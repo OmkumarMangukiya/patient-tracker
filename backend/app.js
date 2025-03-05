@@ -1,5 +1,6 @@
 import express from 'express';
 import signup from './auth/signup.js';
+import signin from './auth/signin.js';
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signup', signup);
+app.post('/signin', signin);
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

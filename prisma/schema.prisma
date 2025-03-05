@@ -34,7 +34,7 @@ model MedicalRecord {
 model Doctor {
   id             String   @id @default(uuid())
   name           String
-  email          String
+  email          String   @unique
   specialization String
   password       String
   // Relations

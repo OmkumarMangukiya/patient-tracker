@@ -18,13 +18,12 @@ const signup = async (req, res) => {
       });
 
       const token = tokenGenerate({
-        role,
-        name,
-        email,
-        age,
+        role : role,
+        name : name,
+        email : email,
+        age : age,
       });
-
-      res.send(`Signup done successfully ${token}`);
+        return res.json({"msg":"done signup",token:token,role:role});
     } else if (role ==='doctor'){
       const {role,name,email,password,specialization} = req.body;
         const user = await prisma.Doctor.create({
@@ -36,11 +35,11 @@ const signup = async (req, res) => {
             },
         });
         const token = tokenGenerate({
-            role,
-            name,
-            email,
+            role : role,
+            name : name,
+            email : email,
         });
-        res.send(`Signup done successfully ${token}`);
+        return res.json({"msg":"done signup",token:token,role:role});
     }
   } catch (err) {
     console.error('Error in creating user:', err);
