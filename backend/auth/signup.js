@@ -10,7 +10,7 @@ const signup = async (req, res) => {
       const user = await prisma.Patient.create({
         data: {
           name: name,
-          age: age,
+          age: parseInt(age),
           gender: gender,
           password: password,
           email: email,

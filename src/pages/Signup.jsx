@@ -1,0 +1,72 @@
+import React from "react";
+import { useState } from "react";
+function Signup(){
+    const [role,setRole] = useState('');
+    const [name,setName] = useState('');
+    const [email,setEmail] = useState('');
+    const [password,setPassword] = useState('');
+    const [age,setAge] = useState(0);
+    const [gender,setGender] = useState('');
+    const [specialization,setSpecialization] = useState('');
+    function handleClick(){
+        if(role === 'patient'){
+            fetch('http://localhost:8000/signup',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({
+                    role:role,
+                    name:name,
+                    email:email,
+                    password:password,
+                    age:age,
+                    gender:gender
+                })
+            });
+        } else if(role === 'doctor'){
+            fetch('http://localhost:8000/signup',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({
+                    role:role,
+                    name:name,
+                    email:email,
+                    password:password,
+                    specialization:specialization
+                })
+            });
+        }
+    }
+    return(
+        <>
+        <h1>Signup</h1>
+        <select value={role} onChange={(e)=>setRole(e.target.value)}>
+            <option value="">Select Role</option>
+            <option value="patient">Patient</option>
+            <option value="doctor">Doctor</option>
+        </select>
+        {role === 'patient' && (
+            <>
+                <input type="text" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)}/>
+                <input type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)}/>
+                <input type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+                <input type="number" placeholder="Age" value={age} onChange={(e)=>setAge(e.target.value)}/>
+                <input type="text" placeholder="Gender" value={gender} onChange={(e)=>setGender(e.target.value)}/>
+            </>
+        )}
+        {role === 'doctor' && (
+            <>
+                <input type="text" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)}/>
+                <input type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)}/>
+                <input type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+                <input type="text" placeholder="Specialization" value={specialization} onChange={(e)=>setSpecialization(e.target.value)}/>
+            </>
+        )}
+        <button onClick={handleClick}>Signup</button>
+        </>
+    )
+}
+export default Signup;
