@@ -29,6 +29,8 @@ function Signup(){
             console.log(response);
             localStorage.setItem('token',response.token);
             localStorage.setItem('role',response.role);
+                navigate('/patient/dashboard');
+            
         } else if(role === 'doctor'){
             const reponse = await fetch('http://localhost:8000/signup',{
                 method:'POST',
@@ -45,6 +47,7 @@ function Signup(){
             });
             localStorage.setItem('token',response.token);
             localStorage.setItem('role',response.role);
+            navigate('/doctor/dashboard');
         }
     }
     return(

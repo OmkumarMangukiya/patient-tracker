@@ -14,6 +14,12 @@ function Signin(){
         })
         localStorage.setItem('token',response.data.token);
         localStorage.setItem('role',response.data.role);
+        if(response.data.role === 'patient'){
+            navigate('/patient/dashboard');
+        }
+        else{
+            navigate('/doctor/dashboard');
+        }
     }
     return(
         <>
