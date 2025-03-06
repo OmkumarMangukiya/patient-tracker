@@ -1,22 +1,19 @@
 import { useState } from "react";
 import {useNavigate} from 'react-router-dom';
+import axios from "axios";
 function Signin(){
     const [role,setRole] = useState('');
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
     const navigate = useNavigate();
-    function handleClick(){
-        fetch('http://localhost:8000/signin',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({
-                role:role,
-                email:email,
-                password:password
-            })
-        });
+    async function handleClick(){
+        const response = await axios.post('http://localhost:8000/signin',{
+            email:email,
+            password:password,
+            role:role
+        })
+        localStorage.setItem('token',response.data.token);
+        localStorage.setItem('role',response.data.role);
     }
     return(
         <>

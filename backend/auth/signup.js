@@ -24,6 +24,7 @@ const signup = async (req, res) => {
         age : age,
       });
         return res.json({"msg":"done signup",token:token,role:role});
+        
     } else if (role ==='doctor'){
       const {role,name,email,password,specialization} = req.body;
         const user = await prisma.Doctor.create({

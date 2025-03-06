@@ -9,7 +9,7 @@ app.use(express.json()); // Middleware to parse JSON bodies
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
-app.use(cors());
+app.use('*',cors());
 app.post('/signup', signup);
 app.post('/signin', signin);
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import {useNavigate} from 'react-router-dom';
 function Signup(){
     const [role,setRole] = useState('');
     const [name,setName] = useState('');
@@ -8,9 +9,10 @@ function Signup(){
     const [age,setAge] = useState(0);
     const [gender,setGender] = useState('');
     const [specialization,setSpecialization] = useState('');
-    function handleClick(){
+    const navigate = useNavigate();
+    async function handleClick(){
         if(role === 'patient'){
-            fetch('http://localhost:8000/signup',{
+            const response = await fetch('http://localhost:8000/signup',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json'
@@ -24,8 +26,11 @@ function Signup(){
                     gender:gender
                 })
             });
+            console.log(response);
+            localStorage.setItem('token',response.token);
+            localStorage.setItem('role',response.role);
         } else if(role === 'doctor'){
-            fetch('http://localhost:8000/signup',{
+            const reponse = await fetch('http://localhost:8000/signup',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json'
@@ -38,6 +43,8 @@ function Signup(){
                     specialization:specialization
                 })
             });
+            localStorage.setItem('token',response.token);
+            localStorage.setItem('role',response.role);
         }
     }
     return(
@@ -66,6 +73,7 @@ function Signup(){
             </>
         )}
         <button onClick={handleClick}>Signup</button>
+        <button onClick={()=>{navigate("/")}}>Signin now</button>
         </>
     )
 }

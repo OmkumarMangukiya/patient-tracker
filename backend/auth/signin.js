@@ -26,7 +26,7 @@ const signin = async (req, res) => {
       email: user.email,
     });
 
-    res.json({ message: 'Sign-in successful', token: token, role: role });
+    return res.json({ message: 'Sign-in successful', token: token, role: role });
   } catch (err) {
     console.error('Error in signing in:', err);
     res.status(500).send('Error in signing in');
