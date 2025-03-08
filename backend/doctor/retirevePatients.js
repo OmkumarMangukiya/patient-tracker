@@ -1,7 +1,8 @@
-import axios from "axios";
+import { tokenVerify } from "../auth/jwtToken.js";
 import prisma from "../client.js";
 const retrievePatients = async (req,res) => {
-    const doctorId = await req.params.doctorId;
+    const token = req.headers.authorization.split(' ')[1];
+    const doctorId = tokenVerify(token).id;
     try{
         
         const patient = await prisma.Patient.findMany({

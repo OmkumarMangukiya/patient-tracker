@@ -22,6 +22,7 @@ const signup = async (req, res) => {
         name : name,
         email : email,
         age : age,
+        id : user.id,
       });
         return res.json({"msg":"done signup",token:token,role:role});
         
@@ -39,6 +40,7 @@ const signup = async (req, res) => {
             role : role,
             name : name,
             email : email,
+            id : user.id,
         });
         return res.json({"msg":"done signup",token:token,role:role});
     }

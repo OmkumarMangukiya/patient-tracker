@@ -15,6 +15,7 @@ model Patient {
   gender   String
   password String
   // Relations
+  doctors     Doctor[]        @relation("DoctorToPatient")
   medicalRecords MedicalRecord[]
   prescriptions  Prescription[]
   appointments   Appointment[]
@@ -38,6 +39,7 @@ model Doctor {
   specialization String
   password       String
   // Relations
+  patients       Patient[]       @relation("DoctorToPatient")
   prescriptions  Prescription[]
   appointments   Appointment[]
 }

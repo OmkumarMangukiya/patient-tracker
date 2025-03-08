@@ -24,6 +24,7 @@ const signin = async (req, res) => {
       role: role,
       name: user.name,
       email: user.email,
+      id :user.id,
     });
 
     return res.json({ message: 'Sign-in successful', token: token, role: role });

@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 app.use('*',cors());
 app.post('/signup', signup);
 app.post('/signin', signin);
-app.post('/retrievePatients/:doctorId', retrievePatients);
+app.get('/doctor/retrievePatients', retrievePatients);
 
 app.listen(8000, () => {
   console.log('Server is running on port 8000');
