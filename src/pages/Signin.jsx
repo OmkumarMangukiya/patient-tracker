@@ -21,7 +21,7 @@ function Signin(){
             navigate('/doctor/dashboard');
         }
     }
-    return(
+    return( 
         <>
         <h1>Signin</h1>
         <select value={role} onChange={(e)=>setRole(e.target.value)}>

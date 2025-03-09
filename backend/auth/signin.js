@@ -1,6 +1,6 @@
 import { tokenGenerate } from './jwtToken.js';
 import prisma from '../client.js';
-
+import bcrypt from 'bcryptjs';
 const signin = async (req, res) => {
   const { email, password, role } = req.body;
 
@@ -15,8 +15,16 @@ const signin = async (req, res) => {
         where: { email: email },
       });
     }
-
-    if (!user || user.password !== password) {
+    
+    // Don't hash password again, instead use bcrypt.compare
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+    
+    // Use bcrypt.compare to check if the passwords match
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    
+    if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
@@ -24,7 +32,7 @@ const signin = async (req, res) => {
       role: role,
       name: user.name,
       email: user.email,
-      id :user.id,
+      id: user.id,
     });
 
     return res.json({ message: 'Sign-in successful', token: token, role: role });

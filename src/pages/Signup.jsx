@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import {useNavigate} from 'react-router-dom';
+import axios from "axios";
 function Signup(){
     const [role,setRole] = useState('');
     const [name,setName] = useState('');
@@ -12,41 +13,28 @@ function Signup(){
     const navigate = useNavigate();
     async function handleClick(){
         if(role === 'patient'){
-            const response = await fetch('http://localhost:8000/signup',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify({
-                    role:role,
-                    name:name,
-                    email:email,
-                    password:password,
-                    age:age,
-                    gender:gender
-                })
-            });
-            console.log(response);
-            localStorage.setItem('token',response.token);
-            localStorage.setItem('role',response.role);
-                navigate('/patient/dashboard');
+            const response = await axios.post('http://localhost:8000/signup',{
+                role:role,
+                name:name,
+                email:email,
+                password:password,
+                age:age,
+                gender:gender,
+            })
+            localStorage.setItem('token',response.data.token);
+            localStorage.setItem('role',response.data.role);
+            navigate('/patient/dashboard');
             
         } else if(role === 'doctor'){
-            const reponse = await fetch('http://localhost:8000/signup',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify({
-                    role:role,
-                    name:name,
-                    email:email,
-                    password:password,
-                    specialization:specialization
-                })
-            });
-            localStorage.setItem('token',response.token);
-            localStorage.setItem('role',response.role);
+            const response = axios.post('http://localhost:8000/signup',{
+                role:role,
+                name:name,
+                email:email,
+                password:password,
+                specialization:specialization,
+            })
+            localStorage.setItem('token',response.data.token);
+            localStorage.setItem('role',response.data.role);
             navigate('/doctor/dashboard');
         }
     }

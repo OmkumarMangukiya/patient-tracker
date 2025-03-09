@@ -1,18 +1,18 @@
 import { tokenGenerate } from './jwtToken.js';
 import prisma from '../client.js';
-
+import bcrypt from 'bcryptjs'; // Fixed typo from bccrypt to bcrypt
 const signup = async (req, res) => {
     const { role } = req.body;
   try {
     if (role === 'patient') {
     const { role, name, email, age, gender, password } = req.body;
-
+      const hashedPassword = await bcrypt.hash(password, 10); // Fixed typo
       const user = await prisma.Patient.create({
         data: {
           name: name,
           age: parseInt(age),
           gender: gender,
-          password: password,
+          password: hashedPassword,
           email: email,
         },
       });
@@ -28,12 +28,14 @@ const signup = async (req, res) => {
         
     } else if (role ==='doctor'){
       const {role,name,email,password,specialization} = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
         const user = await prisma.Doctor.create({
             data: {
             name: name,
             specialization: specialization,
-            password: password,
+            password: hashedPassword,
             email: email,
+
             },
         });
         const token = tokenGenerate({
