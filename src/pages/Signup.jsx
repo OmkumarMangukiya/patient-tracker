@@ -26,7 +26,7 @@ function Signup(){
             navigate('/patient/dashboard');
             
         } else if(role === 'doctor'){
-            const response = axios.post('http://localhost:8000/signup',{
+            const response = await axios.post('http://localhost:8000/signup',{
                 role:role,
                 name:name,
                 email:email,
