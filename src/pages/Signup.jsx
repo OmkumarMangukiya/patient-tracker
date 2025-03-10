@@ -39,8 +39,8 @@ function Signup(){
         }
     }
     return(
-        <>
-        <h1>Signup</h1>
+        <div className="flex flex-col items-center p-4 bg-blue-200 min-h-screen">
+        < h1 className="text-2xl font-bold text-black">Signup</h1>
         <select value={role} onChange={(e)=>setRole(e.target.value)}>
             <option value="">Select Role</option>
             <option value="patient">Patient</option>
@@ -63,9 +63,9 @@ function Signup(){
                 <input type="text" placeholder="Specialization" value={specialization} onChange={(e)=>setSpecialization(e.target.value)}/>
             </>
         )}
-        <button onClick={handleClick}>Signup</button>
-        <button onClick={()=>{navigate("/")}}>Signin now</button>
-        </>
+        <button className='text-white bg-white border border-black px-4 py-2' onClick={handleClick}>Signup</button>
+        <button className='text-white bg-white border border-black px-4 py-2' onClick={() => navigate("/signup")}>Signin now</button>
+        </div>
     )
 }
 export default Signup;
