@@ -20,7 +20,8 @@ function Signin() {
   } 
 
   return (
-    <div className="flex flex-col items-center p-4 bg-blue-200 min-h-screen">
+    <div className="flex flex-col items-center p-4 bg-blue-200 min-h-screen" style={{ backgroundImage: "url('/src/pages/PatientTracker.jpg')" }}>
+      <div className="absolute inset-0 bg-black opacity-50 mix-blend-multiply"></div>
       <h1 className="text-2xl font-bold text-black">Signin</h1>
       <input className=" text-black border-black" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <div className="relative">
