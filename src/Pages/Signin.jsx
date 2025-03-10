@@ -10,7 +10,7 @@ function Signin() {
 
   async function handleLogin() {
     try {
-      const response = await axios.post("http://localhost:8000/login", { email, password });
+      const response = await axios.post("http://localhost:8000/auth/signin", { email, password });
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
       navigate(response.data.role === "patient" ? "/patient/dashboard" : "/doctor/dashboard");

@@ -13,7 +13,7 @@ function Signup(){
     const navigate = useNavigate();
     async function handleClick(){
         if(role === 'patient'){
-            const response = await axios.post('http://localhost:8000/signup',{
+            const response = await axios.post('http://localhost:8000/auth/signup',{
                 role:role,
                 name:name,
                 email:email,
@@ -26,7 +26,7 @@ function Signup(){
             navigate('/patient/dashboard');
             
         } else if(role === 'doctor'){
-            const response = await axios.post('http://localhost:8000/signup',{
+            const response = await axios.post('http://localhost:8000/auth/signup',{
                 role:role,
                 name:name,
                 email:email,

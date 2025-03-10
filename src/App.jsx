@@ -1,36 +1,22 @@
 import './App.css';
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
-import Signup from './pages/Signup';
-import Signin from './pages/Signin';
-import DoctorDashboard from './pages/DoctorDashboard';
-import PatientDashboard from './pages/PatientDashboard';
-
-// Create a header component that uses location
-function Header() {
-  const location = useLocation();
-  const showLogout = location.pathname !== '/' && location.pathname !== '/signup';
-
-  return showLogout ? (
-    <header>
-      <button onClick={() => {
-        localStorage.clear();
-        window.location.href = "/"; // Redirect to signin page after logout
-      }}>Logout</button>
-    </header>
-  ) : null;
-}
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Signin from './Pages/Signin';
+import DoctorDashboard from './Pages/DoctorDashboard';
+import PatientDashboard from './Pages/PatientDashboard';
+import SetPassword from './Components/SetPassword';
+import Signup from './Pages/Signup';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Header />
+    <Router>
       <Routes>
-        <Route path="/" element={<Signin/>}/>
-        <Route path="/signup" element={<Signup/>}/>
-        <Route path="/patient/dashboard" element={<PatientDashboard/>}/>
-        <Route path="/doctor/dashboard" element={<DoctorDashboard/>}/>
+        <Route path="/" element={<Signin />} />
+        <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        <Route path="/patient/dashboard" element={<PatientDashboard />} />
+        <Route path="/set-password" element={<SetPassword />} />
+        <Route path="/signup" element={<Signup/>} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 

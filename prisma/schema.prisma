@@ -11,9 +11,10 @@ model Patient {
   id       Int     @id @default(autoincrement())
   name     String
   email    String  @unique
-  age      Int
-  gender   String
-  password String
+  password String?
+  age      Int?
+  gender   String?
+  status   String  @default("pending")
   // Relations
   doctors     Doctor[]        @relation("DoctorToPatient")
   medicalRecords MedicalRecord[]
