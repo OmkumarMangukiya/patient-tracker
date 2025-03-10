@@ -9,9 +9,16 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
     age: '',
     gender: 'male' // Default value
   });
-  
+  const [allPatients, setAllPatients] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [mode, setMode] = useState('new'); // 'new' or 'existing'
+  const [selectedPatientId, setSelectedPatientId] = useState('');
+
+  async function getPatients(){
+    const response = await axios.get('http://localhost:8000/doctor/retrieveAllPatients');
+    setAllPatients(response.data);
+  }
   
   // If external state management is provided, sync with it
   useEffect(() => {
@@ -21,6 +28,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
         ...formInputs
       }));
     }
+    getPatients();
   }, [formInputs]);
   
   const handleChange = (e) => {
@@ -34,29 +42,63 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
       onInputChange(e);
     }
   };
+
+  const handlePatientSelect = (e) => {
+    const patientId = e.target.value;
+    setSelectedPatientId(patientId);
+    
+    // Optionally, you can find the patient and populate the form data
+    const selectedPatient = allPatients.find(p => p._id === patientId);
+    if (selectedPatient) {
+      setFormData({
+        name: selectedPatient.name || '',
+        email: selectedPatient.email || '',
+        age: selectedPatient.age || '',
+        gender: selectedPatient.gender || 'male'
+      });
+    }
+  };
   
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setLoading(true);
     setMessage({ text: '', type: '' });
     
     try {
       const token = localStorage.getItem('token');
       
-      const response = await axios.post(
-        'http://localhost:8000/doctor/add-patient', 
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
+      if (mode === 'new') {
+        // Creating a new patient
+        await axios.post(
+          'http://localhost:8000/doctor/add-patient', 
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
-        }
-      );
-      
-      setMessage({
-        text: `Patient ${formData.name} added successfully! An invitation email has been sent.`,
-        type: 'success'
-      });
+        );
+        
+        setMessage({
+          text: `Patient ${formData.name} added successfully! An invitation email has been sent.`,
+          type: 'success'
+        });
+      } else {
+        // Adding an existing patient
+        await axios.post(
+          'http://localhost:8000/doctor/assign-patient', 
+          { patientId: selectedPatientId },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        
+        setMessage({
+          text: `Existing patient assigned successfully!`,
+          type: 'success'
+        });
+      }
       
       // Reset form after successful submission
       setFormData({
@@ -65,6 +107,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
         age: '',
         gender: 'male'
       });
+      setSelectedPatientId('');
       
     } catch (err) {
       setMessage({
@@ -78,7 +121,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
   
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Add New Patient</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">Add Patient</h2>
       
       {message.text && (
         <div className={`p-4 mb-4 rounded ${
@@ -88,97 +131,145 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
         </div>
       )}
       
-      <form onSubmit={handleSubmit}>
+      <div className="mb-6">
+        <div className="flex justify-center space-x-4">
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              name="patientMode"
+              value="new"
+              checked={mode === 'new'}
+              onChange={() => setMode('new')}
+              className="form-radio h-4 w-4 text-blue-600"
+            />
+            <span className="ml-2 text-gray-800">Create New Patient</span>
+          </label>
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              name="patientMode"
+              value="existing"
+              checked={mode === 'existing'}
+              onChange={() => setMode('existing')}
+              className="form-radio h-4 w-4 text-blue-600"
+            />
+            <span className="ml-2 text-gray-800">Add Existing Patient</span>
+          </label>
+        </div>
+      </div>
+      
+      {mode === 'existing' ? (
         <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Full Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
+          <label htmlFor="existingPatient" className="block text-gray-700 font-medium mb-2">Select Existing Patient</label>
+          <select
+            id="existingPatient"
+            name="existingPatient"
+            value={selectedPatientId}
+            onChange={handlePatientSelect}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
-            placeholder="Enter patient's full name"
             required
-          />
+          >
+            <option value="">-- Select a patient --</option>
+            {allPatients.map(patient => (
+              <option key={patient._id} value={patient._id}>
+                {patient.name} ({patient.email})
+              </option>
+            ))}
+          </select>
         </div>
-        
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email Address</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
-            placeholder="patient@example.com"
-            required
-          />
-        </div>
-        
-        <div className="mb-4">
-          <label htmlFor="age" className="block text-gray-700 font-medium mb-2">Age</label>
-          <input
-            type="number"
-            id="age"
-            name="age"
-            value={formData.age}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
-            placeholder="Enter age"
-          />
-        </div>
-        
-        <div className="mb-6">
-          <label className="block text-gray-700 font-medium mb-2">Gender</label>
-          <div className="flex space-x-4">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="gender"
-                value="male"
-                checked={formData.gender === 'male'}
-                onChange={handleChange}
-                className="form-radio h-4 w-4 text-blue-600"
-              />
-              <span className="ml-2 text-gray-800">Male</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="gender"
-                value="female"
-                checked={formData.gender === 'female'}
-                onChange={handleChange}
-                className="form-radio h-4 w-4 text-blue-600"
-              />
-              <span className="ml-2 text-gray-800">Female</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="gender"
-                value="other"
-                checked={formData.gender === 'other'}
-                onChange={handleChange}
-                className="form-radio h-4 w-4 text-blue-600"
-              />
-              <span className="ml-2 text-gray-800">Other</span>
-            </label>
+      ) : (
+        <>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+              placeholder="Enter patient's full name"
+              required
+            />
           </div>
-        </div>
-        
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-2 px-4 rounded font-medium text-white ${
-            loading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
-          }`}
-        >
-          {loading ? 'Adding Patient...' : 'Add Patient'}
-        </button>
-      </form>
+          
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+              placeholder="patient@example.com"
+              required
+            />
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="age" className="block text-gray-700 font-medium mb-2">Age</label>
+            <input
+              type="number"
+              id="age"
+              name="age"
+              value={formData.age}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+              placeholder="Enter age"
+            />
+          </div>
+          
+          <div className="mb-6">
+            <label className="block text-gray-700 font-medium mb-2">Gender</label>
+            <div className="flex space-x-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  checked={formData.gender === 'male'}
+                  onChange={handleChange}
+                  className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="ml-2 text-gray-800">Male</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  checked={formData.gender === 'female'}
+                  onChange={handleChange}
+                  className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="ml-2 text-gray-800">Female</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="other"
+                  checked={formData.gender === 'other'}
+                  onChange={handleChange}
+                  className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="ml-2 text-gray-800">Other</span>
+              </label>
+            </div>
+          </div>
+        </>
+      )}
+      
+      <button
+        onClick={handleSubmit}
+        disabled={loading}
+        className={`w-full py-2 px-4 rounded font-medium text-white ${
+          loading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
+        }`}
+      >
+        {loading ? 'Processing...' : mode === 'new' ? 'Add New Patient' : 'Assign Existing Patient'}
+      </button>
     </div>
   );
 }
