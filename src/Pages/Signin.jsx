@@ -5,12 +5,14 @@ import axios from "axios";
 function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   async function handleLogin() {
     try {
-      const response = await axios.post("http://localhost:8000/auth/signin", { email, password });
+
+      const response = await axios.post("http://localhost:8000/auth/signin", { email, password,role });
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
       navigate(response.data.role === "patient" ? "/patient/dashboard" : "/doctor/dashboard");
@@ -22,6 +24,11 @@ function Signin() {
   return (
     <div className="flex flex-col items-center p-4 bg-blue-200 min-h-screen">
       <h1 className="text-2xl font-bold text-black">Signin</h1>
+        <select className="text-black border-black" value={role} onChange={(e) => setRole(e.target.value)}>
+            <option value="">Select Role</option>
+            <option value="patient">Patient</option>
+            <option value="doctor">Doctor</option>
+        </select>
       <input className=" text-black border-black" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <div className="relative">
         <input className=" text-black border-black" type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
