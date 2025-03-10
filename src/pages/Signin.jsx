@@ -23,7 +23,7 @@ function Signin(){
     }
     return( 
         <>
-        <h1>Signin</h1>
+        <h1 className="text-amber-800">Signin</h1>
         <select value={role} onChange={(e)=>setRole(e.target.value)}>
             <option value="">Select Role</option>
             <option value="patient">Patient</option>
