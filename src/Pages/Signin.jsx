@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import backgroundImage from './PatientTracker1.jpg'; // Import the image
 function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +22,8 @@ function Signin() {
   } 
 
   return (
-    <div className="flex flex-col items-center p-4 bg-blue-200 min-h-screen">
+    <div className="flex flex-col items-center p-4 bg-blue-200 min-h-screen" style={{ backgroundImage: `url(${backgroundImage})` }}>
+      <div className="absolute inset-0 bg-black opacity-50 mix-blend-multiply"></div>
       <h1 className="text-2xl font-bold text-black">Signin</h1>
         <select className="text-black border-black" value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="">Select Role</option>
