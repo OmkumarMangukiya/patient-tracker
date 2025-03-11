@@ -59,7 +59,7 @@ function SetPassword() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Set Your Password</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-red-800">Set Your Password</h2>
         
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
@@ -74,7 +74,7 @@ function SetPassword() {
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="password">
+              <label className="block text-red-700 mb-2" htmlFor="password">
                 New Password
               </label>
               <input
@@ -89,7 +89,7 @@ function SetPassword() {
             </div>
             
             <div className="mb-6">
-              <label className="block text-gray-700 mb-2" htmlFor="confirm-password">
+              <label className="block text-red-700 mb-2" htmlFor="confirm-password">
                 Confirm Password
               </label>
               <input
@@ -106,7 +106,7 @@ function SetPassword() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-2 px-4 rounded font-medium text-white ${
+              className={`w-full py-2 px-4 rounded font-medium text-red ${
                 loading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >

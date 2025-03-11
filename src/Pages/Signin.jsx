@@ -29,10 +29,10 @@ function Signin() {
       
       {/* Content container with higher z-index */}
       <div className="relative z-10 flex flex-col items-center bg-white p-8 rounded-lg shadow-lg space-y-4 max-w-md w-full">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Sign In</h1>
+        <h1 className="text-3xl font-bold text-red-800 mb-4">Sign In</h1>
         
         <select 
-          className="w-full p-2 border border-gray-300 rounded text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+          className="w-full p-2 border border-gray-300 rounded text-red-800 focus:outline-none focus:ring-2 focus:ring-blue-500" 
           value={role} 
           onChange={(e) => setRole(e.target.value)}
         >
@@ -42,7 +42,7 @@ function Signin() {
         </select>
         
         <input 
-          className="w-full p-2 border border-gray-300 rounded text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+          className="w-full p-2 border border-gray-300 rounded text-red-800 focus:outline-none focus:ring-2 focus:ring-blue-500" 
           type="email" 
           placeholder="Email" 
           value={email} 
@@ -51,7 +51,7 @@ function Signin() {
         
         <div className="relative w-full">
           <input 
-            className="w-full p-2 border border-gray-300 rounded text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+            className="w-full p-2 border border-gray-300 rounded text-red-800 focus:outline-none focus:ring-2 focus:ring-blue-500" 
             type={showPassword ? "text" : "password"} 
             placeholder="Password" 
             value={password} 
@@ -59,7 +59,7 @@ function Signin() {
           />
           <button 
             type="button" 
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500 hover:text-red-700"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? '👁️' : '👁️‍🗨️'}
@@ -67,14 +67,14 @@ function Signin() {
         </div>
         
         <button 
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-red font-medium py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           onClick={handleLogin}
         >
           Sign In
         </button>
         
         <div className="flex justify-center w-full pt-2">
-          <span className="text-gray-600 mr-2">Don't have an account?</span>
+          <span className="text-red-600 mr-2">Don't have an account?</span>
           <button 
             className="text-blue-600 hover:text-blue-800 font-medium focus:outline-none"
             onClick={() => navigate("/signup")}

@@ -121,7 +121,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
   
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Add Patient</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center text-black">Add Patient</h2>
       
       {message.text && (
         <div className={`p-4 mb-4 rounded ${
@@ -142,7 +142,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
               onChange={() => setMode('new')}
               className="form-radio h-4 w-4 text-blue-600"
             />
-            <span className="ml-2 text-gray-800">Create New Patient</span>
+            <span className="ml-2 text-black">Create New Patient</span>
           </label>
           <label className="inline-flex items-center">
             <input
@@ -153,7 +153,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
               onChange={() => setMode('existing')}
               className="form-radio h-4 w-4 text-blue-600"
             />
-            <span className="ml-2 text-gray-800">Add Existing Patient</span>
+            <span className="ml-2 text-black">Add Existing Patient</span>
           </label>
         </div>
       </div>
@@ -166,7 +166,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
             name="existingPatient"
             value={selectedPatientId}
             onChange={handlePatientSelect}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
             required
           >
             <option value="">-- Select a patient --</option>
@@ -187,7 +187,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               placeholder="Enter patient's full name"
               required
             />
@@ -201,7 +201,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               placeholder="patient@example.com"
               required
             />
@@ -215,7 +215,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
               name="age"
               value={formData.age}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               placeholder="Enter age"
             />
           </div>
@@ -232,7 +232,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
                   onChange={handleChange}
                   className="form-radio h-4 w-4 text-blue-600"
                 />
-                <span className="ml-2 text-gray-800">Male</span>
+                <span className="ml-2 text-black">Male</span>
               </label>
               <label className="inline-flex items-center">
                 <input
@@ -243,7 +243,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
                   onChange={handleChange}
                   className="form-radio h-4 w-4 text-blue-600"
                 />
-                <span className="ml-2 text-gray-800">Female</span>
+                <span className="ml-2 text-black">Female</span>
               </label>
               <label className="inline-flex items-center">
                 <input
@@ -254,7 +254,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
                   onChange={handleChange}
                   className="form-radio h-4 w-4 text-blue-600"
                 />
-                <span className="ml-2 text-gray-800">Other</span>
+                <span className="ml-2 text-black">Other</span>
               </label>
             </div>
           </div>

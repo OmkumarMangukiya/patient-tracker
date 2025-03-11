@@ -63,8 +63,8 @@ function Signup(){
                 <input type="text" placeholder="Specialization" value={specialization} onChange={(e)=>setSpecialization(e.target.value)}/>
             </>
         )}
-        <button className='text-white bg-white border border-black px-4 py-2' onClick={handleClick}>Signup</button>
-        <button className='text-white bg-white border border-black px-4 py-2' onClick={() => navigate("/signup")}>Signin now</button>
+        <button className='text-red bg-white border border-black px-4 py-2' onClick={handleClick}>Signup</button>
+        <button className='text-red bg-white border border-black px-4 py-2' onClick={() => navigate("/signup")}>Signin now</button>
         </div>
     )
 }

@@ -25,25 +25,25 @@ function DoctorDashboard() {
 
   return (
     <div className="container p-4">
-      <h1 className="text-2xl font-bold mb-4">Doctor Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-4 text-black">Doctor Dashboard</h1>
       
       {/* Tab Navigation */}
       <div className="mb-4 border-b">
         <button
           onClick={() => setActiveTab("patients")}
-          className={`mr-4 p-2 ${activeTab === "patients" ? "font-bold border-b-2 border-blue-500" : ""}`}
+          className={`mr-4 p-2 ${activeTab === "patients" ? "font-bold border-b-2 border-blue-500" : ""} text-black`}
         >
           My Patients
         </button>
         <button
           onClick={() => setActiveTab("add")}
-          className={`mr-4 p-2 ${activeTab === "add" ? "font-bold border-b-2 border-blue-500" : ""}`}
+          className={`mr-4 p-2 ${activeTab === "add" ? "font-bold border-b-2 border-blue-500" : ""} text-black`}
         >
           Add Patient
         </button>
         <button
           onClick={() => setActiveTab("appointments")}
-          className={`mr-4 p-2 ${activeTab === "appointments" ? "font-bold border-b-2 border-blue-500" : ""}`}
+          className={`mr-4 p-2 ${activeTab === "appointments" ? "font-bold border-b-2 border-blue-500" : ""} text-black`}
         >
           Appointments
         </button>
@@ -55,7 +55,7 @@ function DoctorDashboard() {
         {activeTab === "add" && <AddPatient formInputs={formInputs} onInputChange={handleInputChange} />}
         {activeTab === "appointments" && (
           <div className="p-2">
-            <p>Appointments feature coming soon</p>
+            <p className="text-black">Appointments feature coming soon</p>
           </div>
         )}
       </div>

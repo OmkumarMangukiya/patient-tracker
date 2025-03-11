@@ -46,15 +46,27 @@ model Doctor {
 }
 
 model Prescription {
-  id         String  @id @default(uuid())
-  doctorId   String
-  doctor     Doctor  @relation(fields: [doctorId], references: [id])
+  id         String            @id @default(uuid()) @map("_id")
+  date       DateTime          @default(now())
   patientId  Int
-  patient    Patient @relation(fields: [patientId], references: [id])
-  medications String
-  dateIssued  DateTime @default(now())
+  doctorId   String
+  patient    Patient           @relation(fields: [patientId], references: [id])
+  doctor     Doctor              @relation(fields: [doctorId], references: [id])
+  medicines  PrescribedMedicine[]
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
 }
-
+model PrescribedMedicine {
+  id            String        @id @default(uuid()) @map("_id") 
+  medicineId    String
+  medicineName  String
+  dosage        String
+  timing        Json          // Store as {morning: boolean, afternoon: boolean, evening: boolean}
+  instructions  String
+  duration      String
+  prescription  Prescription  @relation(fields: [prescriptionId], references: [id])
+  prescriptionId String       
+}
 model Appointment {
   id              String   @id @default(uuid())
   patientId       Int
