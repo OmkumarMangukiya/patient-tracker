@@ -52,15 +52,25 @@ function ViewPrescription({ patientId }) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {prescriptions.map((prescription) => (
-            <div key={prescription.id} className="border p-4 rounded shadow-sm">
+            <div key={prescription.id} className="border p-4 rounded shadow-sm hover:shadow-md transition-shadow">
               <h3 className="font-bold text-lg text-black">Prescription Date: {new Date(prescription.date).toLocaleDateString()}</h3>
               <p className="text-gray-600">Doctor: {prescription.doctor.name}</p>
               <div className="mt-2">
                 <h4 className="font-semibold text-black">Medicines:</h4>
-                <ul className="list-disc list-inside">
+                <ul className="mt-2 space-y-2">
                   {prescription.medicines.map((med) => (
-                    <li key={med.id} className="text-black">
-                      {med.medicineName} - {med.dosage} - {med.duration} - {med.instructions}
+                    <li key={med.id} className="bg-blue-50 p-2 rounded border border-blue-100">
+                      <div className="font-medium text-black">{med.medicineName}</div>
+                      <div className="text-sm text-gray-600">
+                        <div>Dosage: {med.dosage}</div>
+                        <div>Duration: {med.duration}</div>
+                        <div>Timing: {Object.entries(med.timing)
+                          .filter(([_, value]) => value === true)
+                          .map(([key]) => key)
+                          .join(', ')}
+                        </div>
+                        <div>Instructions: {med.instructions}</div>
+                      </div>
                     </li>
                   ))}
                 </ul>

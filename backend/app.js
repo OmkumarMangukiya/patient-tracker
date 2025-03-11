@@ -6,19 +6,27 @@ import setPassword from './auth/setPassword.js';
 import retrievePatients from './doctor/retirevePatients.js';
 import retrieveAllPatients from './doctor/retireveAllPatints.js';
 import assignPatient from './doctor/assign-patient.js';
-import cors from 'cors'; './doctor/prescription.js';
+import cors from 'cors';
 import prescription from './doctor/prescription.js';
 import { getMedicinesHandler } from './utils/medicineData.js';
 import { getPatientPrescriptions } from './patient/prescriptions.js';
+import { 
+  getTodayMedications,
+  updateMedicationStatus,
+  getMedicationHistory,
+  getMedicationAdherenceStats
+} from './patient/medications.js';
+import { initScheduler } from './scheduleTasks.js';
 
 const app = express();
 
-app.use(express.json()); app.use(express.json()); 
+app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('Server is running');es.send('Server is running');
+  res.send('Server is running');
 });
-app.use('*',cors());app.use('*',cors());
+
+app.use('*', cors());
 
 app.post('/auth/signup', signup);
 app.post('/auth/signin', signin);
@@ -31,6 +39,28 @@ app.get('/api/medicines', getMedicinesHandler);
 app.post('/doctor/prescription', prescription);
 app.get('/patient/prescriptions/:patientId', getPatientPrescriptions);
 
+// New medication tracking endpoints
+app.get('/patient/medications/today/:patientId', getTodayMedications);
+app.post('/patient/medications/update-status', updateMedicationStatus);
+app.get('/patient/medications/history/:patientId', getMedicationHistory);
+app.get('/patient/medications/adherence-stats/:patientId', getMedicationAdherenceStats);
+
+// Test endpoint to send medication reminders manually
+app.post('/admin/send-medication-reminders', async (req, res) => {
+  try {
+    const { timeOfDay = 'morning' } = req.body;
+    const { sendReminders } = await import('./scheduleTasks.js');
+    await sendReminders(timeOfDay);
+    res.json({ success: true, message: `${timeOfDay} medication reminders sent successfully` });
+  } catch (error) {
+    console.error('Error sending medication reminders:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.listen(8000, () => {
   console.log('Server is running on port 8000');
+  
+  // Initialize the medication reminder scheduler
+  initScheduler();
 });

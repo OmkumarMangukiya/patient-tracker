@@ -78,13 +78,19 @@ model Appointment {
 }
 
 model MedicineAdherence {
-  id            String  @id @default(uuid())
+  id            String   @id @default(uuid())
   patientId     Int
-  patient       Patient @relation(fields: [patientId], references: [id])
+  patient       Patient  @relation(fields: [patientId], references: [id])
   medication    String
-  adherenceStatus String  // Example: "Taken", "Missed"
+  adherenceStatus String  // "Taken", "Missed", "Pending"
   missedDoses   Int
-  reminderSent  Boolean @default(false)  // ✅ Tracks if an alert was sent
+  reminderSent  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  prescriptionId String?
+  medicineId    String?
+  scheduledTime String?  // "morning", "afternoon", "evening"
+  scheduledDate String?  // YYYY-MM-DD format
 }
 
 model HealthMetrics {

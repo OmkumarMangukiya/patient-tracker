@@ -5,23 +5,44 @@ import DoctorDashboard from './Pages/DoctorDashboard';
 import PatientDashboard from './Pages/PatientDashboard';
 import SetPassword from './Components/SetPassword';
 import Signup from './Pages/Signup';
+import { useEffect } from 'react';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Signin />} />
-        <Route path="/doctor/dashboard" element={<WithLogout Component={DoctorDashboard} />} />
-        <Route path="/patient/dashboard" element={<WithLogout Component={PatientDashboard} />} />
+        <Route path="/doctor/dashboard" element={<WithLogout Component={DoctorDashboard} role="doctor" />} />
+        <Route path="/patient/dashboard" element={<WithLogout Component={PatientDashboard} role="patient" />} />
         <Route path="/set-password" element={<WithLogout Component={SetPassword} />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/patient/medications" element={<WithLogout Component={PatientDashboard} role="patient" initialTab="medications" />} />
       </Routes>
     </Router>
   );
 }
 
-const WithLogout = ({ Component }) => {
+const WithLogout = ({ Component, role, initialTab }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/');
+      return;
+    }
+    
+    try {
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      if (role && decodedToken.role !== role) {
+        navigate('/');
+      }
+    } catch (err) {
+      console.error('Invalid token:', err);
+      localStorage.removeItem('token');
+      navigate('/');
+    }
+  }, [role, navigate]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -29,10 +50,20 @@ const WithLogout = ({ Component }) => {
   };
 
   return (
-    <>
-      <button onClick={handleLogout}>Logout</button>
-      <Component />
-    </>
+    <div>
+      <nav className="bg-blue-600 p-4 shadow-md">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-white text-xl font-bold">Patient Tracker</h1>
+          <button 
+            onClick={handleLogout}
+            className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition-colors"
+          >
+            Logout
+          </button>
+        </div>
+      </nav>
+      <Component initialTab={initialTab} />
+    </div>
   );
 };
 

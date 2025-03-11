@@ -42,6 +42,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
+    "node-cron": "^3.0.3",
     "nodemon": "^3.1.9",
     "prisma-erd-generator": "^2.0.4",
     "vite": "^6.2.0"
