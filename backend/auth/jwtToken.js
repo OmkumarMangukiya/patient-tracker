@@ -1,14 +1,53 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-export function tokenVerify(token) {
+// Ensure environment variables are loaded
+dotenv.config();
+
+// Check if JWT_SECRET is available and set a fallback if needed
+const getJwtSecret = () => {
+  if (!process.env.JWT_SECRET) {
+    console.warn(
+      "WARNING: JWT_SECRET is not set in environment. Using fallback secret."
+    );
+    return "mysecret"; // Fallback secret - ideally this should never be used in production
+  }
+  return process.env.JWT_SECRET;
+};
+
+export function tokenGenerate(user) {
   try {
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-    return decoded;
-  } catch (err) {
-    return false;
+    // Get the JWT secret
+    const jwtSecret = getJwtSecret();
+
+    // Sign token with user information
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+      jwtSecret,
+      { expiresIn: "24h" }
+    );
+
+    return token;
+  } catch (error) {
+    console.error("Error generating token:", error);
+    throw error;
   }
 }
 
-export function tokenGenerate(data) {
-  return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '24h' });
+export function tokenVerify(token) {
+  try {
+    // Get the JWT secret
+    const jwtSecret = getJwtSecret();
+
+    // Verify the token
+    const decoded = jwt.verify(token, jwtSecret);
+    return decoded;
+  } catch (error) {
+    console.error("Token verification failed:", error.message);
+    return null;
+  }
 }
