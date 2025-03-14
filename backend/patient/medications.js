@@ -44,6 +44,15 @@ export const getTodayMedications = async (req, res) => {
           ...new Set(medications.map((med) => med.scheduledTime)),
         ];
 
+        // Track medicines that already have entries for each time period
+        const existingMedicineTimeMap = {};
+        medications.forEach((med) => {
+          if (!existingMedicineTimeMap[med.medicineId]) {
+            existingMedicineTimeMap[med.medicineId] = new Set();
+          }
+          existingMedicineTimeMap[med.medicineId].add(med.scheduledTime);
+        });
+
         // Get prescriptions to extract any time periods that might be missing
         const prescriptions = await prisma.Prescription.findMany({
           where: {
@@ -63,7 +72,14 @@ export const getTodayMedications = async (req, res) => {
 
             // Check each time period
             for (const timeOfDay of ["morning", "afternoon", "evening"]) {
-              if (timing[timeOfDay] && !existingTimes.includes(timeOfDay)) {
+              // Only add if:
+              // 1. This time of day is required in the prescription
+              // 2. This specific medicine doesn't already have an entry for this time period
+              if (
+                timing[timeOfDay] &&
+                (!existingMedicineTimeMap[medicine.id] ||
+                  !existingMedicineTimeMap[medicine.id].has(timeOfDay))
+              ) {
                 additionalMeds.push({
                   medicineId: medicine.id,
                   medicineName: medicine.medicineName,
@@ -120,12 +136,16 @@ export const getTodayMedications = async (req, res) => {
     // Process prescriptions to create medication schedule
     const currentMedications = [];
 
+    // Create a record of which medicines we've already added to avoid duplicates
+    const addedMedicines = new Set();
+
     for (const prescription of prescriptions) {
       for (const medicine of prescription.medicines) {
         // Create morning, afternoon, evening entries if specified in timing
         const timing = medicine.timing;
 
-        if (timing.morning) {
+        // Track each medicine + time combo to avoid duplicates
+        if (timing.morning && !addedMedicines.has(`${medicine.id}-morning`)) {
           currentMedications.push({
             medicineId: medicine.id,
             medicineName: medicine.medicineName,
@@ -135,9 +155,13 @@ export const getTodayMedications = async (req, res) => {
             adherenceStatus: "Pending",
             prescriptionId: prescription.id,
           });
+          addedMedicines.add(`${medicine.id}-morning`);
         }
 
-        if (timing.afternoon) {
+        if (
+          timing.afternoon &&
+          !addedMedicines.has(`${medicine.id}-afternoon`)
+        ) {
           currentMedications.push({
             medicineId: medicine.id,
             medicineName: medicine.medicineName,
@@ -147,9 +171,10 @@ export const getTodayMedications = async (req, res) => {
             adherenceStatus: "Pending",
             prescriptionId: prescription.id,
           });
+          addedMedicines.add(`${medicine.id}-afternoon`);
         }
 
-        if (timing.evening) {
+        if (timing.evening && !addedMedicines.has(`${medicine.id}-evening`)) {
           currentMedications.push({
             medicineId: medicine.id,
             medicineName: medicine.medicineName,
@@ -159,6 +184,7 @@ export const getTodayMedications = async (req, res) => {
             adherenceStatus: "Pending",
             prescriptionId: prescription.id,
           });
+          addedMedicines.add(`${medicine.id}-evening`);
         }
       }
     }
@@ -183,11 +209,9 @@ export const updateMedicationStatus = async (req, res) => {
 
     const decoded = tokenVerify(token);
     if (!decoded || decoded.role !== "patient") {
-      return res
-        .status(403)
-        .json({
-          message: "Unauthorized: Only patients can update medication status",
-        });
+      return res.status(403).json({
+        message: "Unauthorized: Only patients can update medication status",
+      });
     }
 
     const {
@@ -279,11 +303,9 @@ export const getMedicationHistory = async (req, res) => {
 
     const decoded = tokenVerify(token);
     if (!decoded || decoded.role !== "patient") {
-      return res
-        .status(403)
-        .json({
-          message: "Unauthorized: Only patients can view medication history",
-        });
+      return res.status(403).json({
+        message: "Unauthorized: Only patients can view medication history",
+      });
     }
 
     const { patientId } = req.params;

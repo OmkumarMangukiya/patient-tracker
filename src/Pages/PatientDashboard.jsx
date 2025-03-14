@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ViewPrescription from '../Components/ViewPrescription';
 import MedicationTracker from '../Components/MedicationTracker';
 import axios from 'axios';
@@ -10,6 +10,39 @@ function PatientDashboard() {
   const [upcomingMedications, setUpcomingMedications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lastRefreshed, setLastRefreshed] = useState(null);
+
+  // Memoize the fetch function to avoid recreating it on every render
+  const fetchUpcomingMedications = useCallback(async (id, token) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        `http://localhost:8000/patient/medications/today/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          // Add cache-busting parameter to prevent caching
+          params: {
+            _t: new Date().getTime()
+          }
+        }
+      );
+
+      // Filter only pending medications
+      const pendingMedications = response.data.filter(
+        med => med.adherenceStatus === 'Pending'
+      );
+
+      setUpcomingMedications(pendingMedications);
+      setIsLoading(false);
+      setLastRefreshed(new Date());
+    } catch (error) {
+      console.error('Error fetching upcoming medications:', error);
+      setIsLoading(false);
+      setError("Failed to load medication data. Please try refreshing the page.");
+    }
+  }, []);
 
   useEffect(() => {
     try {
@@ -19,7 +52,7 @@ function PatientDashboard() {
         setIsLoading(false);
         return;
       }
-      
+
       const decodedToken = JSON.parse(atob(token.split('.')[1]));
       const id = decodedToken.id;
       setPatientId(id);
@@ -32,12 +65,12 @@ function PatientDashboard() {
       setError("Authentication error. Please log in again.");
       setIsLoading(false);
     }
-  }, []);
+  }, [fetchUpcomingMedications]);
 
   // Set up auto-refresh every minute to keep medication status updated
   useEffect(() => {
     if (!patientId) return;
-    
+
     const refreshInterval = setInterval(() => {
       const token = localStorage.getItem('token');
       if (token && patientId) {
@@ -45,33 +78,15 @@ function PatientDashboard() {
         fetchUpcomingMedications(patientId, token);
       }
     }, 60000); // Refresh every minute
-    
+
     return () => clearInterval(refreshInterval);
-  }, [patientId]);
+  }, [patientId, fetchUpcomingMedications]);
 
-  const fetchUpcomingMedications = async (id, token) => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get(
-        `http://localhost:8000/patient/medications/today/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      // Filter only pending medications
-      const pendingMedications = response.data.filter(
-        med => med.adherenceStatus === 'Pending'
-      );
-
-      setUpcomingMedications(pendingMedications);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching upcoming medications:', error);
-      setIsLoading(false);
-      setError("Failed to load medication data. Please try refreshing the page.");
+  // Manual refresh function for the refresh button
+  const handleRefresh = () => {
+    const token = localStorage.getItem('token');
+    if (token && patientId) {
+      fetchUpcomingMedications(patientId, token);
     }
   };
 
@@ -83,7 +98,7 @@ function PatientDashboard() {
   };
 
   const getTimeEmoji = (time) => {
-    switch(time) {
+    switch (time) {
       case 'morning': return '🌅';
       case 'afternoon': return '☀️';
       case 'evening': return '🌙';
@@ -102,6 +117,12 @@ function PatientDashboard() {
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           <strong className="font-bold">Error:</strong>
           <span className="block sm:inline"> {error}</span>
+          <button
+            onClick={handleRefresh}
+            className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -109,8 +130,26 @@ function PatientDashboard() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-black">Patient Dashboard</h1>
-      
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold text-white">Patient Dashboard</h1>
+        <div className="flex items-center">
+          {lastRefreshed && (
+            <span className="text-xs text-gray-300 mr-2">
+              Last updated: {lastRefreshed.toLocaleTimeString()}
+            </span>
+          )}
+          <button
+            onClick={handleRefresh}
+            className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 flex items-center text-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
       {/* Medication Reminders Alert */}
       {!isLoading && currentTimeMedications.length > 0 && (
         <div className="mb-6 bg-yellow-100 p-4 rounded-md border border-yellow-300 shadow-md">
@@ -127,7 +166,7 @@ function PatientDashboard() {
               </span>
             ))}
           </div>
-          <button 
+          <button
             onClick={() => {
               setViewPrescriptions(false);
               setViewMedications(true);
@@ -138,7 +177,7 @@ function PatientDashboard() {
           </button>
         </div>
       )}
-      
+
       <div className="flex mb-4 space-x-3">
         <button
           onClick={() => {
@@ -149,7 +188,7 @@ function PatientDashboard() {
         >
           Medication Tracker
         </button>
-        
+
         <button
           onClick={() => {
             setViewPrescriptions(true);

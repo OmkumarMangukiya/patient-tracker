@@ -6,7 +6,6 @@ import PatientDashboard from './Pages/PatientDashboard';
 import SetPassword from './Components/SetPassword';
 import Signup from './Pages/Signup';
 import { useEffect } from 'react';
-
 function App() {
   return (
     <Router>
@@ -24,26 +23,6 @@ function App() {
 
 const WithLogout = ({ Component, role, initialTab }) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/');
-      return;
-    }
-    
-    try {
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
-      if (role && decodedToken.role !== role) {
-        navigate('/');
-      }
-    } catch (err) {
-      console.error('Invalid token:', err);
-      localStorage.removeItem('token');
-      navigate('/');
-    }
-  }, [role, navigate]);
-
   const handleLogout = () => {
     localStorage.clear();
     navigate('/');
@@ -54,7 +33,7 @@ const WithLogout = ({ Component, role, initialTab }) => {
       <nav className="bg-blue-600 p-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-white text-xl font-bold">Patient Tracker</h1>
-          <button 
+          <button
             onClick={handleLogout}
             className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition-colors"
           >

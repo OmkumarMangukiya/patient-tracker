@@ -1,17 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-
-// Load environment variables before importing other modules
 dotenv.config();
-
-// Verify JWT_SECRET at startup
-if (!process.env.JWT_SECRET) {
-  console.error("WARNING: JWT_SECRET environment variable is not defined!");
-  console.error(
-    "Authentication will fail without a properly defined JWT_SECRET."
-  );
-}
-
 import signup from "./auth/signup.js";
 import signin from "./auth/signin.js";
 import addPatient from "./doctor/addPatient.js";
@@ -30,16 +19,23 @@ import {
   getMedicationAdherenceStats,
 } from "./patient/medications.js";
 import { initScheduler } from "./scheduleTasks.js";
-
+// Import the trigger function instead of middleware
+import { triggerMedicationReminder } from "./middleware/MedicationReminder.js";
 const app = express();
 
 app.use(express.json());
+app.use("*", cors());
+
+// Create a middleware that triggers reminders for ALL routes without interfering with responses
+app.use((req, res, next) => {
+  // Trigger reminders asynchronously without waiting for response
+  triggerMedicationReminder().catch(console.error);
+  next();
+});
 
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
-
-app.use("*", cors());
 
 app.post("/auth/signup", signup);
 app.post("/auth/signin", signin);
