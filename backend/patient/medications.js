@@ -30,7 +30,7 @@ export const getTodayMedications = async (req, res) => {
     try {
       const medications = await prisma.MedicineAdherence.findMany({
         where: {
-          patientId: String(patientId), // Convert to string instead of parseInt
+          patientId: parseInt(patientId, 10), // Ensure it's an integer
           scheduledDate: today,
         },
         orderBy: {
@@ -56,7 +56,7 @@ export const getTodayMedications = async (req, res) => {
         // Get prescriptions to extract any time periods that might be missing
         const prescriptions = await prisma.Prescription.findMany({
           where: {
-            patientId: String(patientId), // Convert to string
+            patientId: parseInt(patientId, 10), // Ensure it's an integer
           },
           include: {
             medicines: true,
@@ -105,7 +105,7 @@ export const getTodayMedications = async (req, res) => {
       // Fallback: Query without scheduledDate if not available in schema
       const medications = await prisma.MedicineAdherence.findMany({
         where: {
-          patientId: String(patientId), // Convert to string
+          patientId: parseInt(patientId, 10), // Ensure it's an integer
           createdAt: {
             gte: new Date(today),
             lt: new Date(
@@ -126,7 +126,7 @@ export const getTodayMedications = async (req, res) => {
     // If no specific medications found for today, get from prescriptions
     const prescriptions = await prisma.Prescription.findMany({
       where: {
-        patientId: String(patientId), // Convert to string
+        patientId: parseInt(patientId, 10), // Ensure it's an integer
       },
       include: {
         medicines: true,
@@ -238,7 +238,7 @@ export const updateMedicationStatus = async (req, res) => {
 
       const newMedication = await prisma.MedicineAdherence.create({
         data: {
-          patientId: String(patientId), // Convert to string
+          patientId: parseInt(patientId, 10), // Ensure it's an integer
           medication: medication,
           adherenceStatus: status,
           missedDoses: status === "Missed" ? 1 : 0,
@@ -322,7 +322,7 @@ export const getMedicationHistory = async (req, res) => {
 
     const history = await prisma.MedicineAdherence.findMany({
       where: {
-        patientId: String(patientId), // Convert to string
+        patientId: parseInt(patientId, 10), // Ensure it's an integer
         createdAt: {
           gte: startDate,
           lte: endDate,
@@ -368,7 +368,7 @@ export const getMedicationAdherenceStats = async (req, res) => {
     // Get all medication records in the date range
     const adherenceRecords = await prisma.MedicineAdherence.findMany({
       where: {
-        patientId: String(patientId), // Convert to string
+        patientId: parseInt(patientId, 10), // Ensure it's an integer
         createdAt: {
           gte: startDate,
           lte: endDate,

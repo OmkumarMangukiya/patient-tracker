@@ -1,13 +1,14 @@
 import { tokenVerify } from "../auth/jwtToken.js";
 import prisma from "../client.js";
-import axios from "axios";
 import dotenv from "dotenv";
+import transporter from "./emailConfig.js";
 
 dotenv.config();
 
 const emailServiceAlert = async (token) => {
   const decoded = tokenVerify(token);
-  const patientId = decoded.id;
+  // Convert string ID to integer
+  const patientId = parseInt(decoded.id, 10);
 
   try {
     // Get patient details
@@ -23,7 +24,7 @@ const emailServiceAlert = async (token) => {
     // Get current prescriptions with medicines
     const prescriptions = await prisma.Prescription.findMany({
       where: {
-        patientId: patientId,
+        patientId: patientId, // Already an integer
       },
       include: {
         medicines: true,
@@ -81,7 +82,7 @@ const emailServiceAlert = async (token) => {
     // Check if we've already created medication adherence records for today
     const existingAdherenceRecords = await prisma.MedicineAdherence.findMany({
       where: {
-        patientId: patientId,
+        patientId: patientId, // Ensure this is an integer
         scheduledTime: timeOfDay,
         scheduledDate: today,
       },
@@ -95,18 +96,10 @@ const emailServiceAlert = async (token) => {
 
     // Log reminder in the database only for medicines that don't already have records
     for (const med of medications) {
-      // Skip if we already have a record for this medicine at this time today
-      if (existingRecordsMap[med.medicineId]) {
-        console.log(
-          `Skipping duplicate record for ${med.name} at ${timeOfDay}`
-        );
-        continue;
-      }
-
       try {
         await prisma.MedicineAdherence.create({
           data: {
-            patientId: patientId,
+            patientId: patientId, // Ensure this is an integer
             medication: med.name,
             adherenceStatus: "Pending",
             missedDoses: 0,
@@ -122,7 +115,7 @@ const emailServiceAlert = async (token) => {
         if (error.message.includes("Unknown argument")) {
           await prisma.MedicineAdherence.create({
             data: {
-              patientId: patientId,
+              patientId: patientId, // Ensure this is an integer
               medication: med.name,
               adherenceStatus: "Pending",
               missedDoses: 0,
@@ -153,46 +146,38 @@ const sendMedicationReminder = async (email, name, medications, timeOfDay) => {
       )
       .join("");
 
-    const response = await axios({
-      method: "post",
-      url: "https://api.sendinblue.com/v3/smtp/email",
-      headers: {
-        "Content-Type": "application/json",
-        "api-key": process.env.BREVO_API_KEY,
-      },
-      data: {
-        sender: {
-          name: "Patient Tracker",
-          email: process.env.EMAIL_USER,
-        },
-        to: [
-          {
-            email: email,
-            name: name,
-          },
-        ],
-        subject: `Medication Reminder - ${timeOfDay} dose`,
-        htmlContent: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                        <h2 style="color: #4a5568;">Medication Reminder</h2>
-                        <p>Hello ${name},</p>
-                        <p>It's time to take your ${timeOfDay} medication:</p>
-                        <ul>
-                            ${medicationsList}
-                        </ul>
-                        <p>Please remember to mark these medications as taken in your Patient Dashboard.</p>
-                        <p>Best regards,<br>Patient Tracker Team</p>
-                    </div>
-                `,
-      },
-    });
+    console.log(
+      `Attempting to send ${timeOfDay} reminder to ${name} at ${email}`
+    );
 
-    console.log("Medication reminder email sent:", response.data);
+    const mailOptions = {
+      from: `"Patient Tracker" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `Medication Reminder - ${timeOfDay} dose`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #4a5568;">Medication Reminder</h2>
+          <p>Hello ${name},</p>
+          <p>It's time to take your ${timeOfDay} medication:</p>
+          <ul>
+            ${medicationsList}
+          </ul>
+          <p>Please remember to mark these medications as taken in your Patient Dashboard.</p>
+          <p>Best regards,<br>Patient Tracker Team</p>
+        </div>
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log(
+      `Medication reminder email sent successfully to ${email}. Message ID: ${info.messageId}`
+    );
     return true;
   } catch (error) {
     console.error(
-      "Error sending medication reminder email:",
-      error.response?.data || error.message
+      `Error sending medication reminder email to ${email}:`,
+      error.message
     );
     return false;
   }
