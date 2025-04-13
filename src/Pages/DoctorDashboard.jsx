@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import RetirevePatient from '../components/RetirevePatient';
-import AddPatient from '../components/AddPatient';
-import AddPrescription from '../components/AddPrescription';
-import AppointmentList from '../components/AppointmentList';
-import EnhancedChatInterface from '../components/Chat/EnhancedChatInterface';
+import RetirevePatient from '../Components/RetirevePatient';
+import AddPatient from '../Components/AddPatient';
+import AddPrescription from '../Components/AddPrescription';
+import AppointmentList from '../Components/AppointmentList';
+import EnhancedChatInterface from '../Components/Chat/EnhancedChatInterface';
 import { Calendar, Users, FileText, Plus, ListFilter, MessageSquare } from 'lucide-react';
 
 // Import shadcn components
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { Button } from '../Components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../Components/ui/card';
 
 function DoctorDashboard({ initialTab }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'patients'); 
