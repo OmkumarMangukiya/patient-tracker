@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// Import shadcn components
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+
 function SetPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -9,7 +15,7 @@ function SetPassword() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
@@ -36,7 +42,7 @@ function SetPassword() {
       return;
     }
     
-    setLoading(true);
+    setIsLoading(true);
     
     try {
       const response = await axios.post('http://localhost:8000/auth/set-password', {
@@ -47,74 +53,79 @@ function SetPassword() {
       setSuccess(true);
       // Redirect to login page after 2 seconds
       setTimeout(() => {
-        navigate('/login');
+        navigate('/');
       }, 2000);
     } catch (err) {
       setError(err.response?.data?.message || 'Error setting password. Link may be expired.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
   
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-red-800">Set Your Password</h2>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center text-medical-green">Set Your Password</CardTitle>
+          <p className="text-center text-gray-600 mt-2">Create a secure password for your account</p>
+        </CardHeader>
         
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
-            {error}
-          </div>
-        )}
-        
-        {success ? (
-          <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
-            Password set successfully! Redirecting to login...
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-red-700 mb-2" htmlFor="password">
-                New Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your new password"
-                required
-              />
+        <CardContent>
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-200 flex items-center">
+              <span className="mr-2">⚠️</span>
+              <p>{error}</p>
             </div>
-            
-            <div className="mb-6">
-              <label className="block text-red-700 mb-2" htmlFor="confirm-password">
-                Confirm Password
-              </label>
-              <input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Confirm your new password"
-                required
-              />
+          )}
+          
+          {success ? (
+            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md border border-green-200 flex items-center">
+              <span className="mr-2">✓</span>
+              <p>Password set successfully! Redirecting to login...</p>
             </div>
-            
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-2 px-4 rounded font-medium text-red ${
-                loading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-            >
-              {loading ? 'Setting Password...' : 'Set Password'}
-            </button>
-          </form>
-        )}
-      </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <Label htmlFor="password" className="text-gray-700 block mb-1">
+                  New Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full"
+                  placeholder="Enter your new password"
+                  required
+                />
+              </div>
+              
+              <div className="mb-6">
+                <Label htmlFor="confirm-password" className="text-gray-700 block mb-1">
+                  Confirm Password
+                </Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full"
+                  placeholder="Confirm your new password"
+                  required
+                />
+              </div>
+              
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-medical-green hover:bg-medical-green-dark text-white"
+              >
+                {isLoading ? 'Setting Password...' : 'Set Password'}
+              </Button>
+            </form>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
