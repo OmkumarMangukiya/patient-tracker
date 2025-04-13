@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import ViewPrescription from '../Components/ViewPrescription';
-import MedicationTracker from '../Components/MedicationTracker';
-import AppointmentBooking from '../Components/AppointmentBooking';
-import AppointmentList from '../Components/AppointmentList';
-import MessagesInterface from '../Components/Chat/MessagesInterface';
+import ViewPrescription from '../components/ViewPrescription';
+import MedicationTracker from '../components/MedicationTracker';
+import AppointmentBooking from '../components/AppointmentBooking';
+import AppointmentList from '../components/AppointmentList';
+import MessagesInterface from '../components/Chat/MessagesInterface';
 import axios from 'axios';
 import { Calendar, PieChart, PillIcon, Scroll, RefreshCw, MessageSquare } from 'lucide-react';
 

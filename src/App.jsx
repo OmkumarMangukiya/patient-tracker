@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import Signin from './Pages/Signin';
 import DoctorDashboard from './Pages/DoctorDashboard';
 import PatientDashboard from './Pages/PatientDashboard';
-import SetPassword from './Components/SetPassword';
+import SetPassword from './components/SetPassword';
 import Signup from './Pages/Signup';
 import { useEffect } from 'react';
 
