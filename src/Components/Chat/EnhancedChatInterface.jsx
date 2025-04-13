@@ -3,10 +3,10 @@ import { MessageSquare, Send, ChevronLeft, Plus, Search } from 'lucide-react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
-import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "../../components/ui/card";
-import { ScrollArea } from "../../components/ui/scroll-area";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "../../Components/ui/card";
+import { ScrollArea } from "../../Components/ui/scroll-area";
+import { Button } from "../../Components/ui/button";
+import { Input } from "../../Components/ui/input";
 import { cn } from "../../lib/utils";
 
 function EnhancedChatInterface({ userRole }) {
