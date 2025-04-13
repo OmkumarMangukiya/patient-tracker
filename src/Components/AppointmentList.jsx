@@ -127,10 +127,10 @@ function AppointmentList({ userRole }) {
             Complete
           </button>
           <button
-            onClick={() => updateAppointmentStatus(appointment.id, 'missed')}
-            className="px-2 py-1 bg-amber-100 text-amber-700 rounded-md text-sm hover:bg-amber-200"
+            onClick={() => updateAppointmentStatus(appointment.id, 'cancelled')}
+            className="px-2 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200"
           >
-            Mark as Missed
+            Cancel
           </button>
         </div>
       );
