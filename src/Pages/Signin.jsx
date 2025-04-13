@@ -143,7 +143,7 @@ function Signin() {
               <div className="flex justify-end mt-1">
                 <button
                   type="button"
-                  className="text-sm text-white hover:text-gray-200"
+                  className="text-sm text-gray-700 hover:text-gray-900"
                   onClick={() => navigate("/forgot-password")}
                 >
                   Forgot password?
@@ -172,7 +172,7 @@ function Signin() {
           </form>
           
           {/* Sign up link */}
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-gray-700">
             Don't have an account?{' '}
             <button
               className="font-medium text-indigo-600 hover:text-indigo-500"

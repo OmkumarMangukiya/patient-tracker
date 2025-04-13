@@ -7,6 +7,9 @@ import SetPassword from './Components/SetPassword';
 import Signup from './Pages/Signup';
 import { useEffect } from 'react';
 
+// Import the Button component
+import { Button } from './components/ui/button';
+
 function App() {
   return (
     <Router>
@@ -38,27 +41,37 @@ const WithLogout = ({ Component, role, initialTab }) => {
 
   return (
     <div className="bg-white text-black">
-      <nav className="bg-blue-600 p-4 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-white text-xl font-bold">Patient Tracker</h1>
-          <div className="flex items-center space-x-4">
+      <nav className="bg-medical-green p-4 shadow-md sticky top-0 z-50">
+        <div className="container mx-auto flex flex-col md:flex-row md:justify-between md:items-center">
+          <div className="flex justify-between items-center w-full md:w-auto mb-4 md:mb-0">
+            <h1 className="text-white text-xl font-bold">Patient Tracker</h1>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="md:hidden bg-white text-medical-green hover:bg-gray-100 border-none"
+            >
+              Logout
+            </Button>
+          </div>
+          
+          <div className="flex flex-col md:flex-row md:items-center md:space-x-6 space-y-2 md:space-y-0">
             {role === 'doctor' && (
               <>
                 <a 
                   href="/doctor/dashboard" 
-                  className="text-white hover:text-blue-100 transition-colors"
+                  className="text-white hover:text-medical-green-light transition-colors"
                 >
                   Dashboard
                 </a>
                 <a 
                   href="/doctor/appointments" 
-                  className="text-white hover:text-blue-100 transition-colors"
+                  className="text-white hover:text-medical-green-light transition-colors"
                 >
                   Appointments
                 </a>
                 <a 
                   href="/doctor/messages" 
-                  className="text-white hover:text-blue-100 transition-colors"
+                  className="text-white hover:text-medical-green-light transition-colors"
                 >
                   Messages
                 </a>
@@ -68,42 +81,43 @@ const WithLogout = ({ Component, role, initialTab }) => {
               <>
                 <a 
                   href="/patient/dashboard" 
-                  className="text-white hover:text-blue-100 transition-colors"
+                  className="text-white hover:text-medical-green-light transition-colors"
                 >
                   Dashboard
                 </a>
                 <a 
                   href="/patient/medications" 
-                  className="text-white hover:text-blue-100 transition-colors"
+                  className="text-white hover:text-medical-green-light transition-colors"
                 >
                   Medications
                 </a>
                 <a 
                   href="/patient/prescriptions" 
-                  className="text-white hover:text-blue-100 transition-colors"
+                  className="text-white hover:text-medical-green-light transition-colors"
                 >
                   Prescriptions
                 </a>
                 <a 
                   href="/patient/appointments" 
-                  className="text-white hover:text-blue-100 transition-colors"
+                  className="text-white hover:text-medical-green-light transition-colors"
                 >
                   Appointments
                 </a>
                 <a 
                   href="/patient/messages" 
-                  className="text-white hover:text-blue-100 transition-colors"
+                  className="text-white hover:text-medical-green-light transition-colors"
                 >
                   Messages
                 </a>
               </>
             )}
-            <button
+            <Button
               onClick={handleLogout}
-              className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition-colors"
+              variant="outline"
+              className="hidden md:block text-white hover:bg-white hover:text-medical-green border-white"
             >
               Logout
-            </button>
+            </Button>
           </div>
         </div>
       </nav>

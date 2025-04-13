@@ -5,8 +5,12 @@ import RetirevePatient from '../Components/RetirevePatient';
 import AddPatient from '../Components/AddPatient';
 import AddPrescription from '../Components/AddPrescription';
 import AppointmentList from '../Components/AppointmentList';
-import MessagesInterface from '../Components/Chat/MessagesInterface';
+import EnhancedChatInterface from '../Components/Chat/EnhancedChatInterface';
 import { Calendar, Users, FileText, Plus, ListFilter, MessageSquare } from 'lucide-react';
+
+// Import shadcn components
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 
 function DoctorDashboard({ initialTab }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'patients');
@@ -84,77 +88,87 @@ function DoctorDashboard({ initialTab }) {
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Welcome, Dr. {doctorData?.name}</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-lg bg-teal-100 mr-4">
-                    <Users className="h-6 w-6 text-teal-600" />
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center">
+                    <div className="p-3 rounded-lg bg-medical-green-light mr-4">
+                      <Users className="h-6 w-6 text-medical-green-dark" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Total Patients</p>
+                      <p className="text-2xl font-bold text-gray-800">{patients.length}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Total Patients</p>
-                    <p className="text-2xl font-bold text-gray-800">{patients.length}</p>
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
               
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-lg bg-blue-100 mr-4">
-                    <Calendar className="h-6 w-6 text-blue-600" />
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center">
+                    <div className="p-3 rounded-lg bg-medical-green-light mr-4">
+                      <Calendar className="h-6 w-6 text-medical-green-dark" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Today's Appointments</p>
+                      <p className="text-2xl font-bold text-gray-800">{appointmentCounts.today}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Today's Appointments</p>
-                    <p className="text-2xl font-bold text-gray-800">{appointmentCounts.today}</p>
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
               
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-lg bg-purple-100 mr-4">
-                    <Calendar className="h-6 w-6 text-purple-600" />
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center">
+                    <div className="p-3 rounded-lg bg-medical-green-light mr-4">
+                      <Calendar className="h-6 w-6 text-medical-green-dark" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Upcoming Appointments</p>
+                      <p className="text-2xl font-bold text-gray-800">{appointmentCounts.upcoming}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Upcoming Appointments</p>
-                    <p className="text-2xl font-bold text-gray-800">{appointmentCounts.upcoming}</p>
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
             
             <div className="mb-8">
               <h3 className="text-xl font-semibold mb-4 text-gray-800">Quick Actions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <button
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <Button
                   onClick={() => setActiveTab('add-patient')}
-                  className="flex items-center justify-center gap-2 p-3 bg-teal-50 hover:bg-teal-100 rounded-lg text-teal-700 transition duration-200"
+                  variant="outline"
+                  className="flex items-center justify-center gap-2 h-auto py-3"
                 >
                   <Plus className="w-5 h-5" />
                   <span>Add New Patient</span>
-                </button>
+                </Button>
                 
-                <button
+                <Button
                   onClick={() => setActiveTab('add-prescription')}
-                  className="flex items-center justify-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg text-blue-700 transition duration-200"
+                  variant="outline"
+                  className="flex items-center justify-center gap-2 h-auto py-3"
                 >
                   <FileText className="w-5 h-5" />
                   <span>Create Prescription</span>
-                </button>
+                </Button>
                 
-                <button
+                <Button
                   onClick={() => setActiveTab('appointments')}
-                  className="flex items-center justify-center gap-2 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-purple-700 transition duration-200"
+                  variant="outline"
+                  className="flex items-center justify-center gap-2 h-auto py-3"
                 >
                   <Calendar className="w-5 h-5" />
                   <span>View Appointments</span>
-                </button>
+                </Button>
                 
-                <button
+                <Button
                   onClick={() => setActiveTab('messages')}
-                  className="flex items-center justify-center gap-2 p-3 bg-green-50 hover:bg-green-100 rounded-lg text-green-700 transition duration-200"
+                  variant="outline"
+                  className="flex items-center justify-center gap-2 h-auto py-3"
                 >
                   <MessageSquare className="w-5 h-5" />
                   <span>Messages</span>
-                </button>
+                </Button>
               </div>
             </div>
             
@@ -162,34 +176,38 @@ function DoctorDashboard({ initialTab }) {
             {patients.length > 0 && (
               <div>
                 <h3 className="text-xl font-semibold mb-4 text-gray-800">Recent Patients</h3>
-                <div className="overflow-hidden border border-gray-200 rounded-lg bg-white">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {patients.slice(0, 5).map((patient) => (
-                        <tr key={patient.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="font-medium text-gray-900">{patient.name}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-gray-500">{patient.email}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              patient.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
-                            }`}>
-                              {patient.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <Card>
+                  <div className="overflow-hidden rounded-lg">
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {patients.slice(0, 5).map((patient) => (
+                            <tr key={patient.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="font-medium text-gray-900">{patient.name}</div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-gray-500">{patient.email}</td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                  patient.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-medical-green-light text-medical-green-dark'
+                                }`}>
+                                  {patient.status}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </Card>
               </div>
             )}
           </div>
@@ -225,8 +243,8 @@ function DoctorDashboard({ initialTab }) {
       
       case 'messages':
         return (
-          <div className="p-6 h-[calc(100vh-220px)]">
-            <MessagesInterface userRole="doctor" />
+          <div className="p-6 h-full">
+            <EnhancedChatInterface userRole="doctor" />
           </div>
         );
       
@@ -240,46 +258,50 @@ function DoctorDashboard({ initialTab }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Doctor Dashboard</h1>
-            <p className="text-gray-600">Manage your patients and appointments</p>
-          </div>
-          <div className="flex items-center mt-4 md:mt-0">
-            <div className="bg-white rounded-lg shadow-sm p-2 flex items-center">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                <Users className="h-6 w-6 text-blue-600" />
-              </div>
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center">
               <div>
-                {doctorData && (
-                  <>
-                    <p className="font-medium text-gray-700">Dr. {doctorData.name}</p>
-                    <p className="text-xs text-gray-500">{doctorData.specialization || 'Physician'}</p>
-                  </>
-                )}
-                {!doctorData && (
-                  <>
-                    <p className="font-medium text-gray-700">Loading...</p>
-                    <p className="text-xs text-gray-500">Please wait</p>
-                  </>
-                )}
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Doctor Dashboard</h1>
+                <p className="text-gray-600">Manage your patients and appointments</p>
+              </div>
+              <div className="flex items-center mt-4 md:mt-0">
+                <div className="bg-white rounded-lg shadow-sm p-2 flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-medical-green-light flex items-center justify-center mr-3">
+                    <Users className="h-6 w-6 text-medical-green-dark" />
+                  </div>
+                  <div>
+                    {doctorData && (
+                      <>
+                        <p className="font-medium text-gray-700">Dr. {doctorData.name}</p>
+                        <p className="text-xs text-gray-500">{doctorData.specialization || 'Physician'}</p>
+                      </>
+                    )}
+                    {!doctorData && (
+                      <>
+                        <p className="font-medium text-gray-700">Loading...</p>
+                        <p className="text-xs text-gray-500">Please wait</p>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Tab Navigation */}
-        <div className="bg-white rounded-xl shadow-sm mb-6">
-          <div className="flex overflow-x-auto">
+        <div className="bg-white rounded-xl shadow-sm mb-6 overflow-x-auto">
+          <div className="flex">
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`px-6 py-4 font-medium text-sm flex items-center ${
+              className={`px-4 md:px-6 py-4 font-medium text-sm flex items-center whitespace-nowrap ${
                 activeTab === 'dashboard' 
-                  ? 'text-blue-600 border-b-2 border-blue-500 bg-blue-50' 
-                  : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                  ? 'text-medical-green border-b-2 border-medical-green bg-medical-green-light/20' 
+                  : 'text-gray-500 hover:text-medical-green hover:bg-medical-green-light/10'
               } transition-colors duration-200`}
             >
               <ListFilter className="h-5 w-5 mr-2" />
@@ -288,10 +310,10 @@ function DoctorDashboard({ initialTab }) {
             
             <button
               onClick={() => setActiveTab('patients')}
-              className={`px-6 py-4 font-medium text-sm flex items-center ${
+              className={`px-4 md:px-6 py-4 font-medium text-sm flex items-center whitespace-nowrap ${
                 activeTab === 'patients' 
-                  ? 'text-teal-600 border-b-2 border-teal-500 bg-teal-50' 
-                  : 'text-gray-500 hover:text-teal-600 hover:bg-teal-50'
+                  ? 'text-medical-green border-b-2 border-medical-green bg-medical-green-light/20' 
+                  : 'text-gray-500 hover:text-medical-green hover:bg-medical-green-light/10'
               } transition-colors duration-200`}
             >
               <Users className="h-5 w-5 mr-2" />
@@ -300,10 +322,10 @@ function DoctorDashboard({ initialTab }) {
             
             <button
               onClick={() => setActiveTab('add-patient')}
-              className={`px-6 py-4 font-medium text-sm flex items-center ${
+              className={`px-4 md:px-6 py-4 font-medium text-sm flex items-center whitespace-nowrap ${
                 activeTab === 'add-patient' 
-                  ? 'text-blue-600 border-b-2 border-blue-500 bg-blue-50' 
-                  : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                  ? 'text-medical-green border-b-2 border-medical-green bg-medical-green-light/20' 
+                  : 'text-gray-500 hover:text-medical-green hover:bg-medical-green-light/10'
               } transition-colors duration-200`}
             >
               <Plus className="h-5 w-5 mr-2" />
@@ -312,10 +334,10 @@ function DoctorDashboard({ initialTab }) {
             
             <button
               onClick={() => setActiveTab('appointments')}
-              className={`px-6 py-4 font-medium text-sm flex items-center ${
+              className={`px-4 md:px-6 py-4 font-medium text-sm flex items-center whitespace-nowrap ${
                 activeTab === 'appointments' 
-                  ? 'text-purple-600 border-b-2 border-purple-500 bg-purple-50' 
-                  : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'
+                  ? 'text-medical-green border-b-2 border-medical-green bg-medical-green-light/20' 
+                  : 'text-gray-500 hover:text-medical-green hover:bg-medical-green-light/10'
               } transition-colors duration-200`}
             >
               <Calendar className="h-5 w-5 mr-2" />
@@ -324,10 +346,10 @@ function DoctorDashboard({ initialTab }) {
             
             <button
               onClick={() => setActiveTab('messages')}
-              className={`px-6 py-4 font-medium text-sm flex items-center ${
+              className={`px-4 md:px-6 py-4 font-medium text-sm flex items-center whitespace-nowrap ${
                 activeTab === 'messages' 
-                  ? 'text-green-600 border-b-2 border-green-500 bg-green-50' 
-                  : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
+                  ? 'text-medical-green border-b-2 border-medical-green bg-medical-green-light/20' 
+                  : 'text-gray-500 hover:text-medical-green hover:bg-medical-green-light/10'
               } transition-colors duration-200`}
             >
               <MessageSquare className="h-5 w-5 mr-2" />
@@ -337,9 +359,9 @@ function DoctorDashboard({ initialTab }) {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <Card>
           {renderTabContent()}
-        </div>
+        </Card>
       </div>
     </div>
   );

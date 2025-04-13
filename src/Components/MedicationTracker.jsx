@@ -122,8 +122,15 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
         }
       );
 
-      // Refresh the medication list
+      // Refresh the medication list and trigger parent component refresh
       fetchTodayMedications();
+      
+      // Create a custom event to notify parent components that medication data has changed
+      const event = new CustomEvent('medicationUpdated', { detail: { patientId } });
+      window.dispatchEvent(event);
+      
+      // Force refresh for adherence stats
+      refreshData();
     } catch (err) {
       console.error('Error updating medication status:', err.response?.data || err.message);
       setError('Failed to update medication status. Please try again.');

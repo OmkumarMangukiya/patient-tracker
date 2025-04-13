@@ -103,8 +103,8 @@ function PatientDashboard({ initialTab }) {
           
           setStats({
             totalPrescriptions: prescriptionsResponse.data.length,
-            activeMedications: statsResponse.data.totalMedications || 0,
-            adherenceRate: statsResponse.data.overallAdherenceRate || 0,
+            activeMedications: statsResponse.data.summary?.totalMedications || 0,
+            adherenceRate: statsResponse.data.summary?.adherenceRate || 0,
             upcomingAppointments
           });
         }
@@ -128,7 +128,17 @@ function PatientDashboard({ initialTab }) {
       }
     }, 60000);
 
-    return () => clearInterval(refreshInterval);
+    // Add event listener for medication updates
+    const handleMedicationUpdate = () => {
+      handleRefresh();
+    };
+    
+    window.addEventListener('medicationUpdated', handleMedicationUpdate);
+
+    return () => {
+      clearInterval(refreshInterval);
+      window.removeEventListener('medicationUpdated', handleMedicationUpdate);
+    };
   }, [patientId, fetchUpcomingMedications]);
 
   // Manual refresh function
@@ -136,6 +146,47 @@ function PatientDashboard({ initialTab }) {
     const token = localStorage.getItem('token');
     if (token && patientId) {
       fetchUpcomingMedications(patientId, token);
+      
+      // Also refresh adherence stats, prescriptions, and appointments
+      axios.get(
+        `http://localhost:8000/patient/medications/adherence-stats/${patientId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      ).then(statsResponse => {
+        setStats(prevStats => ({
+          ...prevStats,
+          activeMedications: statsResponse.data.summary?.totalMedications || 0,
+          adherenceRate: statsResponse.data.summary?.adherenceRate || 0
+        }));
+      }).catch(err => console.error("Error refreshing adherence stats:", err));
+      
+      // Refresh prescriptions
+      axios.get(
+        `http://localhost:8000/patient/prescriptions/${patientId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      ).then(prescriptionsResponse => {
+        setPrescriptions(prescriptionsResponse.data);
+        setStats(prevStats => ({
+          ...prevStats,
+          totalPrescriptions: prescriptionsResponse.data.length
+        }));
+      }).catch(err => console.error("Error refreshing prescriptions:", err));
+      
+      // Refresh appointments
+      axios.get(
+        'http://localhost:8000/patient/appointments',
+        { headers: { Authorization: `Bearer ${token}` } }
+      ).then(appointmentsResponse => {
+        const upcomingAppointments = appointmentsResponse.data.filter(
+          appointment => 
+            new Date(appointment.appointmentDate) > new Date() && 
+            appointment.status === 'scheduled'
+        ).length;
+        
+        setStats(prevStats => ({
+          ...prevStats,
+          upcomingAppointments
+        }));
+      }).catch(err => console.error("Error refreshing appointments:", err));
     }
   };
 
@@ -433,7 +484,7 @@ function PatientDashboard({ initialTab }) {
                 </div>
               )}
               {activeTab === 'messages' && (
-                <div className="h-[calc(100vh-320px)]">
+                <div className="h-full">
                   <MessagesInterface userRole="patient" />
                 </div>
               )}

@@ -232,9 +232,9 @@ function Signup() {
                 </form>
 
                 <div className="mt-6 text-center">
-                    <p className="text-white text-sm">
+                    <p className="text-gray-700 text-sm">
                         Already have an account?{' '}
-                        <Link to="/login" className="text-white hover:text-blue-200 font-medium">
+                        <Link to="/" className="text-blue-600 hover:text-blue-800 font-medium">
                             Sign in
                         </Link>
                     </p>
