@@ -31,7 +31,23 @@ import getAvailableSlots from "./appointment/getAvailableSlots.js";
 
 import { getDoctorPrescriptionsByPatientId } from "./doctor/getPrescriptions.js";
 
+// Import chat controllers
+import { createChat, getChatsByDoctor, getChatsByPatient, getChatById } from "./chat/chatController.js";
+import { createMessage, getMessagesByChatId } from "./chat/messageController.js";
+
+import http from "http";
+import { Server } from "socket.io";
+
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.io
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Configure as needed for production
+    methods: ["GET", "POST"]
+  }
+});
 
 app.use(express.json());
 app.use("*", cors());
@@ -75,6 +91,14 @@ app.get("/patient/appointments", getPatientAppointments);
 app.post("/appointments/update-status", updateAppointmentStatus);
 app.get("/appointments/available-slots", getAvailableSlots);
 
+// Chat endpoints
+app.post("/chats", createChat);
+app.get("/doctor/chats", getChatsByDoctor);
+app.get("/patient/chats", getChatsByPatient);
+app.get("/chats/:chatId", getChatById);
+app.post("/chats/:chatId/messages", createMessage);
+app.get("/chats/:chatId/messages", getMessagesByChatId);
+
 // Test endpoint to send medication reminders manually
 app.post("/admin/send-medication-reminders", async (req, res) => {
   try {
@@ -91,7 +115,39 @@ app.post("/admin/send-medication-reminders", async (req, res) => {
   }
 });
 
-app.listen(8000, () => {
+// Socket.io connection handler
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+  
+  // Join a chat room
+  socket.on("join-chat", (chatId) => {
+    socket.join(chatId);
+    console.log(`User ${socket.id} joined chat ${chatId}`);
+  });
+  
+  // Leave a chat room
+  socket.on("leave-chat", (chatId) => {
+    socket.leave(chatId);
+    console.log(`User ${socket.id} left chat ${chatId}`);
+  });
+  
+  // Handle new message
+  socket.on("send-message", async (messageData) => {
+    try {
+      // Broadcast to all users in the chat room
+      io.to(messageData.chatId).emit("receive-message", messageData);
+    } catch (error) {
+      console.error("Error handling message:", error);
+      socket.emit("error", { message: "Failed to process message" });
+    }
+  });
+  
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
+server.listen(8000, () => {
   console.log("Server is running on port 8000");
 
   // Initialize the medication reminder scheduler

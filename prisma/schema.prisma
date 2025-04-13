@@ -22,6 +22,7 @@ model Patient {
   appointments   Appointment[]
   medicineAdherences MedicineAdherence[]
   healthMetrics  HealthMetrics[]
+  chats          Chat[]
 }
 
 model MedicalRecord {
@@ -43,6 +44,7 @@ model Doctor {
   patients       Patient[]       @relation("DoctorToPatient")
   prescriptions  Prescription[]
   appointments   Appointment[]
+  chats          Chat[]
 }
 
 model Prescription {
@@ -103,4 +105,26 @@ model HealthMetrics {
   metricName  String
   metricValue Float
   recordedAt  DateTime @default(now())
+}
+
+model Chat {
+  id          String    @id @default(uuid())
+  patientId   Int
+  patient     Patient   @relation(fields: [patientId], references: [id])
+  doctorId    String
+  doctor      Doctor    @relation(fields: [doctorId], references: [id])
+  messages    Message[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Message {
+  id          String    @id @default(uuid())
+  content     String
+  chatId      String
+  chat        Chat      @relation(fields: [chatId], references: [id])
+  senderId    String    // ID of the sender (could be doctor or patient)
+  senderType  String    // "doctor" or "patient"
+  readStatus  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
 }

@@ -3,8 +3,9 @@ import ViewPrescription from '../Components/ViewPrescription';
 import MedicationTracker from '../Components/MedicationTracker';
 import AppointmentBooking from '../Components/AppointmentBooking';
 import AppointmentList from '../Components/AppointmentList';
+import MessagesInterface from '../Components/Chat/MessagesInterface';
 import axios from 'axios';
-import { Calendar, PieChart, PillIcon, Scroll, RefreshCw } from 'lucide-react';
+import { Calendar, PieChart, PillIcon, Scroll, RefreshCw, MessageSquare } from 'lucide-react';
 
 function PatientDashboard({ initialTab }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'medications');
@@ -296,10 +297,10 @@ function PatientDashboard({ initialTab }) {
         )}
 
         {/* Navigation Tabs */}
-        <div className="flex mb-6 border-b border-gray-200 bg-white rounded-t-xl shadow-md px-4">
+        <div className="flex mb-6 border-b border-gray-200 bg-white rounded-t-xl shadow-md px-4 overflow-x-auto">
           <button
             onClick={() => switchToTab('dashboard')}
-            className={`${activeTab === 'dashboard' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none`}
+            className={`${activeTab === 'dashboard' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none whitespace-nowrap`}
           >
             <div className="flex items-center">
               <PieChart className="h-5 w-5 mr-2" />
@@ -308,7 +309,7 @@ function PatientDashboard({ initialTab }) {
           </button>
           <button
             onClick={() => switchToTab('medications')}
-            className={`${activeTab === 'medications' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none`}
+            className={`${activeTab === 'medications' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none whitespace-nowrap`}
           >
             <div className="flex items-center">
               <PillIcon className="h-5 w-5 mr-2" />
@@ -317,7 +318,7 @@ function PatientDashboard({ initialTab }) {
           </button>
           <button
             onClick={() => switchToTab('prescriptions')}
-            className={`${activeTab === 'prescriptions' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none`}
+            className={`${activeTab === 'prescriptions' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none whitespace-nowrap`}
           >
             <div className="flex items-center">
               <Scroll className="h-5 w-5 mr-2" />
@@ -326,11 +327,20 @@ function PatientDashboard({ initialTab }) {
           </button>
           <button
             onClick={() => switchToTab('appointments')}
-            className={`${activeTab === 'appointments' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none`}
+            className={`${activeTab === 'appointments' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none whitespace-nowrap`}
           >
             <div className="flex items-center">
               <Calendar className="h-5 w-5 mr-2" />
               Appointments
+            </div>
+          </button>
+          <button
+            onClick={() => switchToTab('messages')}
+            className={`${activeTab === 'messages' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none whitespace-nowrap`}
+          >
+            <div className="flex items-center">
+              <MessageSquare className="h-5 w-5 mr-2" />
+              Messages
             </div>
           </button>
         </div>
@@ -420,6 +430,11 @@ function PatientDashboard({ initialTab }) {
                 <div className="space-y-8">
                   <AppointmentBooking />
                   <AppointmentList userRole="patient" />
+                </div>
+              )}
+              {activeTab === 'messages' && (
+                <div className="h-[calc(100vh-320px)]">
+                  <MessagesInterface userRole="patient" />
                 </div>
               )}
             </>

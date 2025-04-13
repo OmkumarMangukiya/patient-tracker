@@ -5,7 +5,8 @@ import RetirevePatient from '../Components/RetirevePatient';
 import AddPatient from '../Components/AddPatient';
 import AddPrescription from '../Components/AddPrescription';
 import AppointmentList from '../Components/AppointmentList';
-import { Calendar, Users, FileText, Plus, ListFilter } from 'lucide-react';
+import MessagesInterface from '../Components/Chat/MessagesInterface';
+import { Calendar, Users, FileText, Plus, ListFilter, MessageSquare } from 'lucide-react';
 
 function DoctorDashboard({ initialTab }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'patients');
@@ -122,7 +123,7 @@ function DoctorDashboard({ initialTab }) {
             
             <div className="mb-8">
               <h3 className="text-xl font-semibold mb-4 text-gray-800">Quick Actions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <button
                   onClick={() => setActiveTab('add-patient')}
                   className="flex items-center justify-center gap-2 p-3 bg-teal-50 hover:bg-teal-100 rounded-lg text-teal-700 transition duration-200"
@@ -145,6 +146,14 @@ function DoctorDashboard({ initialTab }) {
                 >
                   <Calendar className="w-5 h-5" />
                   <span>View Appointments</span>
+                </button>
+                
+                <button
+                  onClick={() => setActiveTab('messages')}
+                  className="flex items-center justify-center gap-2 p-3 bg-green-50 hover:bg-green-100 rounded-lg text-green-700 transition duration-200"
+                >
+                  <MessageSquare className="w-5 h-5" />
+                  <span>Messages</span>
                 </button>
               </div>
             </div>
@@ -211,6 +220,13 @@ function DoctorDashboard({ initialTab }) {
         return (
           <div className="p-6">
             <AppointmentList userRole="doctor" />
+          </div>
+        );
+      
+      case 'messages':
+        return (
+          <div className="p-6 h-[calc(100vh-220px)]">
+            <MessagesInterface userRole="doctor" />
           </div>
         );
       
@@ -304,6 +320,18 @@ function DoctorDashboard({ initialTab }) {
             >
               <Calendar className="h-5 w-5 mr-2" />
               Appointments
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('messages')}
+              className={`px-6 py-4 font-medium text-sm flex items-center ${
+                activeTab === 'messages' 
+                  ? 'text-green-600 border-b-2 border-green-500 bg-green-50' 
+                  : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
+              } transition-colors duration-200`}
+            >
+              <MessageSquare className="h-5 w-5 mr-2" />
+              Messages
             </button>
           </div>
         </div>
