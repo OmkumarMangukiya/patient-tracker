@@ -16,7 +16,7 @@ const signup = async (req, res) => {
           email: email,
         },
       });
-
+      console.log("GGGG",user);
       const token = tokenGenerate({
         role : role,
         name : name,

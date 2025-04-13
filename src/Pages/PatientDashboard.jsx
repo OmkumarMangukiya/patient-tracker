@@ -15,6 +15,9 @@ function PatientDashboard({ initialTab }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastRefreshed, setLastRefreshed] = useState(null);
+  const [userName, setUserName] = useState('');
+  const [viewMedications, setViewMedications] = useState(true);
+  const [viewPrescriptions, setViewPrescriptions] = useState(false);
   const [stats, setStats] = useState({
     totalPrescriptions: 0,
     activeMedications: 0,
@@ -22,7 +25,6 @@ function PatientDashboard({ initialTab }) {
     upcomingAppointments: 0
   });
 
-  // Memoize the fetch function to avoid recreating it on every render
   const fetchUpcomingMedications = useCallback(async (id, token) => {
     try {
       setIsLoading(true);
@@ -32,14 +34,12 @@ function PatientDashboard({ initialTab }) {
           headers: {
             Authorization: `Bearer ${token}`
           },
-          // Add cache-busting parameter to prevent caching
           params: {
             _t: new Date().getTime()
           }
         }
       );
 
-      // Filter only pending medications
       const pendingMedications = response.data.filter(
         med => med.adherenceStatus === 'Pending'
       );
@@ -66,8 +66,10 @@ function PatientDashboard({ initialTab }) {
 
         const decodedToken = JSON.parse(atob(token.split('.')[1]));
         const id = decodedToken.id;
+        const name = decodedToken.name || 'Patient';
         setPatientId(id);
         setPatientData(decodedToken);
+        setUserName(name);
 
         if (id) {
           // Fetch medications
@@ -115,17 +117,15 @@ function PatientDashboard({ initialTab }) {
     fetchData();
   }, [fetchUpcomingMedications]);
 
-  // Set up auto-refresh every minute to keep medication status updated
   useEffect(() => {
     if (!patientId) return;
 
     const refreshInterval = setInterval(() => {
       const token = localStorage.getItem('token');
       if (token && patientId) {
-        console.log("Auto-refreshing medication data...");
         fetchUpcomingMedications(patientId, token);
       }
-    }, 60000); // Refresh every minute
+    }, 60000);
 
     return () => clearInterval(refreshInterval);
   }, [patientId, fetchUpcomingMedications]);
@@ -154,206 +154,231 @@ function PatientDashboard({ initialTab }) {
     }
   };
 
-  // Filter medications due for the current time period
   const currentTimeMedications = upcomingMedications.filter(
     med => med.scheduledTime === getCurrentTimePeriod()
   );
 
   if (error) {
     return (
-      <div className="container mx-auto p-4 bg-white text-black">
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
-          <strong className="font-bold">Error:</strong>
-          <span className="block sm:inline"> {error}</span>
-          <button
-            onClick={handleRefresh}
-            className="mt-2 bg-red-100 text-red-800 px-3 py-1 rounded hover:bg-red-200"
-          >
-            Try Again
-          </button>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <strong className="font-bold">Error:</strong>
+            <span className="block sm:inline"> {error}</span>
+            <button
+              onClick={handleRefresh}
+              className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+            >
+              Try Again
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return (
-          <div className="text-black">
-            <h2 className="text-2xl font-semibold mb-6">Welcome, {patientData?.name}</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium">Prescriptions</h3>
-                  <Scroll className="w-5 h-5 text-blue-600" />
-                </div>
-                <p className="text-2xl font-semibold">{stats.totalPrescriptions}</p>
-              </div>
-              
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium">Active Medications</h3>
-                  <PillIcon className="w-5 h-5 text-green-600" />
-                </div>
-                <p className="text-2xl font-semibold">{stats.activeMedications}</p>
-              </div>
-              
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium">Adherence Rate</h3>
-                  <PieChart className="w-5 h-5 text-amber-600" />
-                </div>
-                <p className="text-2xl font-semibold">{stats.adherenceRate}%</p>
-              </div>
-              
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium">Upcoming Appointments</h3>
-                  <Calendar className="w-5 h-5 text-purple-600" />
-                </div>
-                <p className="text-2xl font-semibold">{stats.upcomingAppointments}</p>
-              </div>
-            </div>
-            
-            {/* Medication Reminders Alert */}
-            {!isLoading && currentTimeMedications.length > 0 && (
-              <div className="mb-6 bg-yellow-50 p-4 rounded-md border border-yellow-200 shadow-sm">
-                <h2 className="text-lg font-semibold text-yellow-800 flex items-center">
-                  {getTimeEmoji(getCurrentTimePeriod())} Medication Reminder
-                </h2>
-                <p className="text-yellow-800 mb-2">
-                  You have {currentTimeMedications.length} medication(s) to take for {getCurrentTimePeriod()}.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {currentTimeMedications.map((med, index) => (
-                    <span key={med.id || index} className="bg-white px-2 py-1 rounded-md text-sm text-yellow-800 border border-yellow-200">
-                      {med.medicineName || med.medication}
-                    </span>
-                  ))}
-                </div>
-                <button
-                  onClick={() => setActiveTab('medications')}
-                  className="mt-3 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                >
-                  Mark Medications
-                </button>
-              </div>
-            )}
-            
-            <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-              <h3 className="text-xl font-semibold mb-4">Recent Prescriptions</h3>
-              
-              {prescriptions.length === 0 ? (
-                <p className="text-gray-500">No prescriptions found</p>
-              ) : (
-                <div className="space-y-4">
-                  {prescriptions.slice(0, 3).map((prescription) => (
-                    <div key={prescription.id} className="border-b pb-3">
-                      <p className="font-medium">Dr. {prescription.doctor.name}</p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(prescription.date).toLocaleDateString()}
-                      </p>
-                      <p className="text-sm mt-1">
-                        {prescription.medicines.length} medications prescribed
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      
-      case 'medications':
-        return patientId && <MedicationTracker patientId={patientId} />;
-      
-      case 'prescriptions':
-        return patientId && <ViewPrescription patientId={patientId} />;
-      
-      case 'appointments':
-        return (
-          <div className="space-y-8">
-            <AppointmentBooking />
-            <AppointmentList userRole="patient" />
-          </div>
-        );
-      
-      default:
-        return <div>Select a tab</div>;
+  const switchToTab = (tab) => {
+    setActiveTab(tab);
+    if (tab === 'medications') {
+      setViewMedications(true);
+      setViewPrescriptions(false);
+    } else if (tab === 'prescriptions') {
+      setViewMedications(false);
+      setViewPrescriptions(true);
     }
   };
 
   return (
-    <div className="container mx-auto p-4 bg-white text-black">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Patient Dashboard</h1>
-        <div className="flex items-center">
-          {lastRefreshed && (
-            <span className="text-xs text-gray-500 mr-2">
-              Last updated: {lastRefreshed.toLocaleTimeString()}
-            </span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header Section */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">Welcome back, {userName}!</h1>
+              <p className="text-gray-600">Here's your health overview for today</p>
+            </div>
+            <div className="flex items-center mt-4 md:mt-0">
+              {lastRefreshed && (
+                <span className="text-sm text-gray-500 mr-3">
+                  Last updated: {lastRefreshed.toLocaleTimeString()}
+                </span>
+              )}
+              <button
+                onClick={handleRefresh}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center transition duration-200"
+              >
+                <RefreshCw className="h-5 w-5 mr-2" />
+                Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Dashboard */}
+        {activeTab === 'dashboard' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex items-center">
+                <div className="p-3 rounded-lg bg-blue-100 mr-4">
+                  <Scroll className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Prescriptions</p>
+                  <p className="text-2xl font-bold text-gray-800">{stats.totalPrescriptions}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex items-center">
+                <div className="p-3 rounded-lg bg-green-100 mr-4">
+                  <PillIcon className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Active Medications</p>
+                  <p className="text-2xl font-bold text-gray-800">{stats.activeMedications}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex items-center">
+                <div className="p-3 rounded-lg bg-amber-100 mr-4">
+                  <PieChart className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Adherence Rate</p>
+                  <p className="text-2xl font-bold text-gray-800">{stats.adherenceRate}%</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex items-center">
+                <div className="p-3 rounded-lg bg-purple-100 mr-4">
+                  <Calendar className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Upcoming Appointments</p>
+                  <p className="text-2xl font-bold text-gray-800">{stats.upcomingAppointments}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Medication Reminders */}
+        {!isLoading && currentTimeMedications.length > 0 && (
+          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-md p-6 mb-6 text-white">
+            <div className="flex items-center mb-4">
+              <span className="text-3xl mr-3">{getTimeEmoji(getCurrentTimePeriod())}</span>
+              <h2 className="text-2xl font-semibold">Time for your {getCurrentTimePeriod()} medications!</h2>
+            </div>
+            <p className="mb-4">
+              You have {currentTimeMedications.length} medication{currentTimeMedications.length > 1 ? 's' : ''} to take now:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+              {currentTimeMedications.map((med, index) => (
+                <div key={med.id || index} className="bg-white bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
+                  <div className="font-medium">{med.medicineName || med.medication}</div>
+                  <div className="text-sm opacity-80">{med.dosage}</div>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => switchToTab('medications')}
+              className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 font-medium transition duration-200"
+            >
+              Mark as Taken
+            </button>
+          </div>
+        )}
+
+        {/* Navigation Tabs */}
+        <div className="flex mb-6 border-b border-gray-200 bg-white rounded-t-xl shadow-md px-4">
+          <button
+            onClick={() => switchToTab('dashboard')}
+            className={`${activeTab === 'dashboard' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none`}
+          >
+            <div className="flex items-center">
+              <PieChart className="h-5 w-5 mr-2" />
+              Dashboard
+            </div>
+          </button>
+          <button
+            onClick={() => switchToTab('medications')}
+            className={`${activeTab === 'medications' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none`}
+          >
+            <div className="flex items-center">
+              <PillIcon className="h-5 w-5 mr-2" />
+              Medication Tracker
+            </div>
+          </button>
+          <button
+            onClick={() => switchToTab('prescriptions')}
+            className={`${activeTab === 'prescriptions' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none`}
+          >
+            <div className="flex items-center">
+              <Scroll className="h-5 w-5 mr-2" />
+              My Prescriptions
+            </div>
+          </button>
+          <button
+            onClick={() => switchToTab('appointments')}
+            className={`${activeTab === 'appointments' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'} px-4 py-3 font-medium text-sm focus:outline-none`}
+          >
+            <div className="flex items-center">
+              <Calendar className="h-5 w-5 mr-2" />
+              Appointments
+            </div>
+          </button>
+        </div>
+
+        {/* Main Content */}
+        <div className="bg-white rounded-b-xl shadow-md p-6">
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+          ) : (
+            <>
+              {activeTab === 'dashboard' && (
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Recent Prescriptions</h3>
+                  
+                  {prescriptions.length === 0 ? (
+                    <p className="text-gray-500">No prescriptions found</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {prescriptions.slice(0, 3).map((prescription) => (
+                        <div key={prescription.id} className="border-b pb-3">
+                          <p className="font-medium">Dr. {prescription.doctor.name}</p>
+                          <p className="text-sm text-gray-600">
+                            {new Date(prescription.date).toLocaleDateString()}
+                          </p>
+                          <p className="text-sm mt-1">
+                            {prescription.medicines.length} medications prescribed
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {activeTab === 'medications' && patientId && <MedicationTracker patientId={patientId} />}
+              {activeTab === 'prescriptions' && patientId && <ViewPrescription patientId={patientId} />}
+              {activeTab === 'appointments' && (
+                <div className="space-y-8">
+                  <AppointmentBooking />
+                  <AppointmentList userRole="patient" />
+                </div>
+              )}
+            </>
           )}
-          <button
-            onClick={handleRefresh}
-            className="flex items-center gap-1 text-sm bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Refresh
-          </button>
         </div>
       </div>
-      
-      <div className="bg-white shadow-sm p-4 mb-6 rounded-lg">
-        <div className="flex overflow-x-auto">
-          <button
-            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
-              activeTab === 'dashboard'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            Dashboard
-          </button>
-          
-          <button
-            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
-              activeTab === 'medications'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('medications')}
-          >
-            Medication Tracker
-          </button>
-          
-          <button
-            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
-              activeTab === 'prescriptions'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('prescriptions')}
-          >
-            Prescriptions
-          </button>
-          
-          <button
-            className={`px-4 py-2 font-medium text-sm rounded-md ${
-              activeTab === 'appointments'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('appointments')}
-          >
-            Appointments
-          </button>
-        </div>
-      </div>
-      
-      <div>{renderTabContent()}</div>
     </div>
   );
 }
