@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import Signin from './pages/Signin';
+import Signin from './Pages/Signin';
 import DoctorDashboard from './Pages/DoctorDashboard';
 import PatientDashboard from './Pages/PatientDashboard';
 import SetPassword from './Components/SetPassword';
