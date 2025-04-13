@@ -1,10 +1,10 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import Signin from './pages/Signin';
-import DoctorDashboard from './pages/DoctorDashboard';
-import PatientDashboard from './pages/PatientDashboard';
+import Signin from './Pages/Signin';
+import DoctorDashboard from './Pages/DoctorDashboard';
+import PatientDashboard from './Pages/PatientDashboard';
 import SetPassword from './components/SetPassword';
-import Signup from './pages/Signup';
+import Signup from './Pages/Signup';
 import { useEffect } from 'react';
 
 // Import the Button component
