@@ -74,7 +74,10 @@ model Appointment {
   doctorId        String
   doctor          Doctor   @relation(fields: [doctorId], references: [id])
   appointmentDate DateTime
-  status          String
+  status          String   // "scheduled", "completed", "cancelled", "missed"
+  purpose         String?  // Brief description of appointment purpose
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model MedicineAdherence {

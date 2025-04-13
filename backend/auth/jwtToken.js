@@ -20,13 +20,10 @@ export function tokenGenerate(user) {
     // Get the JWT secret
     const jwtSecret = getJwtSecret();
 
-    // Sign token with user information
+    // Sign token with all user information
+    // This way we include all fields like purpose, patientId, etc.
     const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
+      user,
       jwtSecret,
       { expiresIn: "24h" }
     );

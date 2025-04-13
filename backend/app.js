@@ -21,6 +21,14 @@ import {
 import { initScheduler } from "./scheduleTasks.js";
 // Import the trigger function instead of middleware
 import { triggerMedicationReminder } from "./middleware/MedicationReminder.js";
+
+// Import appointment controllers
+import createAppointment from "./appointment/createAppointment.js";
+import getDoctorAppointments from "./appointment/getDoctorAppointments.js";
+import getPatientAppointments from "./appointment/getPatientAppointments.js";
+import updateAppointmentStatus from "./appointment/updateAppointmentStatus.js";
+import getAvailableSlots from "./appointment/getAvailableSlots.js";
+
 const app = express();
 
 app.use(express.json());
@@ -56,6 +64,13 @@ app.get(
   "/patient/medications/adherence-stats/:patientId",
   getMedicationAdherenceStats
 );
+
+// Appointment endpoints
+app.post("/appointments", createAppointment);
+app.get("/doctor/appointments", getDoctorAppointments);
+app.get("/patient/appointments", getPatientAppointments);
+app.post("/appointments/update-status", updateAppointmentStatus);
+app.get("/appointments/available-slots", getAvailableSlots);
 
 // Test endpoint to send medication reminders manually
 app.post("/admin/send-medication-reminders", async (req, res) => {
