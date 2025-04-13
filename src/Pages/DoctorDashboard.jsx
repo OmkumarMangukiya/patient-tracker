@@ -78,41 +78,53 @@ function DoctorDashboard({ initialTab }) {
     switch (activeTab) {
       case 'dashboard':
         return (
-          <div className="bg-white p-6 rounded-lg shadow-sm text-black">
-            <h2 className="text-2xl font-semibold mb-6">Welcome, Dr. {doctorData?.name}</h2>
+          <div className="p-6">
+            <h2 className="text-2xl font-semibold mb-6 text-gray-800">Welcome, Dr. {doctorData?.name}</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-black">Total Patients</h3>
-                  <Users className="w-5 h-5 text-blue-600" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-lg bg-teal-100 mr-4">
+                    <Users className="h-6 w-6 text-teal-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Total Patients</p>
+                    <p className="text-2xl font-bold text-gray-800">{patients.length}</p>
+                  </div>
                 </div>
-                <p className="text-2xl font-semibold text-black">{patients.length}</p>
               </div>
               
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-black">Today's Appointments</h3>
-                  <Calendar className="w-5 h-5 text-green-600" />
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-lg bg-blue-100 mr-4">
+                    <Calendar className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Today's Appointments</p>
+                    <p className="text-2xl font-bold text-gray-800">{appointmentCounts.today}</p>
+                  </div>
                 </div>
-                <p className="text-2xl font-semibold text-black">{appointmentCounts.today}</p>
               </div>
               
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-black">Upcoming Appointments</h3>
-                  <Calendar className="w-5 h-5 text-purple-600" />
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-lg bg-purple-100 mr-4">
+                    <Calendar className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Upcoming Appointments</p>
+                    <p className="text-2xl font-bold text-gray-800">{appointmentCounts.upcoming}</p>
+                  </div>
                 </div>
-                <p className="text-2xl font-semibold text-black">{appointmentCounts.upcoming}</p>
               </div>
             </div>
             
             <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-4 text-black">Quick Actions</h3>
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">Quick Actions</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <button
                   onClick={() => setActiveTab('add-patient')}
-                  className="flex items-center justify-center gap-2 p-3 bg-white border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-50"
+                  className="flex items-center justify-center gap-2 p-3 bg-teal-50 hover:bg-teal-100 rounded-lg text-teal-700 transition duration-200"
                 >
                   <Plus className="w-5 h-5" />
                   <span>Add New Patient</span>
@@ -120,7 +132,7 @@ function DoctorDashboard({ initialTab }) {
                 
                 <button
                   onClick={() => setActiveTab('add-prescription')}
-                  className="flex items-center justify-center gap-2 p-3 bg-white border border-green-200 text-green-700 rounded-lg hover:bg-green-50"
+                  className="flex items-center justify-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg text-blue-700 transition duration-200"
                 >
                   <FileText className="w-5 h-5" />
                   <span>Create Prescription</span>
@@ -128,7 +140,7 @@ function DoctorDashboard({ initialTab }) {
                 
                 <button
                   onClick={() => setActiveTab('appointments')}
-                  className="flex items-center justify-center gap-2 p-3 bg-white border border-purple-200 text-purple-700 rounded-lg hover:bg-purple-50"
+                  className="flex items-center justify-center gap-2 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-purple-700 transition duration-200"
                 >
                   <Calendar className="w-5 h-5" />
                   <span>View Appointments</span>
@@ -139,10 +151,10 @@ function DoctorDashboard({ initialTab }) {
             {/* Recent Patients */}
             {patients.length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold mb-4 text-black">Recent Patients</h3>
-                <div className="overflow-hidden border border-gray-200 rounded-lg">
+                <h3 className="text-xl font-semibold mb-4 text-gray-800">Recent Patients</h3>
+                <div className="overflow-hidden border border-gray-200 rounded-lg bg-white">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-white">
+                    <thead className="bg-gray-50">
                       <tr>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
@@ -174,99 +186,134 @@ function DoctorDashboard({ initialTab }) {
         );
       
       case 'patients':
-        return <RetirevePatient />;
+        return (
+          <div className="p-6">
+            <RetirevePatient />
+          </div>
+        );
       
       case 'add-patient':
-        return <AddPatient />;
+        return (
+          <div className="p-6">
+            <AddPatient />
+          </div>
+        );
       
       case 'add-prescription':
-        return <AddPrescription />;
+        return (
+          <div className="p-6">
+            <AddPrescription />
+          </div>
+        );
       
       case 'appointments':
-        return <AppointmentList userRole="doctor" />;
+        return (
+          <div className="p-6">
+            <AppointmentList userRole="doctor" />
+          </div>
+        );
       
       default:
-        return <div className="text-black">Select a tab</div>;
+        return (
+          <div className="p-6 text-gray-700">
+            Select a tab
+          </div>
+        );
     }
   };
 
   return (
-    <div className="container mx-auto p-4 bg-white text-black">
-      <div className="bg-white shadow-sm p-4 mb-6 rounded-lg">
-        <div className="flex overflow-x-auto">
-          <button
-            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
-              activeTab === 'dashboard'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            <span className="flex items-center gap-1">
-              <ListFilter className="w-4 h-4" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Doctor Dashboard</h1>
+            <p className="text-gray-600">Manage your patients and appointments</p>
+          </div>
+          <div className="flex items-center mt-4 md:mt-0">
+            <div className="bg-white rounded-lg shadow-sm p-2 flex items-center">
+              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <Users className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-700">Dr. {doctorData?.name || 'User'}</p>
+                <p className="text-xs text-gray-500">{doctorData?.specialization || 'Physician'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="bg-white rounded-xl shadow-sm mb-6">
+          <div className="flex overflow-x-auto">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`px-6 py-4 font-medium text-sm flex items-center ${
+                activeTab === 'dashboard' 
+                  ? 'text-blue-600 border-b-2 border-blue-500 bg-blue-50' 
+                  : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+              } transition-colors duration-200`}
+            >
+              <ListFilter className="h-5 w-5 mr-2" />
               Dashboard
-            </span>
-          </button>
-          
-          <button
-            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
-              activeTab === 'patients'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('patients')}
-          >
-            <span className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              Patients
-            </span>
-          </button>
-          
-          <button
-            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
-              activeTab === 'add-patient'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('add-patient')}
-          >
-            <span className="flex items-center gap-1">
-              <Plus className="w-4 h-4" />
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('patients')}
+              className={`px-6 py-4 font-medium text-sm flex items-center ${
+                activeTab === 'patients' 
+                  ? 'text-teal-600 border-b-2 border-teal-500 bg-teal-50' 
+                  : 'text-gray-500 hover:text-teal-600 hover:bg-teal-50'
+              } transition-colors duration-200`}
+            >
+              <Users className="h-5 w-5 mr-2" />
+              My Patients
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('add-patient')}
+              className={`px-6 py-4 font-medium text-sm flex items-center ${
+                activeTab === 'add-patient' 
+                  ? 'text-blue-600 border-b-2 border-blue-500 bg-blue-50' 
+                  : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+              } transition-colors duration-200`}
+            >
+              <Plus className="h-5 w-5 mr-2" />
               Add Patient
-            </span>
-          </button>
-          
-          <button
-            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
-              activeTab === 'add-prescription'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('add-prescription')}
-          >
-            <span className="flex items-center gap-1">
-              <FileText className="w-4 h-4" />
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('add-prescription')}
+              className={`px-6 py-4 font-medium text-sm flex items-center ${
+                activeTab === 'add-prescription' 
+                  ? 'text-green-600 border-b-2 border-green-500 bg-green-50' 
+                  : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
+              } transition-colors duration-200`}
+            >
+              <FileText className="h-5 w-5 mr-2" />
               Add Prescription
-            </span>
-          </button>
-          
-          <button
-            className={`px-4 py-2 font-medium text-sm rounded-md ${
-              activeTab === 'appointments'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('appointments')}
-          >
-            <span className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('appointments')}
+              className={`px-6 py-4 font-medium text-sm flex items-center ${
+                activeTab === 'appointments' 
+                  ? 'text-purple-600 border-b-2 border-purple-500 bg-purple-50' 
+                  : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'
+              } transition-colors duration-200`}
+            >
+              <Calendar className="h-5 w-5 mr-2" />
               Appointments
-            </span>
-          </button>
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          {renderTabContent()}
         </div>
       </div>
-      
-      {renderTabContent()}
     </div>
   );
 }
