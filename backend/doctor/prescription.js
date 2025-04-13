@@ -36,9 +36,16 @@ const prescription = async (req, res) => {
       return res.status(400).json({ message: "All medicines must have id, name, dosage, timing, instructions and duration" });
     }
 
+    // Convert patientId to integer if it's not already
+    const patientIdInt = parseInt(patientId, 10);
+    
+    if (isNaN(patientIdInt)) {
+      return res.status(400).json({ message: "Invalid patient ID format" });
+    }
+
     // Check if patient exists
     const patient = await prisma.Patient.findUnique({
-      where: { id: patientId }
+      where: { id: patientIdInt }
     });
 
     if (!patient) {
@@ -48,7 +55,7 @@ const prescription = async (req, res) => {
     // Create prescription with proper data formatting
     const prescription = await prisma.Prescription.create({
       data: {
-        patientId,
+        patientId: patientIdInt,
         doctorId: decoded.id,
         date: new Date(),
         medicines: {

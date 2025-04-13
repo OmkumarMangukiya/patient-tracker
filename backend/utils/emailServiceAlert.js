@@ -96,6 +96,12 @@ const emailServiceAlert = async (token) => {
 
     // Log reminder in the database only for medicines that don't already have records
     for (const med of medications) {
+      // Skip if we already have a record for this medicine today
+      if (existingRecordsMap[med.medicineId]) {
+        console.log(`Skipping duplicate record for medicine: ${med.name}, medicineId: ${med.medicineId}`);
+        continue;
+      }
+      
       try {
         await prisma.MedicineAdherence.create({
           data: {
@@ -110,6 +116,8 @@ const emailServiceAlert = async (token) => {
             scheduledDate: today,
           },
         });
+        
+        console.log(`Created adherence record for: ${med.name}`);
       } catch (error) {
         // If scheduledDate/scheduledTime fields aren't available in schema, create without them
         if (error.message.includes("Unknown argument")) {
@@ -124,6 +132,8 @@ const emailServiceAlert = async (token) => {
               medicineId: med.medicineId,
             },
           });
+          
+          console.log(`Created adherence record (without schedule fields) for: ${med.name}`);
         } else {
           throw error;
         }

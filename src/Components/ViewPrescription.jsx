@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { format } from 'date-fns';
+import { ChevronDown, ChevronUp, Calendar, User } from 'lucide-react';
 
 function ViewPrescription({ patientId }) {
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('date');
+  const [sortDirection, setSortDirection] = useState('desc'); // newest first by default
 
   useEffect(() => {
     const fetchPrescriptions = async () => {
@@ -35,6 +39,33 @@ function ViewPrescription({ patientId }) {
     fetchPrescriptions();
   }, [patientId]);
 
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      // Toggle direction if same field clicked
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // New field, set default direction
+      setSortBy(field);
+      setSortDirection('desc');
+    }
+  };
+
+  const sortedPrescriptions = [...prescriptions].sort((a, b) => {
+    if (sortBy === 'date') {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+    }
+    if (sortBy === 'doctor') {
+      const doctorA = a.doctor.name.toLowerCase();
+      const doctorB = b.doctor.name.toLowerCase();
+      return sortDirection === 'asc' 
+        ? doctorA.localeCompare(doctorB) 
+        : doctorB.localeCompare(doctorA);
+    }
+    return 0;
+  });
+
   if (loading) {
     return <div className="text-center p-4 text-black">Loading prescriptions...</div>;
   }
@@ -45,35 +76,87 @@ function ViewPrescription({ patientId }) {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4 text-black">My Prescriptions</h2>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h2 className="text-2xl font-bold text-black">Prescription History</h2>
+        <div className="flex space-x-4 mt-2 md:mt-0">
+          <button 
+            onClick={() => handleSort('date')}
+            className={`flex items-center space-x-1 ${sortBy === 'date' ? 'text-blue-600 font-medium' : 'text-gray-600'}`}
+          >
+            <Calendar className="h-4 w-4" />
+            <span>Date</span>
+            {sortBy === 'date' && (
+              sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
+          <button 
+            onClick={() => handleSort('doctor')}
+            className={`flex items-center space-x-1 ${sortBy === 'doctor' ? 'text-blue-600 font-medium' : 'text-gray-600'}`}
+          >
+            <User className="h-4 w-4" />
+            <span>Doctor</span>
+            {sortBy === 'doctor' && (
+              sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+      </div>
       
       {prescriptions.length === 0 ? (
-        <p className="text-black">You have no prescriptions yet.</p>
+        <div className="bg-white p-8 rounded-lg shadow-sm text-center">
+          <p className="text-gray-600">You have no prescriptions yet.</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {prescriptions.map((prescription) => (
-            <div key={prescription.id} className="border p-4 rounded shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="font-bold text-lg text-black">Prescription Date: {new Date(prescription.date).toLocaleDateString()}</h3>
-              <p className="text-gray-600">Doctor: {prescription.doctor.name}</p>
-              <div className="mt-2">
-                <h4 className="font-semibold text-black">Medicines:</h4>
-                <ul className="mt-2 space-y-2">
+        <div className="space-y-6">
+          {sortedPrescriptions.map((prescription) => (
+            <div 
+              key={prescription.id} 
+              className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex flex-col md:flex-row justify-between mb-4 pb-3 border-b">
+                <div>
+                  <div className="flex items-center text-gray-700 mb-1">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <span className="font-medium">
+                      {format(new Date(prescription.date), 'MMMM d, yyyy')}
+                    </span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <User className="h-4 w-4 mr-2" />
+                    <span>Dr. {prescription.doctor.name}</span>
+                  </div>
+                </div>
+                <div className="mt-2 md:mt-0 text-sm bg-blue-50 px-2 py-1 rounded-full text-blue-600 self-start">
+                  {prescription.medicines.length} medication{prescription.medicines.length !== 1 ? 's' : ''}
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-gray-700 mb-3">Medications</h4>
+                <div className="space-y-3">
                   {prescription.medicines.map((med) => (
-                    <li key={med.id} className="bg-blue-50 p-2 rounded border border-blue-100">
-                      <div className="font-medium text-black">{med.medicineName}</div>
-                      <div className="text-sm text-gray-600">
-                        <div>Dosage: {med.dosage}</div>
-                        <div>Duration: {med.duration}</div>
-                        <div>Timing: {Object.entries(med.timing)
-                          .filter(([_, value]) => value === true)
-                          .map(([key]) => key)
-                          .join(', ')}
+                    <div key={med.id} className="bg-blue-50 p-3 rounded border border-blue-100">
+                      <h5 className="font-medium text-gray-800 mb-2">{med.medicineName}</h5>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                        <div>
+                          <span className="font-medium text-gray-700">Dosage:</span> {med.dosage}
                         </div>
-                        <div>Instructions: {med.instructions}</div>
+                        <div>
+                          <span className="font-medium text-gray-700">Duration:</span> {med.duration}
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700">Timing:</span> {Object.entries(med.timing)
+                            .filter(([_, value]) => value === true)
+                            .map(([key]) => key)
+                            .join(', ')}
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700">Instructions:</span> {med.instructions}
+                        </div>
                       </div>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
           ))}

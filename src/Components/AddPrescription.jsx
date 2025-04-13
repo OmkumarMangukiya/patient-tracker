@@ -90,6 +90,13 @@ function AddPrescription({ patientId, patientName, onClose }) {
     setSelectedMedicines(updatedMedicines);
   };
 
+  const handleCloseModal = (e) => {
+    // Prevent event from bubbling up
+    e.stopPropagation();
+    // Call the onClose prop
+    if (onClose) onClose();
+  };
+
   const handleSubmit = async () => {
     if (selectedMedicines.length === 0) {
       setMessage({ text: 'Please add at least one medicine', type: 'error' });
@@ -148,15 +155,16 @@ function AddPrescription({ patientId, patientName, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 overflow-auto">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl max-h-screen overflow-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 overflow-auto z-50" onClick={handleCloseModal}>
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl max-h-screen overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-black">
             Add Prescription for {patientName}
           </h2>
           <button 
-            onClick={onClose}
+            onClick={handleCloseModal}
             className="text-gray-500 hover:text-gray-800"
+            type="button"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -204,6 +212,7 @@ function AddPrescription({ patientId, patientName, onClose }) {
                       <button
                         onClick={() => handleAddMedicine(med)}
                         className="bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200"
+                        type="button"
                       >
                         Add
                       </button>
@@ -233,6 +242,7 @@ function AddPrescription({ patientId, patientName, onClose }) {
                       <button
                         onClick={() => handleRemoveMedicine(index)}
                         className="text-red-500 hover:text-red-700"
+                        type="button"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -343,6 +353,7 @@ function AddPrescription({ patientId, patientName, onClose }) {
               className={`w-full py-2 rounded font-medium text-white ${
                 loading || selectedMedicines.length === 0 ? 'bg-blue-300' : 'bg-blue-600 hover:bg-blue-700'
               }`}
+              type="button"
             >
               {loading ? 'Processing...' : 'Submit Prescription'}
             </button>

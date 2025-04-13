@@ -29,6 +29,8 @@ import getPatientAppointments from "./appointment/getPatientAppointments.js";
 import updateAppointmentStatus from "./appointment/updateAppointmentStatus.js";
 import getAvailableSlots from "./appointment/getAvailableSlots.js";
 
+import { getDoctorPrescriptionsByPatientId } from "./doctor/getPrescriptions.js";
+
 const app = express();
 
 app.use(express.json());
@@ -54,6 +56,7 @@ app.get("/doctor/retrieveAllPatients", retrieveAllPatients);
 app.post("/doctor/assign-patient", assignPatient);
 app.get("/api/medicines", getMedicinesHandler);
 app.post("/doctor/prescription", prescription);
+app.get("/doctor/prescriptions/:patientId", getDoctorPrescriptionsByPatientId);
 app.get("/patient/prescriptions/:patientId", getPatientPrescriptions);
 
 // New medication tracking endpoints

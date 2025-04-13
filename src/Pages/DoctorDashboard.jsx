@@ -295,18 +295,6 @@ function DoctorDashboard({ initialTab }) {
             </button>
             
             <button
-              onClick={() => setActiveTab('add-prescription')}
-              className={`px-6 py-4 font-medium text-sm flex items-center ${
-                activeTab === 'add-prescription' 
-                  ? 'text-green-600 border-b-2 border-green-500 bg-green-50' 
-                  : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
-              } transition-colors duration-200`}
-            >
-              <FileText className="h-5 w-5 mr-2" />
-              Add Prescription
-            </button>
-            
-            <button
               onClick={() => setActiveTab('appointments')}
               className={`px-6 py-4 font-medium text-sm flex items-center ${
                 activeTab === 'appointments' 

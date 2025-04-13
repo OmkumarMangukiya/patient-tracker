@@ -345,23 +345,70 @@ function PatientDashboard({ initialTab }) {
             <>
               {activeTab === 'dashboard' && (
                 <div className="mb-8">
-                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Recent Prescriptions</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-semibold text-gray-800">Recent Prescriptions</h3>
+                    <button 
+                      onClick={() => switchToTab('prescriptions')}
+                      className="text-blue-600 hover:text-blue-800 flex items-center text-sm font-medium"
+                    >
+                      View All Prescriptions
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
                   
                   {prescriptions.length === 0 ? (
                     <p className="text-gray-500">No prescriptions found</p>
                   ) : (
                     <div className="space-y-4">
-                      {prescriptions.slice(0, 3).map((prescription) => (
-                        <div key={prescription.id} className="border-b pb-3">
-                          <p className="font-medium">Dr. {prescription.doctor.name}</p>
-                          <p className="text-sm text-gray-600">
-                            {new Date(prescription.date).toLocaleDateString()}
-                          </p>
-                          <p className="text-sm mt-1">
-                            {prescription.medicines.length} medications prescribed
-                          </p>
+                      {prescriptions.slice(0, 5).map((prescription) => (
+                        <div key={prescription.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                          <div className="flex justify-between">
+                            <div>
+                              <p className="font-medium text-gray-800">Dr. {prescription.doctor.name}</p>
+                              <p className="text-sm text-gray-600">
+                                {new Date(prescription.date).toLocaleDateString()} 
+                                <span className="mx-2">•</span>
+                                {prescription.medicines.length} medication{prescription.medicines.length !== 1 ? 's' : ''}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => switchToTab('prescriptions')}
+                              className="text-blue-600 hover:text-blue-800 text-sm"
+                            >
+                              Details
+                            </button>
+                          </div>
+                          
+                          {/* Show a preview of medicines */}
+                          {prescription.medicines.length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {prescription.medicines.slice(0, 3).map(med => (
+                                <div key={med.id} className="bg-blue-50 px-2 py-1 rounded text-xs text-blue-700">
+                                  {med.medicineName}
+                                </div>
+                              ))}
+                              {prescription.medicines.length > 3 && (
+                                <div className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600">
+                                  +{prescription.medicines.length - 3} more
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ))}
+                      
+                      {prescriptions.length > 5 && (
+                        <div className="text-center pt-2">
+                          <button 
+                            onClick={() => switchToTab('prescriptions')}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          >
+                            See {prescriptions.length - 5} more prescriptions
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
