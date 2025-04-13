@@ -26,7 +26,14 @@ function RetirevePatient() {
           }
         );
 
-        setPatients(response.data);
+        // Ensure each patient has an id field for consistent key usage
+        const patientsWithConsistentIds = response.data.map(patient => ({
+          ...patient,
+          // Use existing id or _id, or generate a fallback
+          uniqueId: patient.id || patient._id || `patient-${Math.random().toString(36).substr(2, 9)}`
+        }));
+
+        setPatients(patientsWithConsistentIds);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching patients:', err);
@@ -65,7 +72,7 @@ function RetirevePatient() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {patients.map((patient) => (
-            <div key={patient._id} className="border p-4 rounded shadow-sm">
+            <div key={patient.uniqueId} className="border p-4 rounded shadow-sm">
               <h3 className="font-bold text-lg text-black">{patient.name}</h3>
               <p className="text-gray-600">{patient.email}</p>
               <div className="mt-2">
@@ -91,7 +98,7 @@ function RetirevePatient() {
       
       {showPrescriptionModal && selectedPatient && (
         <AddPrescription 
-          patientId={selectedPatient.id || selectedPatient._id}
+          patientId={selectedPatient.id || selectedPatient._id || selectedPatient.uniqueId}
           patientName={selectedPatient.name}
           onClose={handleClosePrescriptionModal}
         />

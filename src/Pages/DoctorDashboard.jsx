@@ -28,6 +28,7 @@ function DoctorDashboard({ initialTab }) {
         }
 
         const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        console.log('Decoded token:', decodedToken); // Debug: check what's in the token
         setDoctorData(decodedToken);
 
         // Fetch patients
@@ -237,8 +238,18 @@ function DoctorDashboard({ initialTab }) {
                 <Users className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-700">Dr. {doctorData?.name || 'User'}</p>
-                <p className="text-xs text-gray-500">{doctorData?.specialization || 'Physician'}</p>
+                {doctorData && (
+                  <>
+                    <p className="font-medium text-gray-700">Dr. {doctorData.name}</p>
+                    <p className="text-xs text-gray-500">{doctorData.specialization || 'Physician'}</p>
+                  </>
+                )}
+                {!doctorData && (
+                  <>
+                    <p className="font-medium text-gray-700">Loading...</p>
+                    <p className="text-xs text-gray-500">Please wait</p>
+                  </>
+                )}
               </div>
             </div>
           </div>

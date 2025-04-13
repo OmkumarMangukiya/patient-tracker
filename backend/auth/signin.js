@@ -45,7 +45,9 @@ const signin = async (req, res) => {
       token = tokenGenerate({
         id: user.id,
         email: user.email,
+        name: user.name,
         role: role,
+        specialization: role === "doctor" ? user.specialization : undefined
       });
     } catch (tokenError) {
       console.error("Error generating token:", tokenError);
