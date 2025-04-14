@@ -7,8 +7,8 @@ const lastReminderSent = {
   evening: null,
 };
 
-// Cooldown period in milliseconds (e.g., 4 hours = 14400000 ms)
-const REMINDER_COOLDOWN = 14400000;
+// Cooldown period in milliseconds (4 minutes = 240000 ms)
+const REMINDER_COOLDOWN = 240000;
 
 // Convert from middleware to utility function
 export const triggerMedicationReminder = async () => {

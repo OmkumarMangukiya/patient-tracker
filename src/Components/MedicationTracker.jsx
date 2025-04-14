@@ -2,12 +2,23 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function MedicationTracker({ patientId, initialTab = 'current' }) {
+  // Helper functions defined first
+  // Get current time period (morning, afternoon, evening)
+  const getCurrentTimePeriod = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 18) return 'afternoon';
+    return 'evening';
+  };
+  
+  // State definitions
   const [medications, setMedications] = useState([]);
   const [medicationHistory, setMedicationHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(initialTab);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [lastTimeCheck, setLastTimeCheck] = useState(getCurrentTimePeriod());
 
   // Force refresh the data
   const refreshData = () => {
@@ -32,6 +43,47 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
     
     return () => clearInterval(timer);
   }, [activeTab, patientId]);
+
+  // Check for time period changes to auto-mark missed medications
+  useEffect(() => {
+    const timePeriodChecker = setInterval(() => {
+      const currentTimePeriod = getCurrentTimePeriod();
+      
+      // If time period has changed
+      if (currentTimePeriod !== lastTimeCheck) {
+        console.log(`Time period changed from ${lastTimeCheck} to ${currentTimePeriod}`);
+        setLastTimeCheck(currentTimePeriod);
+        
+        // Check for missed medications from the previous time period
+        const missableMeds = medications.filter(med => 
+          med.adherenceStatus === 'Pending' && 
+          isPreviousTimePeriod(med.scheduledTime, currentTimePeriod)
+        );
+        
+        // Auto-mark these as missed
+        if (missableMeds.length > 0) {
+          console.log(`Auto-marking ${missableMeds.length} medications as missed`);
+          
+          // Update each missed medication
+          missableMeds.forEach(med => {
+            updateMedicationStatus(med, 'Missed');
+          });
+        }
+      }
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(timePeriodChecker);
+  }, [medications, lastTimeCheck]);
+
+  // Helper to determine if a medication's scheduled time is now in the past
+  const isPreviousTimePeriod = (medicationTime, currentTime) => {
+    const timeOrder = ['morning', 'afternoon', 'evening'];
+    const medTimeIndex = timeOrder.indexOf(medicationTime);
+    const currentTimeIndex = timeOrder.indexOf(currentTime);
+    
+    // If it's the same day and medication time is earlier than current time
+    return medTimeIndex < currentTimeIndex;
+  };
 
   const fetchTodayMedications = async () => {
     try {
@@ -156,14 +208,6 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
       groups[time].push(med);
       return groups;
     }, {});
-  };
-
-  // Get current time period (morning, afternoon, evening)
-  const getCurrentTimePeriod = () => {
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return 'morning';
-    if (hour >= 12 && hour < 18) return 'afternoon';
-    return 'evening';
   };
 
   const timeOrder = ['morning', 'afternoon', 'evening', 'unscheduled'];

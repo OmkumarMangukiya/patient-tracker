@@ -65,30 +65,35 @@ export const getTodayMedications = async (req, res) => {
 
         // Check if all time periods from prescriptions exist in our medications
         // If not, generate medications for those missing periods
+        // Also check for duration to ensure we only show active medications
         const additionalMeds = [];
         for (const prescription of prescriptions) {
           for (const medicine of prescription.medicines) {
             const timing = medicine.timing;
-
-            // Check each time period
-            for (const timeOfDay of ["morning", "afternoon", "evening"]) {
-              // Only add if:
-              // 1. This time of day is required in the prescription
-              // 2. This specific medicine doesn't already have an entry for this time period
-              if (
-                timing[timeOfDay] &&
-                (!existingMedicineTimeMap[medicine.id] ||
-                  !existingMedicineTimeMap[medicine.id].has(timeOfDay))
-              ) {
-                additionalMeds.push({
-                  medicineId: medicine.id,
-                  medicineName: medicine.medicineName,
-                  dosage: medicine.dosage,
-                  instructions: medicine.instructions,
-                  scheduledTime: timeOfDay,
-                  adherenceStatus: "Pending",
-                  prescriptionId: prescription.id,
-                });
+            
+            // Check if medication is still active based on duration
+            // If prescription has a date and duration, check if it's still valid
+            if (isStillActive(prescription.date, medicine.duration)) {
+              // Check each time period
+              for (const timeOfDay of ["morning", "afternoon", "evening"]) {
+                // Only add if:
+                // 1. This time of day is required in the prescription
+                // 2. This specific medicine doesn't already have an entry for this time period
+                if (
+                  timing[timeOfDay] &&
+                  (!existingMedicineTimeMap[medicine.id] ||
+                    !existingMedicineTimeMap[medicine.id].has(timeOfDay))
+                ) {
+                  additionalMeds.push({
+                    medicineId: medicine.id,
+                    medicineName: medicine.medicineName,
+                    dosage: medicine.dosage,
+                    instructions: medicine.instructions,
+                    scheduledTime: timeOfDay,
+                    adherenceStatus: "Pending",
+                    prescriptionId: prescription.id,
+                  });
+                }
               }
             }
           }
@@ -141,50 +146,53 @@ export const getTodayMedications = async (req, res) => {
 
     for (const prescription of prescriptions) {
       for (const medicine of prescription.medicines) {
-        // Create morning, afternoon, evening entries if specified in timing
-        const timing = medicine.timing;
+        // Only include medicines that are still active based on their duration
+        if (isStillActive(prescription.date, medicine.duration)) {
+          // Create morning, afternoon, evening entries if specified in timing
+          const timing = medicine.timing;
 
-        // Track each medicine + time combo to avoid duplicates
-        if (timing.morning && !addedMedicines.has(`${medicine.id}-morning`)) {
-          currentMedications.push({
-            medicineId: medicine.id,
-            medicineName: medicine.medicineName,
-            dosage: medicine.dosage,
-            instructions: medicine.instructions,
-            scheduledTime: "morning",
-            adherenceStatus: "Pending",
-            prescriptionId: prescription.id,
-          });
-          addedMedicines.add(`${medicine.id}-morning`);
-        }
+          // Track each medicine + time combo to avoid duplicates
+          if (timing.morning && !addedMedicines.has(`${medicine.id}-morning`)) {
+            currentMedications.push({
+              medicineId: medicine.id,
+              medicineName: medicine.medicineName,
+              dosage: medicine.dosage,
+              instructions: medicine.instructions,
+              scheduledTime: "morning",
+              adherenceStatus: "Pending",
+              prescriptionId: prescription.id,
+            });
+            addedMedicines.add(`${medicine.id}-morning`);
+          }
 
-        if (
-          timing.afternoon &&
-          !addedMedicines.has(`${medicine.id}-afternoon`)
-        ) {
-          currentMedications.push({
-            medicineId: medicine.id,
-            medicineName: medicine.medicineName,
-            dosage: medicine.dosage,
-            instructions: medicine.instructions,
-            scheduledTime: "afternoon",
-            adherenceStatus: "Pending",
-            prescriptionId: prescription.id,
-          });
-          addedMedicines.add(`${medicine.id}-afternoon`);
-        }
+          if (
+            timing.afternoon &&
+            !addedMedicines.has(`${medicine.id}-afternoon`)
+          ) {
+            currentMedications.push({
+              medicineId: medicine.id,
+              medicineName: medicine.medicineName,
+              dosage: medicine.dosage,
+              instructions: medicine.instructions,
+              scheduledTime: "afternoon",
+              adherenceStatus: "Pending",
+              prescriptionId: prescription.id,
+            });
+            addedMedicines.add(`${medicine.id}-afternoon`);
+          }
 
-        if (timing.evening && !addedMedicines.has(`${medicine.id}-evening`)) {
-          currentMedications.push({
-            medicineId: medicine.id,
-            medicineName: medicine.medicineName,
-            dosage: medicine.dosage,
-            instructions: medicine.instructions,
-            scheduledTime: "evening",
-            adherenceStatus: "Pending",
-            prescriptionId: prescription.id,
-          });
-          addedMedicines.add(`${medicine.id}-evening`);
+          if (timing.evening && !addedMedicines.has(`${medicine.id}-evening`)) {
+            currentMedications.push({
+              medicineId: medicine.id,
+              medicineName: medicine.medicineName,
+              dosage: medicine.dosage,
+              instructions: medicine.instructions,
+              scheduledTime: "evening",
+              adherenceStatus: "Pending",
+              prescriptionId: prescription.id,
+            });
+            addedMedicines.add(`${medicine.id}-evening`);
+          }
         }
       }
     }
@@ -197,6 +205,45 @@ export const getTodayMedications = async (req, res) => {
       .json({ message: "Error fetching medications: " + err.message });
   }
 };
+
+// Helper function to check if a medicine is still active based on prescription date and duration
+function isStillActive(prescriptionDate, durationStr) {
+  if (!prescriptionDate || !durationStr) return true; // If missing data, assume it's active
+  
+  try {
+    // Parse the duration string (e.g. "7 days", "2 weeks", "1 month")
+    const durationMatch = durationStr.match(/(\d+)\s*(\w+)/);
+    if (!durationMatch) return true;
+    
+    const value = parseInt(durationMatch[1]);
+    const unit = durationMatch[2].toLowerCase();
+    
+    // Convert prescription date to Date object if it's not already
+    const startDate = prescriptionDate instanceof Date 
+      ? prescriptionDate 
+      : new Date(prescriptionDate);
+    
+    // Calculate end date based on duration
+    const endDate = new Date(startDate);
+    
+    if (unit.includes('day')) {
+      endDate.setDate(endDate.getDate() + value);
+    } else if (unit.includes('week')) {
+      endDate.setDate(endDate.getDate() + (value * 7));
+    } else if (unit.includes('month')) {
+      endDate.setMonth(endDate.getMonth() + value);
+    } else {
+      return true; // Unknown unit, assume it's active
+    }
+    
+    // Check if today is before or equal to the end date
+    const today = new Date();
+    return today <= endDate;
+  } catch (error) {
+    console.error("Error checking medication duration:", error);
+    return true; // If there's an error, default to showing the medication
+  }
+}
 
 // Update medication status (taken/missed)
 export const updateMedicationStatus = async (req, res) => {
@@ -376,20 +423,46 @@ export const getMedicationAdherenceStats = async (req, res) => {
       },
     });
 
-    // Calculate statistics
-    const totalCount = adherenceRecords.length;
+    // Get today's prescriptions to count unique medicines
+    const today = new Date().toISOString().split("T")[0];
+    const prescriptions = await prisma.Prescription.findMany({
+      where: {
+        patientId: parseInt(patientId, 10),
+      },
+      include: {
+        medicines: true,
+      },
+    });
+
+    // Extract unique medicines from prescriptions
+    const uniqueMedicines = new Set();
+    prescriptions.forEach(prescription => {
+      prescription.medicines.forEach(medicine => {
+        uniqueMedicines.add(medicine.id);
+      });
+    });
+
+    // Count only non-pending records for adherence calculation
+    const totalActiveCount = adherenceRecords.filter(
+      r => r.adherenceStatus !== "Pending"
+    ).length;
+    
     const takenCount = adherenceRecords.filter(
-      (r) => r.adherenceStatus === "Taken"
+      r => r.adherenceStatus === "Taken"
     ).length;
+    
     const missedCount = adherenceRecords.filter(
-      (r) => r.adherenceStatus === "Missed"
+      r => r.adherenceStatus === "Missed"
     ).length;
+    
     const pendingCount = adherenceRecords.filter(
-      (r) => r.adherenceStatus === "Pending"
+      r => r.adherenceStatus === "Pending"
     ).length;
 
-    // Calculate adherence rate (taken / (taken + missed + pending))
-    const adherenceRate = totalCount > 0 ? (takenCount / totalCount) * 100 : 0;
+    // Calculate adherence rate (taken / (taken + missed)) excluding pending
+    const adherenceRate = totalActiveCount > 0 
+      ? (takenCount / totalActiveCount) * 100 
+      : 0;
 
     // Group by date to see daily adherence
     const dailyAdherence = {};
@@ -410,16 +483,20 @@ export const getMedicationAdherenceStats = async (req, res) => {
     });
 
     // Convert to array for easier frontend processing
-    const dailyStats = Object.keys(dailyAdherence).map((date) => ({
-      date,
-      ...dailyAdherence[date],
-      adherenceRate:
-        (dailyAdherence[date].taken / dailyAdherence[date].total) * 100,
-    }));
+    const dailyStats = Object.keys(dailyAdherence).map((date) => {
+      const activeTotal = dailyAdherence[date].taken + dailyAdherence[date].missed;
+      return {
+        date,
+        ...dailyAdherence[date],
+        adherenceRate: activeTotal > 0
+          ? (dailyAdherence[date].taken / activeTotal) * 100
+          : 0
+      };
+    });
 
     const stats = {
       summary: {
-        totalMedications: totalCount,
+        totalMedications: uniqueMedicines.size, // Number of unique medicines
         takenCount,
         missedCount,
         pendingCount,

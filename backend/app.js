@@ -21,6 +21,8 @@ import {
 import { initScheduler } from "./scheduleTasks.js";
 // Import the trigger function instead of middleware
 import { triggerMedicationReminder } from "./middleware/MedicationReminder.js";
+// Import the missed medication checker middleware
+import { checkForMissedMedications, configureSocketIO } from "./middleware/MissedMedicationChecker.js";
 
 // Import appointment controllers
 import createAppointment from "./appointment/createAppointment.js";
@@ -49,6 +51,12 @@ const io = new Server(server, {
   }
 });
 
+// Make io available globally for use in other modules
+global.io = io;
+
+// Configure the middleware with the Socket.io instance
+configureSocketIO(io);
+
 app.use(express.json());
 app.use("*", cors());
 
@@ -58,6 +66,10 @@ app.use((req, res, next) => {
   triggerMedicationReminder().catch(console.error);
   next();
 });
+
+// Add the missed medication checker middleware to automatically mark missed medications
+// This will run on every request but only process for authenticated patients
+app.use(checkForMissedMedications);
 
 app.get("/", (req, res) => {
   res.send("Server is running");

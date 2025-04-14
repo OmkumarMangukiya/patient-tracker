@@ -5,7 +5,7 @@ import DoctorDashboard from './Pages/DoctorDashboard';
 import PatientDashboard from './Pages/PatientDashboard';
 import SetPassword from './Components/SetPassword';
 import Signup from './Pages/Signup';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // Import the Button component
 import { Button } from './Components/ui/button';
@@ -34,14 +34,36 @@ function App() {
 
 const WithLogout = ({ Component, role, initialTab }) => {
   const navigate = useNavigate();
+  const [visible, setVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
   const handleLogout = () => {
     localStorage.clear();
     navigate('/');
   };
 
+  // Control navbar visibility on scroll
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (window.scrollY > lastScrollY && window.scrollY > 80) {
+        // Scrolling down & past initial position - hide navbar
+        setVisible(false);
+      } else {
+        // Scrolling up - show navbar
+        setVisible(true);
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', controlNavbar);
+    return () => {
+      window.removeEventListener('scroll', controlNavbar);
+    };
+  }, [lastScrollY]);
+
   return (
     <div className="bg-white text-black">
-      <nav className="bg-medical-green p-4 shadow-md sticky top-0 z-50">
+      <nav className={`bg-medical-green p-4 shadow-md transition-transform duration-300 fixed top-0 left-0 right-0 z-50 ${visible ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="container mx-auto flex flex-col md:flex-row md:justify-between md:items-center">
           <div className="flex justify-between items-center w-full md:w-auto mb-4 md:mb-0">
             <h1 className="text-white text-xl font-bold">Patient Tracker</h1>
@@ -121,7 +143,9 @@ const WithLogout = ({ Component, role, initialTab }) => {
           </div>
         </div>
       </nav>
-      <Component initialTab={initialTab} />
+      <div className="pt-28 md:pt-24">
+        <Component initialTab={initialTab} />
+      </div>
     </div>
   );
 };

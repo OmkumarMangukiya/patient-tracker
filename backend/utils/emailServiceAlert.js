@@ -48,10 +48,32 @@ const emailServiceAlert = async (token) => {
       timeOfDay = "evening";
     }
 
-    // Filter medicines that need to be taken at the current time
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];
+
+    // Check existing adherence records to see if medications are already taken
+    const existingAdherenceRecords = await prisma.MedicineAdherence.findMany({
+      where: {
+        patientId: patientId,
+        scheduledTime: timeOfDay,
+        scheduledDate: today,
+      },
+    });
+
+    // Create a map for quick lookup of medication adherence status
+    const medicationStatusMap = {};
+    existingAdherenceRecords.forEach(record => {
+      medicationStatusMap[record.medicineId] = record.adherenceStatus;
+    });
+
+    // Filter medicines that need to be taken at the current time AND aren't already taken
     const medications = prescriptions.flatMap((prescription) =>
       prescription.medicines
-        .filter((med) => med.timing && med.timing[timeOfDay] === true)
+        .filter((med) => {
+          const isMedForThisTimePeriod = med.timing && med.timing[timeOfDay] === true;
+          const isMedAlreadyTaken = medicationStatusMap[med.id] === "Taken";
+          return isMedForThisTimePeriod && !isMedAlreadyTaken;
+        })
         .map((med) => ({
           name: med.medicineName,
           dosage: med.dosage,
@@ -63,7 +85,7 @@ const emailServiceAlert = async (token) => {
 
     if (medications.length === 0) {
       console.log(
-        `No medications scheduled for ${timeOfDay} for patient ${patientId}`
+        `No untaken medications found for ${timeOfDay} for patient ${patientId}`
       );
       return false;
     }
@@ -76,18 +98,6 @@ const emailServiceAlert = async (token) => {
       timeOfDay
     );
 
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split("T")[0];
-
-    // Check if we've already created medication adherence records for today
-    const existingAdherenceRecords = await prisma.MedicineAdherence.findMany({
-      where: {
-        patientId: patientId, // Ensure this is an integer
-        scheduledTime: timeOfDay,
-        scheduledDate: today,
-      },
-    });
-
     // Create a map to track which medicines already have records for today's time period
     const existingRecordsMap = {};
     existingAdherenceRecords.forEach((record) => {
@@ -98,7 +108,21 @@ const emailServiceAlert = async (token) => {
     for (const med of medications) {
       // Skip if we already have a record for this medicine today
       if (existingRecordsMap[med.medicineId]) {
-        console.log(`Skipping duplicate record for medicine: ${med.name}, medicineId: ${med.medicineId}`);
+        console.log(`Updating existing record for medicine: ${med.name}, medicineId: ${med.medicineId}`);
+        
+        // Update the existing record to ensure it's marked as reminded
+        await prisma.MedicineAdherence.updateMany({
+          where: { 
+            patientId: patientId,
+            medicineId: med.medicineId,
+            scheduledTime: timeOfDay,
+            scheduledDate: today
+          },
+          data: {
+            reminderSent: true
+          }
+        });
+        
         continue;
       }
       

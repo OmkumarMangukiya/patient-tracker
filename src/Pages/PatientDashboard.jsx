@@ -6,6 +6,7 @@ import AppointmentList from '../Components/AppointmentList';
 import MessagesInterface from '../Components/Chat/MessagesInterface';
 import axios from 'axios';
 import { Calendar, PieChart, PillIcon, Scroll, RefreshCw, MessageSquare } from 'lucide-react';
+import io from 'socket.io-client';
 
 function PatientDashboard({ initialTab }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'medications');
@@ -25,6 +26,7 @@ function PatientDashboard({ initialTab }) {
     adherenceRate: 0,
     upcomingAppointments: 0
   });
+  const [socket, setSocket] = useState(null);
 
   const fetchUpcomingMedications = useCallback(async (id, token) => {
     try {
@@ -54,6 +56,46 @@ function PatientDashboard({ initialTab }) {
       setError("Failed to load medication data. Please try refreshing the page.");
     }
   }, []);
+
+  useEffect(() => {
+    // Setup socket connection
+    const newSocket = io('http://localhost:8000');
+    setSocket(newSocket);
+
+    // Cleanup on unmount
+    return () => {
+      if (newSocket) newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    // Listen for medication updates via socket if patientId is available
+    if (socket && patientId) {
+      const handleMedicationUpdate = (data) => {
+        // Check if this update is for the current patient
+        if (data.patientId === patientId) {
+          console.log('Received medication update via WebSocket:', data);
+          
+          // Show a notification to the user
+          if (data.message) {
+            // You could use a toast notification library here
+            alert(data.message);
+          }
+          
+          // Refresh the data
+          handleRefresh();
+        }
+      };
+
+      // Listen for medication update events
+      socket.on('medications-updated', handleMedicationUpdate);
+
+      // Cleanup listener on unmount or when patientId/socket changes
+      return () => {
+        socket.off('medications-updated', handleMedicationUpdate);
+      };
+    }
+  }, [socket, patientId]);
 
   useEffect(() => {
     const fetchData = async () => {

@@ -9,8 +9,8 @@ import { Button } from "../../Components/ui/button";
 import { Input } from "../../Components/ui/input";
 import { cn } from "../../lib/utils";
 
-function EnhancedChatInterface({ userRole }) {
-  const [view, setView] = useState('list'); // 'list', 'chat', 'new'
+function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSelect }) {
+  const [view, setView] = useState(initialSelectedPatient ? 'new' : 'list'); // 'list', 'chat', 'new'
   const [selectedChat, setSelectedChat] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [chats, setChats] = useState([]);
@@ -20,7 +20,16 @@ function EnhancedChatInterface({ userRole }) {
   const [newMessage, setNewMessage] = useState('');
   const [socket, setSocket] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState(initialSelectedPatient);
   const messagesEndRef = useRef(null);
+
+  // Handle initialSelectedPatient prop
+  useEffect(() => {
+    if (initialSelectedPatient) {
+      setSelectedPatient(initialSelectedPatient);
+      setView('new');
+    }
+  }, [initialSelectedPatient]);
 
   // Connect to the socket
   useEffect(() => {
@@ -430,21 +439,28 @@ function EnhancedChatInterface({ userRole }) {
                   {group.messages.map((message, messageIndex) => (
                     <div 
                       key={message.id || messageIndex} 
-                      className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'}`}
+                      className="mb-4"
                     >
-                      <div 
-                        className={cn(
-                          "max-w-[80%] rounded-lg p-3 mb-1",
-                          isCurrentUser(message) 
-                            ? "bg-medical-green text-black rounded-br-none"
-                            : "bg-white text-gray-800 rounded-bl-none shadow-sm"
-                        )}
-                      >
-                        <div className="mb-1">{message.content}</div>
+                      {/* Message container with alignment */}
+                      <div className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'}`}>
+                        <div 
+                          className={cn(
+                            "max-w-[80%] rounded-lg p-3 shadow-sm border",
+                            isCurrentUser(message) 
+                              ? "bg-medical-green text-black rounded-br-none border-medical-green-dark"
+                              : "bg-white text-gray-800 rounded-bl-none border-gray-200"
+                          )}
+                        >
+                          {message.content}
+                        </div>
+                      </div>
+                      
+                      {/* Timestamp - completely separate row */}
+                      <div className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'} mt-1`}>
                         <div 
                           className={cn(
                             "text-xs",
-                            isCurrentUser(message) ? "text-gray-700" : "text-gray-500"
+                            isCurrentUser(message) ? "text-gray-600 mr-1" : "text-gray-500 ml-1"
                           )}
                         >
                           {formatTime(message.createdAt)}
@@ -487,21 +503,184 @@ function EnhancedChatInterface({ userRole }) {
       <CardHeader className="bg-medical-green-light flex-shrink-0">
         <div className="flex items-center">
           <Button 
-            onClick={handleBack}
+            onClick={() => {
+              handleBack();
+              if (onPatientSelect) onPatientSelect();
+            }}
             variant="ghost" 
             size="icon"
             className="mr-2 hover:bg-medical-green-light rounded-full"
           >
             <ChevronLeft className="h-5 w-5 text-gray-700" />
           </Button>
-          <CardTitle className="text-gray-800">Start a new conversation</CardTitle>
+          <CardTitle className="text-gray-800">
+            {selectedPatient ? `Chat with ${selectedPatient.name}` : 'Start a new conversation'}
+          </CardTitle>
         </div>
       </CardHeader>
       <CardContent className="p-6 flex-grow overflow-auto">
-        {/* New chat content would go here - using existing NewChat component */}
-        <p className="text-gray-500 text-center mt-8">
-          Select a recipient to start a new conversation
-        </p>
+        {selectedPatient ? (
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto rounded-full bg-medical-green-light flex items-center justify-center mb-4">
+              <MessageSquare className="h-8 w-8 text-medical-green-dark" />
+            </div>
+            <h3 className="text-xl font-medium text-gray-800 mb-2">{selectedPatient.name}</h3>
+            <p className="text-gray-600 mb-6">
+              {selectedPatient.age && `${selectedPatient.age} years old`} 
+              {selectedPatient.phone && ` • ${selectedPatient.phone}`}
+            </p>
+            <Button 
+              onClick={async () => {
+                try {
+                  setLoading(true);
+                  setError('');
+                  const token = localStorage.getItem('token');
+                  
+                  // Find patient ID to use (try multiple properties)
+                  const patientId = selectedPatient._id || selectedPatient.id || selectedPatient.uniqueId;
+                  
+                  if (!patientId) {
+                    console.error('Cannot determine patient ID');
+                    setError('Patient ID not found');
+                    setLoading(false);
+                    return;
+                  }
+                  
+                  // Check if chat already exists
+                  const existingChats = await axios.get(
+                    `http://localhost:8000/${userRole}/chats`, 
+                    { headers: { Authorization: `Bearer ${token}` }}
+                  );
+                  
+                  // Check multiple ID properties to find a match
+                  let existingChat = existingChats.data.find(chat => {
+                    if (!chat.participants) return false;
+                    
+                    return chat.participants.some(p => 
+                      (p.id && (p.id === patientId)) || 
+                      (p._id && (p._id === patientId)) ||
+                      (p.uniqueId && (p.uniqueId === patientId))
+                    );
+                  });
+                  
+                  if (existingChat) {
+                    console.log('Found existing chat:', existingChat);
+                    handleChatStart({...existingChat, isExisting: true});
+                  } else {
+                    try {
+                      // Create new chat
+                      const tokenData = JSON.parse(atob(token.split('.')[1]));
+                      const currentUserId = tokenData.id;
+                      
+                      // Prepare request based on user role
+                      let chatData = {};
+                      if (userRole === 'doctor') {
+                        // Ensure patientId is a number
+                        const numericPatientId = parseInt(patientId, 10);
+                        if (isNaN(numericPatientId)) {
+                          console.error('Patient ID is not a valid number:', patientId);
+                          setError('Invalid patient ID format');
+                          setLoading(false);
+                          return;
+                        }
+                        
+                        chatData = {
+                          doctorId: currentUserId,
+                          patientId: numericPatientId
+                        };
+                      } else {
+                        // Ensure doctorId is a number
+                        const numericDoctorId = parseInt(patientId, 10);
+                        if (isNaN(numericDoctorId)) {
+                          console.error('Doctor ID is not a valid number:', patientId);
+                          setError('Invalid doctor ID format');
+                          setLoading(false);
+                          return;
+                        }
+                        
+                        chatData = {
+                          patientId: currentUserId,
+                          doctorId: numericDoctorId
+                        };
+                      }
+                      
+                      console.log('Creating chat with data:', chatData);
+                      
+                      const response = await axios.post(
+                        'http://localhost:8000/chats', 
+                        chatData,
+                        { headers: { Authorization: `Bearer ${token}` }}
+                      );
+                      
+                      console.log('Created new chat:', response.data);
+                      handleChatStart({...response.data, isNew: true});
+                    } catch (chatCreateError) {
+                      console.error('Error creating chat:', chatCreateError);
+                      
+                      // If there's any error, display specific message and try find method
+                      if (chatCreateError.response?.status === 400) {
+                        setStatusMessage('Using existing conversation instead');
+                        
+                        // Refresh chats list and filter again
+                        const refreshedChats = await axios.get(
+                          `http://localhost:8000/${userRole}/chats`, 
+                          { headers: { Authorization: `Bearer ${token}` }}
+                        );
+                        
+                        // Find by name - different approach depending on role
+                        let chatByName;
+                        if (userRole === 'doctor') {
+                          // Doctor looking for patient chat
+                          chatByName = refreshedChats.data.find(chat => 
+                            chat.patient && (
+                              (chat.patient.name && chat.patient.name.toLowerCase() === selectedPatient.name.toLowerCase()) ||
+                              (chat.patient.email && chat.patient.email.toLowerCase() === selectedPatient.email?.toLowerCase())
+                            )
+                          );
+                        } else {
+                          // Patient looking for doctor chat
+                          chatByName = refreshedChats.data.find(chat => 
+                            chat.doctor && (
+                              (chat.doctor.name && chat.doctor.name.toLowerCase() === selectedPatient.name.toLowerCase()) ||
+                              (chat.doctor.email && chat.doctor.email.toLowerCase() === selectedPatient.email?.toLowerCase())
+                            )
+                          );
+                        }
+                        
+                        if (chatByName) {
+                          console.log('Found chat by name match:', chatByName);
+                          handleChatStart({...chatByName, isExisting: true});
+                        } else {
+                          setError('Could not find or create a conversation with this person');
+                        }
+                      } else {
+                        setError('Failed to start conversation');
+                      }
+                    }
+                  }
+                  setLoading(false);
+                } catch (error) {
+                  console.error('Error in chat process:', error);
+                  setError('Failed to open conversation');
+                  setLoading(false);
+                }
+              }}
+              className="bg-medical-green hover:bg-medical-green-dark text-white"
+              disabled={loading}
+            >
+              {loading ? 'Processing...' : error ? 'Try Again' : 'Start conversation'}
+            </Button>
+            {error && (
+              <div className="mt-3 text-red-500 text-sm">
+                {error}
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center mt-8">
+            Select a recipient to start a new conversation
+          </p>
+        )}
       </CardContent>
     </Card>
   );

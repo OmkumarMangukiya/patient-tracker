@@ -223,39 +223,23 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">Gender</label>
             <div className="flex space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="male"
-                  checked={formData.gender === 'male'}
-                  onChange={handleChange}
-                  className="form-radio h-4 w-4 text-blue-600"
-                />
-                <span className="ml-2 text-black">Male</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="female"
-                  checked={formData.gender === 'female'}
-                  onChange={handleChange}
-                  className="form-radio h-4 w-4 text-blue-600"
-                />
-                <span className="ml-2 text-black">Female</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="other"
-                  checked={formData.gender === 'other'}
-                  onChange={handleChange}
-                  className="form-radio h-4 w-4 text-blue-600"
-                />
-                <span className="ml-2 text-black">Other</span>
-              </label>
+              {[
+                { value: 'male', label: 'Male' },
+                { value: 'female', label: 'Female' },
+                { value: 'other', label: 'Other' }
+              ].map(option => (
+                <label key={`gender-${option.value}`} className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value={option.value}
+                    checked={formData.gender === option.value}
+                    onChange={handleChange}
+                    className="form-radio h-4 w-4 text-blue-600"
+                  />
+                  <span className="ml-2 text-black">{option.label}</span>
+                </label>
+              ))}
             </div>
           </div>
         </>

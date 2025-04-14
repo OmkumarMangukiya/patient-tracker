@@ -185,18 +185,25 @@ function ChatComponent({ chatId, onBack, userRole, recipientName, recipientId })
                 {group.messages.map((message, messageIndex) => (
                   <div 
                     key={message.id || messageIndex} 
-                    className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'}`}
+                    className="mb-4"
                   >
-                    <div 
-                      className={`max-w-[70%] rounded-lg p-3 ${
-                        isCurrentUser(message) 
-                          ? 'bg-blue-600 text-white rounded-br-none' 
-                          : 'bg-white text-gray-800 rounded-bl-none shadow-sm'
-                      }`}
-                    >
-                      <div className="mb-1">{message.content}</div>
+                    {/* Message container with alignment */}
+                    <div className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'}`}>
                       <div 
-                        className={`text-xs ${isCurrentUser(message) ? 'text-blue-200' : 'text-gray-500'}`}
+                        className={`max-w-[70%] rounded-lg p-3 shadow-sm border ${
+                          isCurrentUser(message) 
+                            ? 'bg-blue-600 text-white rounded-br-none border-blue-700' 
+                            : 'bg-white text-gray-800 rounded-bl-none border-gray-200'
+                        }`}
+                      >
+                        {message.content}
+                      </div>
+                    </div>
+                    
+                    {/* Timestamp - completely separate row */}
+                    <div className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'} mt-1`}>
+                      <div 
+                        className={`text-xs ${isCurrentUser(message) ? 'text-gray-600 mr-1' : 'text-gray-500 ml-1'}`}
                       >
                         {formatTime(message.createdAt)}
                       </div>

@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import AddPrescription from './AddPrescription';
 import { format } from 'date-fns';
-import { Calendar, User, PlusCircle, FileText, ArrowLeft, Clock } from 'lucide-react';
+import { Calendar, User, PlusCircle, FileText, ArrowLeft, Clock, Search } from 'lucide-react';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import { Input } from './ui/input';
 
-function RetirevePatient() {
+function RetirevePatient({ onAddPrescription }) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -13,6 +17,8 @@ function RetirevePatient() {
   const [showPatientDetails, setShowPatientDetails] = useState(false);
   const [patientPrescriptions, setPatientPrescriptions] = useState([]);
   const [loadingPrescriptions, setLoadingPrescriptions] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -50,9 +56,27 @@ function RetirevePatient() {
     fetchPatients();
   }, []);
 
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredPatients = patients.filter(patient => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return (
+      patient.name.toLowerCase().includes(lowerSearchTerm) ||
+      patient.email.toLowerCase().includes(lowerSearchTerm)
+    );
+  });
+
   const handleAddPrescription = (patient) => {
-    setSelectedPatient(patient);
-    setShowPrescriptionModal(true);
+    // If handler provided by parent, use that (for integrated modal approach)
+    if (onAddPrescription) {
+      onAddPrescription(patient);
+    } else {
+      // Otherwise use local state for standalone component
+      setSelectedPatient(patient);
+      setShowPrescriptionModal(true);
+    }
   };
 
   const handleClosePrescriptionModal = () => {
@@ -63,46 +87,27 @@ function RetirevePatient() {
   const handleViewPatientDetails = async (patient) => {
     setSelectedPatient(patient);
     setShowPatientDetails(true);
+    setLoadingPrescriptions(true);
     
     try {
-      setLoadingPrescriptions(true);
       const token = localStorage.getItem('token');
-      const patientId = patient.id || patient._id;
-      
-      if (patientId) {
-        // Try to fetch using the doctor endpoint first
-        try {
-          const response = await axios.get(
-            `http://localhost:8000/doctor/prescriptions/${patientId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
-          );
-          
-          setPatientPrescriptions(response.data);
-        } catch (error) {
-          // If doctor endpoint fails, fall back to patient endpoint
-          console.log("Falling back to patient endpoint for prescriptions");
-          const fallbackResponse = await axios.get(
-            `http://localhost:8000/patient/prescriptions/${patientId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
-          );
-          
-          setPatientPrescriptions(fallbackResponse.data);
-        }
-      } else {
-        console.error("Patient ID is missing");
+      if (!token) {
+        console.error('Authentication token not found');
+        setLoadingPrescriptions(false);
+        return;
       }
-    } catch (err) {
-      console.error("Error fetching patient prescriptions:", err);
-      setPatientPrescriptions([]); // Ensure empty array on error
-    } finally {
+      
+      const patientId = patient.id || patient._id || patient.uniqueId;
+      const response = await axios.get(`http://localhost:8000/doctor/prescriptions/${patientId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      setPatientPrescriptions(response.data);
+      setLoadingPrescriptions(false);
+    } catch (error) {
+      console.error('Error fetching patient prescriptions:', error);
       setLoadingPrescriptions(false);
     }
   };
@@ -233,44 +238,81 @@ function RetirevePatient() {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4 text-black">My Patients</h2>
-      
-      {patients.length === 0 ? (
-        <p className="text-black">You haven't added any patients yet.</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">My Patients</h2>
+        <div className="relative w-full md:w-64">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
+          <Input
+            type="text"
+            placeholder="Search patients..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="pl-10 w-full"
+          />
+        </div>
+      </div>
+
+      {filteredPatients.length === 0 ? (
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p className="text-gray-500">No patients found</p>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {patients.map((patient) => (
-            <div key={patient.uniqueId} className="bg-white border p-4 rounded shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="font-bold text-lg text-black">{patient.name}</h3>
-              <p className="text-gray-600">{patient.email}</p>
-              <div className="mt-2">
-                <span className="text-sm text-gray-500">
-                  Age: {patient.age || 'Not specified'}
-                </span>
-                <span className="text-sm text-gray-500 ml-4">
-                  Gender: {patient.gender || 'Not specified'}
-                </span>
-              </div>
-              <div className="mt-4 flex justify-end space-x-2">
-                <button
-                  onClick={() => handleViewPatientDetails(patient)}
-                  className="bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200"
-                >
-                  View Details
-                </button>
-                <button
-                  onClick={() => handleAddPrescription(patient)}
-                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                >
-                  Add Prescription
-                </button>
-              </div>
-            </div>
+          {filteredPatients.map(patient => (
+            <Card key={patient.id} className="overflow-hidden hover:shadow-md transition-shadow duration-200">
+              <CardContent className="p-0">
+                <div className="bg-medical-green-light/20 p-4 flex justify-between items-start">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-full bg-medical-green-light flex items-center justify-center mr-3">
+                      <User className="h-5 w-5 text-medical-green-dark" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{patient.name}</h3>
+                      <p className="text-sm text-gray-500">{patient.email}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-4">
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    <div>
+                      <p className="text-xs text-gray-500">Patient ID</p>
+                      <p className="text-sm font-medium">{patient.id}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Status</p>
+                      <p className={`text-sm font-medium ${
+                        patient.status === 'active' ? 'text-green-600' : 'text-orange-500'
+                      }`}>
+                        {patient.status || 'Pending'}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={() => handleViewPatientDetails(patient)}
+                      variant="outline"
+                      size="sm"
+                      className="w-full flex items-center justify-center"
+                    >
+                      <FileText className="h-4 w-4 mr-1" />
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
-      
-      {showPrescriptionModal && selectedPatient && (
+
+      {/* Standalone Prescription Modal (only used when not integrated with parent) */}
+      {!onAddPrescription && showPrescriptionModal && selectedPatient && (
         <AddPrescription 
           patientId={selectedPatient.id || selectedPatient._id || selectedPatient.uniqueId}
           patientName={selectedPatient.name}
