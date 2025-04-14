@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../client.js';
 import jwt from 'jsonwebtoken';
-
-const prisma = new PrismaClient();
 
 // Verify JWT token
 function verifyToken(token) {

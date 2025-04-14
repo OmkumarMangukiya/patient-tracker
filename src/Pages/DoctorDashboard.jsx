@@ -6,6 +6,7 @@ import AddPatient from '../Components/AddPatient';
 import AddPrescription from '../Components/AddPrescription';
 import AppointmentList from '../Components/AppointmentList';
 import EnhancedChatInterface from '../Components/Chat/EnhancedChatInterface';
+import ConciseMedicationTracker from '../components/ConciseMedicationTracker';
 import {
   AreaChart,
   Bell,
@@ -619,6 +620,19 @@ function DoctorDashboard({ initialTab }) {
                       ))}
                     </div>
                   )}
+                </div>
+
+                {/* Medication Tracker Section */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <Clock className="h-5 w-5 mr-2 text-green-600" />
+                    Medication Adherence
+                  </h3>
+                  <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+                    <ConciseMedicationTracker 
+                      patientId={selectedPatient._id || selectedPatient.id || selectedPatient.uniqueId} 
+                    />
+                  </div>
                 </div>
               </div>
             ) : (

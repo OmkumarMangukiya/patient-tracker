@@ -44,6 +44,9 @@ import { Server } from "socket.io";
 // Import the new controller
 import deletePrescription from "./doctor/deletePrescription.js";
 
+// Import doctor medication controller
+import { getPatientMedicationsTodayForDoctor } from "./doctor/medications.js";
+
 const app = express();
 const server = http.createServer(app);
 
@@ -95,6 +98,7 @@ app.get("/patient/prescriptions/:patientId", getPatientPrescriptions);
 
 // New medication tracking endpoints
 app.get("/patient/medications/today/:patientId", getTodayMedications);
+app.get("/doctor/patient-medications/today/:patientId", getPatientMedicationsTodayForDoctor);
 app.post("/patient/medications/update-status", updateMedicationStatus);
 app.get("/patient/medications/history/:patientId", getMedicationHistory);
 app.get(

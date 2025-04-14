@@ -1,5 +1,6 @@
 import prisma from "../client.js";
 import { tokenVerify } from "../auth/jwtToken.js";
+import jwt from "jsonwebtoken";
 
 // Get today's medications for a patient
 export const getTodayMedications = async (req, res) => {
@@ -245,97 +246,74 @@ function isStillActive(prescriptionDate, durationStr) {
   }
 }
 
-// Update medication status (taken/missed)
+// Update a specific medication's status (Taken/Missed)
 export const updateMedicationStatus = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      return res.status(401).json({ message: "Authentication required" });
+      return res.status(401).json({ message: 'Authorization token required' });
     }
 
-    const decoded = tokenVerify(token);
-    if (!decoded || decoded.role !== "patient") {
-      return res.status(403).json({
-        message: "Unauthorized: Only patients can update medication status",
-      });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { id, status, patientId, medication, prescriptionId, medicineId, scheduledTime, isNewMedication } = req.body;
+
+    // Verify the token belongs to the patient or a doctor
+    const isAuthorized = decoded.role === 'patient' && decoded.id == patientId || decoded.role === 'doctor';
+    if (!isAuthorized) {
+      return res.status(403).json({ message: 'Unauthorized: Only patients can update their own medications' });
     }
 
-    const {
-      id,
-      status,
-      patientId,
-      isNewMedication,
-      medication,
-      prescriptionId,
-      medicineId,
-      scheduledTime,
-    } = req.body;
+    const today = new Date().toISOString().split('T')[0];
 
-    if (!status || !patientId) {
-      return res
-        .status(400)
-        .json({ message: "Status and patient ID are required" });
-    }
+    // First, check if a record already exists for this medication on this date and time period
+    const existingRecord = await prisma.MedicineAdherence.findFirst({
+      where: {
+        patientId: parseInt(patientId),
+        scheduledDate: today,
+        scheduledTime: scheduledTime,
+        medicineId: medicineId,
+      }
+    });
 
-    // If this is a new medication record (from prescription data, not yet in MedicineAdherence table)
-    if (isNewMedication || id.startsWith("temp-")) {
-      console.log("Creating new medication record");
-      const today = new Date().toISOString().split("T")[0];
-
-      const newMedication = await prisma.MedicineAdherence.create({
-        data: {
-          patientId: parseInt(patientId, 10), // Ensure it's an integer
-          medication: medication,
-          adherenceStatus: status,
-          missedDoses: status === "Missed" ? 1 : 0,
-          reminderSent: true,
-          prescriptionId,
-          medicineId,
-          scheduledTime,
-          scheduledDate: today,
+    let result;
+    
+    if (existingRecord) {
+      // Update existing record instead of creating a new one
+      console.log(`Updating existing record for medicine: ${medication}, medicineId: ${medicineId}`);
+      
+      result = await prisma.MedicineAdherence.update({
+        where: {
+          id: existingRecord.id
         },
+        data: {
+          adherenceStatus: status,
+          updatedAt: new Date()
+        }
       });
-
-      return res.status(201).json(newMedication);
+    } else if (isNewMedication || !medicineId) {
+      // Only create a new record if it's a new medication or doesn't have a medicine ID
+      console.log(`Creating new adherence record for medicine: ${medication}`);
+      
+      result = await prisma.MedicineAdherence.create({
+        data: {
+          patientId: parseInt(patientId),
+          medication: medication,
+          scheduledDate: today,
+          scheduledTime: scheduledTime,
+          adherenceStatus: status,
+          prescriptionId: prescriptionId,
+          medicineId: medicineId
+        }
+      });
     } else {
-      // This is an existing record, update it
-      console.log("Updating existing medication record:", id);
-
-      if (!id) {
-        return res
-          .status(400)
-          .json({ message: "Medication ID is required for updates" });
-      }
-
-      // Check if the medication record exists
-      const existingMedication = await prisma.MedicineAdherence.findUnique({
-        where: { id },
-      });
-
-      if (existingMedication) {
-        // Update existing record
-        const updatedMedication = await prisma.MedicineAdherence.update({
-          where: { id },
-          data: {
-            adherenceStatus: status,
-            missedDoses:
-              status === "Missed"
-                ? existingMedication.missedDoses + 1
-                : existingMedication.missedDoses,
-          },
-        });
-
-        return res.status(200).json(updatedMedication);
-      } else {
-        return res.status(404).json({ message: "Medication record not found" });
-      }
+      // Fallback for other cases - but this should rarely happen
+      return res.status(400).json({ message: 'Unable to determine if medication record should be created or updated' });
     }
-  } catch (err) {
-    console.error("Error updating medication status:", err);
-    return res
-      .status(500)
-      .json({ message: "Error updating medication status: " + err.message });
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error updating medication status:', error);
+    res.status(500).json({ message: 'Failed to update medication status' });
   }
 };
 
