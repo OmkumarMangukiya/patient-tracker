@@ -12,27 +12,25 @@
 
 ### 2. **Doctor Dashboard**
 - **Patient Management:** View, add, or update patient information.
-- **Health Monitoring:** Access patients' health metrics like blood pressure, blood sugar, heart rate, etc.
-- **Alerts System:** Get notifications for missed medications and critical health updates.
+- **Alerts System:** Get to see if patient took medicine or not.
 - **Messaging System:** Send messages to patients about medication dosages and alerts.
 
 ### 3. **Patient Dashboard**
 - **Health Logs:** Patients can log symptoms, medications, and other health data.
 - **Medication Reminders:** Receive alerts for medication schedules.
-- **Reports:** View graphical reports of health trends over time.
-
-### 4. **Health Monitoring Modules**
-- **Customizable Modules:** Enable or disable disease-specific modules (like diabetes or hypertension) based on patient needs.
-- **Real-time Tracking:** Track and display real-time data for various health metrics.
 
 ### 5. **Database Schema (PostgreSQL with Prisma)**
-- **Tables:**
-  - `User` (for authentication and roles)
-  - `Patient` (for patient-specific data)
-  - `Doctor` (for doctor-specific data)
-  - `MedicalRecord` (for storing health data)
-  - `Alert` (for medication reminders and alerts)
-  - `Message` (for communication between doctors and patients)
+- **Models:**
+  - `Patient` (patient information, authentication, and health data)
+  - `Doctor` (doctor information, specialization, and authentication)
+  - `MedicalRecord` (for storing diagnoses and medications)
+  - `Prescription` (doctor prescriptions for patients)
+  - `PrescribedMedicine` (details of medicines within prescriptions including dosage and timing)
+  - `Appointment` (scheduling between doctors and patients)
+  - `MedicineAdherence` (tracking medicine intake and reminders)
+  - `HealthMetrics` (storing patient health measurements)
+  - `Chat` (communication channel between doctor and patient)
+  - `Message` (individual messages within a chat)
 - **Relationships:** Properly normalized with foreign keys for efficient querying.
 
 
