@@ -66,7 +66,7 @@ Create or update the `.env` file in the root directory with:
 DATABASE_URL="postgresql://pt1_owner:npg_8WXuB2AokcYz@ep-square-bread-a1toc31n-pooler.ap-southeast-1.aws.neon.tech/pt1?sslmode=require"
 TOKEN_SECRET="mysecret"
 EMAIL_USER=omkumarmangukiya706@gmail.com
-EMAIL_PASS="lwsz ectw dmda thgc"
+EMAIL_PASS="your password"
 JWT_SECRET=your-jwt-secret
 VITE_BACKEND_URL=http://localhost:8000
 ```
@@ -77,7 +77,7 @@ Create or update the `.env` file in the backend directory with:
 DATABASE_URL="postgresql://pt1_owner:npg_8WXuB2AokcYz@ep-square-bread-a1toc31n-pooler.ap-southeast-1.aws.neon.tech/pt1?sslmode=require"
 TOKEN_SECRET="mysecret"
 EMAIL_USER=omkumarmangukiya706@gmail.com
-EMAIL_PASS="lwsz ectw dmda thgc"
+EMAIL_PASS="your password"
 FRONTEND_URL=http://localhost:5173
 JWT_SECRET=your-jwt-secret
 ```
