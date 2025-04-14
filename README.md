@@ -79,7 +79,10 @@ EMAIL_PASS="your password"
 FRONTEND_URL=http://localhost:5173
 JWT_SECRET=your-jwt-secret
 ```
-
+- Generate an App Password from your Google Account settings:
+  1. Go to your Google Account settings
+  2. Search App Password and enter a app name
+  3. Copy the generated 16-character password and use it as EMAIL_PASS
 ### 3. Frontend Setup
 ```bash
 # Install dependencies
