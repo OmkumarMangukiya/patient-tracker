@@ -16,7 +16,7 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
   const [selectedPatientId, setSelectedPatientId] = useState('');
 
   async function getPatients(){
-    const response = await axios.get('http://localhost:8000/doctor/retrieveAllPatients');
+    const response = await axios.get('http://localhost:8000/doctor/doctors');
     setAllPatients(response.data);
   }
   

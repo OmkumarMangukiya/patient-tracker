@@ -18,7 +18,7 @@ function NewChat({ userRole, onBack, onChatStart }) {
         
         // API endpoint depends on user role
         const endpoint = userRole === 'doctor' 
-          ? 'http://localhost:8000/doctor/retrieveAllPatients' 
+          ? 'http://localhost:8000/doctor/doctors' 
           : 'http://localhost:8000/doctor/retrievePatients'; // For patients, get their doctors
         
         const response = await axios.get(endpoint, {

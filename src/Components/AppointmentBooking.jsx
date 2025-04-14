@@ -30,8 +30,10 @@ function AppointmentBooking() {
         }
 
         // Get the patient's doctors instead of trying to get patients assigned to the patient
-        const response = await axios.get(`http://localhost:8000/doctor/retrieveAllPatients`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const response = await axios.get(`http://localhost:8000/doctor/doctors`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         
         // Filter only the doctors that are assigned to this patient
