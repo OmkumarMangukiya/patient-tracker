@@ -8,7 +8,7 @@ import setPassword from "./auth/setPassword.js";
 import forgotPassword from "./auth/forgotPassword.js";
 import resetPassword from "./auth/resetPassword.js";
 import retrievePatients from "./doctor/retirevePatients.js";
-import retrieveAllPatients from "./doctor/retireveAllPatints.js";
+import getAllDoctors from "./doctor/getAllDoctors.js";
 import assignPatient from "./doctor/assign-patient.js";
 import removePatient from "./doctor/remove-patient.js";
 import cors from "cors";
@@ -90,6 +90,7 @@ app.post("/auth/set-password", setPassword);
 app.post("/auth/forgot-password", forgotPassword);
 app.post("/auth/reset-password", resetPassword);
 app.get("/doctor/retrievePatients", retrievePatients);
+app.get("/doctor/doctors", getAllDoctors);
 app.post("/doctor/add-patient", addPatient);
 app.post("/doctor/prescription", prescription);
 app.get("/doctor/prescriptions/:patientId", getDoctorPrescriptionsByPatientId);
@@ -105,6 +106,9 @@ app.get(
   "/patient/medications/adherence-stats/:patientId",
   getMedicationAdherenceStats
 );
+
+// Medicine data endpoint
+app.get("/api/medicines", getMedicinesHandler);
 
 // Appointment endpoints
 app.post("/appointments", createAppointment);
