@@ -8,6 +8,7 @@ import setPassword from "./auth/setPassword.js";
 import retrievePatients from "./doctor/retirevePatients.js";
 import retrieveAllPatients from "./doctor/retireveAllPatints.js";
 import assignPatient from "./doctor/assign-patient.js";
+import removePatient from "./doctor/remove-patient.js";
 import cors from "cors";
 import prescription from "./doctor/prescription.js";
 import { getMedicinesHandler } from "./utils/medicineData.js";
@@ -39,6 +40,9 @@ import { createMessage, getMessagesByChatId } from "./chat/messageController.js"
 
 import http from "http";
 import { Server } from "socket.io";
+
+// Import the new controller
+import deletePrescription from "./doctor/deletePrescription.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -82,9 +86,11 @@ app.post("/doctor/add-patient", addPatient);
 app.post("/auth/set-password", setPassword);
 app.get("/doctor/retrieveAllPatients", retrieveAllPatients);
 app.post("/doctor/assign-patient", assignPatient);
+app.post("/doctor/remove-patient", removePatient);
 app.get("/api/medicines", getMedicinesHandler);
 app.post("/doctor/prescription", prescription);
 app.get("/doctor/prescriptions/:patientId", getDoctorPrescriptionsByPatientId);
+app.delete("/doctor/prescription/:prescriptionId", deletePrescription);
 app.get("/patient/prescriptions/:patientId", getPatientPrescriptions);
 
 // New medication tracking endpoints

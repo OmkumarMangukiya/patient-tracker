@@ -8,10 +8,42 @@ function AddPrescription({ patientId, patientName, onClose }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
   const [selectedMedicines, setSelectedMedicines] = useState([]);
+  const [validPatientId, setValidPatientId] = useState(null);
+  const [condition, setCondition] = useState('General');
 
-  // Debug log to check patientId
+  // Common medical conditions
+  const commonConditions = [
+    'General',
+    'Hypertension',
+    'Diabetes',
+    'Asthma',
+    'Arthritis',
+    'Common Cold',
+    'Influenza',
+    'Allergies',
+    'Migraine',
+    'Gastritis',
+    'Anxiety',
+    'Depression',
+    'Insomnia',
+    'GERD',
+    'Urinary Tract Infection',
+    'Other'
+  ];
+
+  // Debug log to check patientId and validate it
   useEffect(() => {
-    console.log("Patient ID received:", patientId);
+    console.log("Patient ID received:", patientId, typeof patientId);
+    
+    // Validate patientId and ensure it's in the correct format
+    if (patientId) {
+      const id = typeof patientId === 'string' ? patientId : String(patientId);
+      setValidPatientId(id);
+      console.log("Valid patient ID set:", id);
+    } else {
+      console.error("Invalid or missing patient ID");
+      setMessage({ text: 'Patient ID is missing. Please try again later.', type: 'error' });
+    }
   }, [patientId]);
 
   useEffect(() => {
@@ -47,6 +79,10 @@ function AddPrescription({ patientId, patientName, onClose }) {
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
+  };
+
+  const handleConditionChange = (e) => {
+    setCondition(e.target.value);
   };
 
   const handleAddMedicine = (medicine) => {
@@ -92,7 +128,9 @@ function AddPrescription({ patientId, patientName, onClose }) {
 
   const handleCloseModal = (e) => {
     // Prevent event from bubbling up
-    e.stopPropagation();
+    if (e) {
+      e.stopPropagation();
+    }
     // Call the onClose prop
     if (onClose) onClose();
   };
@@ -103,8 +141,8 @@ function AddPrescription({ patientId, patientName, onClose }) {
       return;
     }
     
-    if (!patientId) {
-      setMessage({ text: 'Patient ID is missing. Please try again.', type: 'error' });
+    if (!validPatientId) {
+      setMessage({ text: 'Patient ID is missing or invalid. Please try again.', type: 'error' });
       return;
     }
 
@@ -124,13 +162,14 @@ function AddPrescription({ patientId, patientName, onClose }) {
         composition2: med.composition2 || ''
       }));
       
-      console.log("Sending request with patient ID:", patientId);
+      console.log("Sending request with patient ID:", validPatientId);
       
       const response = await axios.post(
         'http://localhost:8000/doctor/prescription',
         {
-          patientId: patientId,
-          medicines: medicinesPayload
+          patientId: validPatientId,
+          medicines: medicinesPayload,
+          condition: condition
         },
         {
           headers: {
@@ -159,7 +198,7 @@ function AddPrescription({ patientId, patientName, onClose }) {
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl max-h-screen overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-black">
-            Add Prescription for {patientName}
+            Add Prescription for {patientName || 'Patient'}
           </h2>
           <button 
             onClick={handleCloseModal}
@@ -172,6 +211,16 @@ function AddPrescription({ patientId, patientName, onClose }) {
           </button>
         </div>
 
+        {!validPatientId && (
+          <div className="p-4 mb-4 rounded bg-red-100 text-red-700 border border-red-300">
+            <strong>Patient ID is missing.</strong> This is likely a system error. Please try:
+            <ul className="list-disc ml-5 mt-2">
+              <li>Closing this modal and selecting the patient again</li>
+              <li>Refreshing the page and trying again</li>
+            </ul>
+          </div>
+        )}
+
         {message.text && (
           <div className={`p-4 mb-4 rounded ${
             message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
@@ -179,6 +228,35 @@ function AddPrescription({ patientId, patientName, onClose }) {
             {message.text}
           </div>
         )}
+
+        <div className="p-4 mb-6 border-2 border-blue-200 rounded-lg bg-blue-50">
+          <h3 className="text-lg font-semibold text-blue-700 mb-2">Medical Condition</h3>
+          <div className="mb-2">
+            <label htmlFor="condition" className="block text-sm font-medium text-gray-700 mb-1">
+              Select the condition being treated with this prescription
+            </label>
+            <select
+              id="condition"
+              name="condition"
+              value={condition}
+              onChange={handleConditionChange}
+              className="w-full border-2 border-blue-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            >
+              {commonConditions.map(cond => (
+                <option key={cond} value={cond}>{cond}</option>
+              ))}
+            </select>
+            {condition === 'Other' && (
+              <input
+                type="text"
+                placeholder="Specify condition"
+                className="w-full mt-2 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                onChange={(e) => setCondition(e.target.value)}
+              />
+            )}
+          </div>
+          <p className="text-sm text-blue-600">This condition will be associated with the prescription and visible to the patient</p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left column: Medicine search and list */}

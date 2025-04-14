@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { ChevronDown, ChevronUp, Calendar, User } from 'lucide-react';
+import { ChevronDown, ChevronUp, Calendar, User, Stethoscope } from 'lucide-react';
 
 function ViewPrescription({ patientId }) {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -121,9 +121,13 @@ function ViewPrescription({ patientId }) {
                       {format(new Date(prescription.date), 'MMMM d, yyyy')}
                     </span>
                   </div>
-                  <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-gray-600 mb-1">
                     <User className="h-4 w-4 mr-2" />
                     <span>Dr. {prescription.doctor.name}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <Stethoscope className="h-4 w-4 mr-2" />
+                    <span>Condition: {prescription.condition || 'General'}</span>
                   </div>
                 </div>
                 <div className="mt-2 md:mt-0 text-sm bg-blue-50 px-2 py-1 rounded-full text-blue-600 self-start">

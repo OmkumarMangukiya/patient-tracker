@@ -24,11 +24,16 @@ import {
   ArrowLeft,
   PlusCircle,
   Clock,
+  Trash2,
+  AlertCircle,
+  X,
+  Stethoscope,
 } from "lucide-react";
 
 // Import shadcn components
-import { Button } from '../Components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../Components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 function DoctorDashboard({ initialTab }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'patients'); 
@@ -40,6 +45,9 @@ function DoctorDashboard({ initialTab }) {
   const [showPatientDetails, setShowPatientDetails] = useState(false);
   const [patientPrescriptions, setPatientPrescriptions] = useState([]);
   const [loadingPrescriptions, setLoadingPrescriptions] = useState(false);
+  const [showConfirmRemoveModal, setShowConfirmRemoveModal] = useState(false);
+  const [patientToRemove, setPatientToRemove] = useState(null);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [appointmentCounts, setAppointmentCounts] = useState({
     today: 0,
     upcoming: 0,
@@ -47,6 +55,10 @@ function DoctorDashboard({ initialTab }) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [prescriptionToDelete, setPrescriptionToDelete] = useState(null);
+  const [isDeletingPrescription, setIsDeletingPrescription] = useState(false);
+  const [deletePrescriptionError, setDeletePrescriptionError] = useState(null);
+  const [deletePrescriptionSuccess, setDeletePrescriptionSuccess] = useState(null);
   const navigate = useNavigate();
 
   const fetchDoctorData = async () => {
@@ -160,6 +172,9 @@ function DoctorDashboard({ initialTab }) {
       }
       
       setLoadingPrescriptions(false);
+      setPrescriptionToDelete(null);
+      setDeletePrescriptionError(null);
+      setDeletePrescriptionSuccess(null);
     } catch (error) {
       console.error('Error fetching patient prescriptions:', error);
       setLoadingPrescriptions(false);
@@ -170,6 +185,94 @@ function DoctorDashboard({ initialTab }) {
   const handleContactPatient = (patient) => {
     setSelectedChatPatient(patient);
     setActiveTab('messages');
+  };
+
+  // Function to handle patient removal
+  const handleRemovePatient = (patient) => {
+    setPatientToRemove(patient);
+    setShowConfirmRemoveModal(true);
+  };
+
+  // Function to confirm patient removal
+  const confirmRemovePatient = async () => {
+    if (!patientToRemove) return;
+    
+    try {
+      setIsRemoving(true);
+      const token = localStorage.getItem('token');
+      
+      // Get the patient ID, handling different ID properties
+      const patientId = patientToRemove._id || patientToRemove.id || patientToRemove.uniqueId;
+      
+      // Make API call to remove doctor-patient relationship
+      await axios.post(
+        'http://localhost:8000/doctor/remove-patient', 
+        { patientId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      // Update local state to remove the patient
+      setPatients(patients.filter(p => 
+        (p._id !== patientId) && (p.id !== patientId) && (p.uniqueId !== patientId)
+      ));
+      
+      // Close the confirmation modal
+      setShowConfirmRemoveModal(false);
+      setPatientToRemove(null);
+      
+      // If we're in the patient details view, go back to patients list
+      if (activeTab === 'patient-details') {
+        setShowPatientDetails(false);
+        setActiveTab('patients');
+      }
+      
+      setIsRemoving(false);
+    } catch (error) {
+      console.error('Error removing patient:', error);
+      setIsRemoving(false);
+      // Handle error as needed
+    }
+  };
+
+  // Function to handle opening the delete prescription confirmation
+  const handleDeletePrescription = (prescriptionId) => {
+    setPrescriptionToDelete(prescriptionId);
+    setDeletePrescriptionError(null);
+    setDeletePrescriptionSuccess(null);
+  };
+
+  // Function to confirm and execute prescription deletion
+  const confirmDeletePrescription = async () => {
+    if (!prescriptionToDelete) return;
+
+    setIsDeletingPrescription(true);
+    setDeletePrescriptionError(null);
+    setDeletePrescriptionSuccess(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:8000/doctor/prescription/${prescriptionToDelete}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Update local state to remove the prescription
+      setPatientPrescriptions(prev => prev.filter(p => p.id !== prescriptionToDelete));
+      setDeletePrescriptionSuccess('Prescription deleted successfully.');
+      setPrescriptionToDelete(null);
+
+    } catch (error) {
+      console.error('Error deleting prescription:', error);
+      setDeletePrescriptionError(error.response?.data?.message || 'Failed to delete prescription.');
+    } finally {
+      setIsDeletingPrescription(false);
+    }
+  };
+
+  // Function to close the delete prescription dialog
+  const closeDeletePrescriptionDialog = () => {
+    setPrescriptionToDelete(null);
+    setDeletePrescriptionError(null);
+    setDeletePrescriptionSuccess(null);
   };
 
   const renderTabContent = () => {
@@ -284,10 +387,17 @@ function DoctorDashboard({ initialTab }) {
                           </button>
                           <button
                             onClick={() => handleContactPatient(patient)}
-                            className="text-purple-600 hover:text-purple-800"
+                            className="text-purple-600 hover:text-purple-800 mr-2"
                           >
                             <MessageSquare className="h-4 w-4 inline mr-1" />
                             Contact
+                          </button>
+                          <button
+                            onClick={() => handleRemovePatient(patient)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 className="h-4 w-4 inline mr-1" />
+                            Remove
                           </button>
                         </td>
                       </tr>
@@ -393,9 +503,29 @@ function DoctorDashboard({ initialTab }) {
                       <MessageSquare className="h-4 w-4 mr-2" />
                       Contact Patient
                     </Button>
+                    <Button
+                      onClick={() => handleRemovePatient(selectedPatient)}
+                      variant="destructive"
+                      className="flex items-center"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Remove Patient
+                    </Button>
                   </div>
                 </div>
                 
+                {/* Prescription Deletion Messages */} 
+                {deletePrescriptionError && (
+                  <div className="mb-4 p-3 rounded bg-red-100 text-red-700 border border-red-300">
+                    {deletePrescriptionError}
+                  </div>
+                )}
+                {deletePrescriptionSuccess && (
+                  <div className="mb-4 p-3 rounded bg-green-100 text-green-700 border border-green-300">
+                    {deletePrescriptionSuccess}
+                  </div>
+                )}
+
                 {/* Patient Prescriptions */}
                 <div className="mt-8">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -428,16 +558,36 @@ function DoctorDashboard({ initialTab }) {
                                   })}
                                 </span>
                               </div>
-                              <div className="flex items-center text-gray-600">
+                              <div className="flex items-center text-gray-600 mb-1">
                                 <Clock className="h-4 w-4 mr-2 text-gray-500" />
                                 <span>{new Date(prescription.date).toLocaleTimeString('en-US', {
                                   hour: 'numeric',
                                   minute: 'numeric'
                                 })}</span>
                               </div>
+                              <div className="flex items-center text-gray-600">
+                                <Stethoscope className="h-4 w-4 mr-2 text-gray-500" />
+                                <span className="font-medium">Condition:</span> <span className="ml-1">{prescription.condition || 'General'}</span>
+                              </div>
                             </div>
-                            <div className="bg-blue-50 px-2 py-1 rounded-full text-xs text-blue-600">
-                              {prescription.medicines.length} medication{prescription.medicines.length !== 1 ? 's' : ''}
+                            <div className="flex gap-2 items-center">
+                              <div className="bg-blue-50 px-2 py-1 rounded-full text-xs text-blue-600">
+                                {prescription.medicines.length} medication{prescription.medicines.length !== 1 ? 's' : ''}
+                              </div>
+                              {/* Delete Prescription Button Trigger */} 
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-red-500 hover:bg-red-100 h-7 w-7"
+                                    onClick={() => handleDeletePrescription(prescription.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                {/* The content is rendered separately below */}
+                              </AlertDialog>
                             </div>
                           </div>
                           
@@ -596,12 +746,120 @@ function DoctorDashboard({ initialTab }) {
 
       {/* Prescription Modal */}
       {showPrescriptionModal && selectedPatient && (
-        <AddPrescription 
-          patientId={selectedPatient._id || selectedPatient.id || selectedPatient.uniqueId} 
-          patientName={selectedPatient.name}
-          onClose={handleClosePrescriptionModal}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-blue-600">
+                Add Prescription for {selectedPatient.name}
+              </h3>
+              <button 
+                onClick={handleClosePrescriptionModal}
+                className="text-gray-500 hover:text-gray-800"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <AddPrescription 
+              patientId={selectedPatient._id || selectedPatient.id || selectedPatient.uniqueId} 
+              patientName={selectedPatient.name}
+              onClose={handleClosePrescriptionModal}
+            />
+          </div>
+        </div>
       )}
+
+      {/* Confirm Remove Patient Modal */}
+      {showConfirmRemoveModal && patientToRemove && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-red-600 flex items-center">
+                <AlertCircle className="h-5 w-5 mr-2" />
+                Remove Patient
+              </h3>
+              <button 
+                onClick={() => {
+                  setShowConfirmRemoveModal(false);
+                  setPatientToRemove(null);
+                }}
+                className="text-gray-500 hover:text-gray-800"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <p className="text-gray-700 mb-4">
+                Are you sure you want to remove <span className="font-bold">{patientToRemove.name}</span> from your patient list?
+              </p>
+              <p className="text-gray-600 text-sm">
+                This will remove the patient from your list, but their data will still be stored in the system.
+              </p>
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowConfirmRemoveModal(false);
+                  setPatientToRemove(null);
+                }}
+                disabled={isRemoving}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmRemovePatient}
+                disabled={isRemoving}
+                className="flex items-center"
+              >
+                {isRemoving ? (
+                  <>
+                    <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Remove Patient
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Prescription Confirmation Dialog */} 
+      <AlertDialog open={!!prescriptionToDelete} onOpenChange={(open) => !open && closeDeletePrescriptionDialog()}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Prescription?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this prescription? This action cannot be undone.
+              Deleting this prescription will also remove associated medication tracking data for the patient.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {deletePrescriptionError && (
+            <p className="text-sm text-red-600 mt-2">{deletePrescriptionError}</p>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={closeDeletePrescriptionDialog} disabled={isDeletingPrescription}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeletePrescription} 
+              disabled={isDeletingPrescription}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeletingPrescription ? 'Deleting...' : 'Delete Prescription'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </div>
   );
 }

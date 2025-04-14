@@ -14,7 +14,7 @@ const prescription = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized: Only doctors can create prescriptions" });
     }
     
-    const { patientId, medicines } = req.body;
+    const { patientId, medicines, condition } = req.body;
     
     console.log("Received patientId:", patientId);
     
@@ -58,6 +58,7 @@ const prescription = async (req, res) => {
         patientId: patientIdInt,
         doctorId: decoded.id,
         date: new Date(),
+        condition: condition || "General",
         medicines: {
           create: medicines.map(med => ({
             medicineId: med.id.toString(),

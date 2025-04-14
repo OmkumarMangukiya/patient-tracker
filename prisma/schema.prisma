@@ -52,6 +52,7 @@ model Prescription {
   date       DateTime          @default(now())
   patientId  Int
   doctorId   String
+  condition  String            @default("General")
   patient    Patient           @relation(fields: [patientId], references: [id])
   doctor     Doctor              @relation(fields: [doctorId], references: [id])
   medicines  PrescribedMedicine[]
