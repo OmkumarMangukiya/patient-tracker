@@ -39,6 +39,43 @@ export const sendInviteEmail = async (patientEmail, patientName, token) => {
   }
 };
 
+/**
+ * Send a password reset email with reset link
+ * @param {string} userEmail - Email address of the user
+ * @param {string} userName - Name of the user
+ * @param {string} token - JWT token for password reset
+ */
+export const sendPasswordResetEmail = async (userEmail, userName, token) => {
+  const link = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+  
+  try {
+    const mailOptions = {
+      from: `"Patient Tracker" <${process.env.EMAIL_USER}>`,
+      to: userEmail,
+      subject: 'Password Reset - Patient Tracker',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #4a5568;">Password Reset</h2>
+          <p>Hello ${userName},</p>
+          <p>We received a request to reset your password for your Patient Tracker account. Click the button below to reset your password:</p>
+          <p><a href="${link}" style="background-color: #4299e1; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0;">Reset Your Password</a></p>
+          <p>This link will expire in 1 hour for security purposes.</p>
+          <p>If you didn't request a password reset, please ignore this email or contact support if you have concerns.</p>
+          <p>Best regards,<br>Patient Tracker Team</p>
+        </div>
+      `
+    };
+    
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Password reset email sent:', info.messageId);
+    return true;
+  } catch (error) {
+    console.error('Error sending password reset email:', error.message);
+    return false;
+  }
+};
+
 export default {
-  sendInviteEmail
+  sendInviteEmail,
+  sendPasswordResetEmail
 };

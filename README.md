@@ -49,29 +49,66 @@
 
 ## 🚀 Installation and Setup
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/yourusername/patient-tracker.git && cd patient-tracker
-   ```
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-3. **Configure PostgreSQL:**
-   - In the `.env` file, update your PostgreSQL URL:
-     ```env
-     DATABASE_URL="postgresql://postgres:omman@127.0.0.1:5432/pt1?schema=public"
-     TOKEN_SECRET="mysecret"
-     ```
-4. **Run Prisma migrations:**
-   ```bash
-   npx prisma migrate dev
-   ```
-5. **Start the application:**
-   ```bash
-   npm run start
-   ```
+### Prerequisites
+- Node.js and npm installed
+- PostgreSQL database
 
+### 1. Clone the repository:
+```bash
+git clone https://github.com/OmkumarMangukiya/patient-tracker.git && cd patient-tracker
+```
+
+### 2. Environment Configuration
+
+#### Frontend (.env file in root directory)
+Create or update the `.env` file in the root directory with:
+```env
+DATABASE_URL="postgresql://pt1_owner:npg_8WXuB2AokcYz@ep-square-bread-a1toc31n-pooler.ap-southeast-1.aws.neon.tech/pt1?sslmode=require"
+TOKEN_SECRET="mysecret"
+EMAIL_USER=omkumarmangukiya706@gmail.com
+EMAIL_PASS="lwsz ectw dmda thgc"
+JWT_SECRET=your-jwt-secret
+VITE_BACKEND_URL=http://localhost:8000
+```
+
+#### Backend (.env file in backend directory)
+Create or update the `.env` file in the backend directory with:
+```env
+DATABASE_URL="postgresql://pt1_owner:npg_8WXuB2AokcYz@ep-square-bread-a1toc31n-pooler.ap-southeast-1.aws.neon.tech/pt1?sslmode=require"
+TOKEN_SECRET="mysecret"
+EMAIL_USER=omkumarmangukiya706@gmail.com
+EMAIL_PASS="lwsz ectw dmda thgc"
+FRONTEND_URL=http://localhost:5173
+JWT_SECRET=your-jwt-secret
+```
+
+### 3. Frontend Setup
+```bash
+# Install dependencies
+npm install
+
+# Run Prisma migrations
+npx prisma migrate dev
+
+# Start the frontend development server
+npm run dev
+```
+
+### 4. Backend Setup
+```bash
+# Navigate to backend directory
+cd backend
+
+# Install dependencies
+npm install
+
+# Start the backend server
+node app.js
+```
+
+### 5. Access the Application
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000
 
 ## 📊 Future Enhancements
 

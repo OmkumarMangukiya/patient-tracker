@@ -15,7 +15,7 @@ const getJwtSecret = () => {
   return process.env.JWT_SECRET;
 };
 
-export function tokenGenerate(user) {
+export function tokenGenerate(user, expiresIn = "24h") {
   try {
     // Get the JWT secret
     const jwtSecret = getJwtSecret();
@@ -25,7 +25,7 @@ export function tokenGenerate(user) {
     const token = jwt.sign(
       user,
       jwtSecret,
-      { expiresIn: "24h" }
+      { expiresIn: expiresIn }
     );
 
     return token;

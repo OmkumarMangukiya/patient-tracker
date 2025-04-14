@@ -5,6 +5,8 @@ import DoctorDashboard from './Pages/DoctorDashboard';
 import PatientDashboard from './Pages/PatientDashboard';
 import SetPassword from './Components/SetPassword';
 import Signup from './Pages/Signup';
+import ForgotPassword from './Components/ForgotPassword';
+import ResetPassword from './Components/ResetPassword';
 import { useEffect, useState } from 'react';
 
 // Import the Button component
@@ -23,6 +25,8 @@ function App() {
           <Route path="/patient/appointments" element={<WithLogout Component={PatientDashboard} role="patient" initialTab="appointments" />} />
           <Route path="/patient/messages" element={<WithLogout Component={PatientDashboard} role="patient" initialTab="messages" />} />
           <Route path="/set-password" element={<WithLogout Component={SetPassword} />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/patient/medications" element={<WithLogout Component={PatientDashboard} role="patient" initialTab="medications" />} />
           <Route path="/patient/prescriptions" element={<WithLogout Component={PatientDashboard} role="patient" initialTab="prescriptions" />} />
