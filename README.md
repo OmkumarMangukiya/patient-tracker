@@ -51,30 +51,25 @@
 - Node.js and npm installed
 - PostgreSQL database
 
-### 1. Clone the repository:
-```bash
-git clone https://github.com/OmkumarMangukiya/patient-tracker.git && cd patient-tracker
-```
-
-### 2. Environment Configuration
+### 1. Environment Configuration
 
 #### Frontend (.env file in root directory)
-Create or update the `.env` file in the root directory with:
+Change .env file by updating your email and password(for password see steps below)
 ```env
 DATABASE_URL="postgresql://pt1_owner:npg_8WXuB2AokcYz@ep-square-bread-a1toc31n-pooler.ap-southeast-1.aws.neon.tech/pt1?sslmode=require"
 TOKEN_SECRET="mysecret"
-EMAIL_USER=omkumarmangukiya706@gmail.com
-EMAIL_PASS="your password"
+EMAIL_USER="YOUR EMAIL"
+EMAIL_PASS="YOUR PASSOWRD"
 JWT_SECRET=your-jwt-secret
 VITE_BACKEND_URL=http://localhost:8000
 ```
 
 #### Backend (.env file in backend directory)
-Create or update the `.env` file in the backend directory with:
+Change .env file by updating your email and password(for password see steps below)
 ```env
 DATABASE_URL="postgresql://pt1_owner:npg_8WXuB2AokcYz@ep-square-bread-a1toc31n-pooler.ap-southeast-1.aws.neon.tech/pt1?sslmode=require"
 TOKEN_SECRET="mysecret"
-EMAIL_USER=omkumarmangukiya706@gmail.com
+EMAIL_USER="YOUR EMAIL"
 EMAIL_PASS="your password"
 FRONTEND_URL=http://localhost:5173
 JWT_SECRET=your-jwt-secret
@@ -83,45 +78,28 @@ JWT_SECRET=your-jwt-secret
   1. Go to your Google Account settings
   2. Search App Password and enter a app name
   3. Copy the generated 16-character password and use it as EMAIL_PASS
-### 3. Frontend Setup
-```bash
-# Install dependencies
-npm install
 
-# Run Prisma migrations
-npx prisma migrate dev
-
-# Start the frontend development server
-npm run dev
-```
-
-### 4. Backend Setup
+### 3. Backend Setup
 ```bash
 # Navigate to backend directory
 cd backend
-
-# Install dependencies
-npm install
 
 # Start the backend server
 node app.js
 ```
 
+### 4. Frontend Setup
+```bash
+# Install dependencies
+npm install
+
+# Start the frontend development server
+npm run dev
+```
+
+
 ### 5. Access the Application
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8000
-
-## 📊 Future Enhancements
-
-- **Appointment Scheduling:** Allow patients to book and manage appointments.
-- **Payment Integration:** Support for online payments for consultations.
-- **AI-based Recommendations:** Suggest medications and health tips based on patient history.
-
-
-## 🛡 Security Considerations
-
-- Password encryption using bcrypt.
-- Role-based access control for secure data access.
-- Secure API endpoints with JWT.
 
 ---
