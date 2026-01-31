@@ -7,6 +7,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "nodemon backend/app.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -25,7 +28,6 @@
     "csv-parser": "^3.2.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.3.1",
-    "electron": "^13.1.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",

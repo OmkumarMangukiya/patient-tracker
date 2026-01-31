@@ -1,42 +1,32 @@
 import prisma from '../client.js';
 import { tokenVerify } from '../auth/jwtToken.js';
 
-// Store a reference to Socket.io instance
 let io;
 
-/**
- * Configure the middleware with Socket.io instance
- */
+// Configure the middleware with Socket.io instance
 export const configureSocketIO = (socketIO) => {
   io = socketIO;
 };
 
-/**
- * Middleware to automatically check for and mark missed medications
- * whenever a patient accesses their dashboard or medication data
- */
+// Middleware to automatically check for and mark missed medications
+// whenever a patient accesses their dashboard or medication data
 export const checkForMissedMedications = async (req, res, next) => {
   try {
-    // Only process for authenticated patient requests
     const token = req.headers.authorization?.split(" ")[1];
     
     if (!token) {
       return next();
     }
     
-    // Try to decode the token
     try {
       const decoded = tokenVerify(token);
       
-      // Only process for patient users
       if (decoded && decoded.role === 'patient') {
         const patientId = decoded.id;
-        
-        // Get current date in YYYY-MM-DD format
+        // break date and time
         const today = new Date().toISOString().split("T")[0];
-        
-        // Get current time period
-        const currentTime = getCurrentTimePeriod();
+        // get current time period -> morning , afternoon , evening
+        const currentTime = getCurrentTimePeriod(); 
         
         // Find all pending medications for this patient for today
         // that are scheduled for an earlier time period
@@ -46,7 +36,7 @@ export const checkForMissedMedications = async (req, res, next) => {
             scheduledDate: today,
             adherenceStatus: 'Pending',
             scheduledTime: {
-              in: getPreviousTimePeriods(currentTime)
+              in: getPreviousTimePeriods(currentTime) // return previous time periods
             }
           }
         });
@@ -54,10 +44,10 @@ export const checkForMissedMedications = async (req, res, next) => {
         // Mark these medications as missed
         let markedAnyMedications = false;
         for (const med of pendingMedications) {
-          await prisma.MedicineAdherence.update({
+          await prisma.medicineAdherence.update({
             where: { id: med.id },
             data: {
-              adherenceStatus: 'Missed',
+              adherenceStatus: 'missed',
               missedDoses: {
                 increment: 1
               }
@@ -81,31 +71,25 @@ export const checkForMissedMedications = async (req, res, next) => {
         }
       }
     } catch (tokenError) {
-      // If token is invalid, just continue with the request
+      // token is invalid
       console.error("Token verification error in missed medication middleware:", tokenError);
     }
   } catch (error) {
     console.error("Error in missed medication middleware:", error);
-    // Continue with the request even if there's an error in this middleware
   }
-  
-  // Always continue with the request
   next();
 };
 
-/**
- * Function to directly check and mark missed medications for a patient
- * This can be called from other parts of the application
- */
+// Function to directly check and mark missed medications for a patient
+// This can be called from other parts of the application
 export const directlyCheckMissedMedications = async (patientId) => {
   try {
     if (!patientId) return;
     
-    // Get current date in YYYY-MM-DD format
+    // break date and time
     const today = new Date().toISOString().split("T")[0];
-    
-    // Get current time period
-    const currentTime = getCurrentTimePeriod();
+    // get current time period -> morning , afternoon , evening
+    const currentTime = getCurrentTimePeriod(); 
     
     // Find all pending medications for this patient for today
     // that are scheduled for an earlier time period
@@ -115,7 +99,7 @@ export const directlyCheckMissedMedications = async (patientId) => {
         scheduledDate: today,
         adherenceStatus: 'Pending',
         scheduledTime: {
-          in: getPreviousTimePeriods(currentTime)
+          in: getPreviousTimePeriods(currentTime) // return previous time periods
         }
       }
     });
@@ -123,16 +107,15 @@ export const directlyCheckMissedMedications = async (patientId) => {
     // Mark these medications as missed
     let markedAnyMedications = false;
     for (const med of pendingMedications) {
-      await prisma.MedicineAdherence.update({
+      await prisma.medicineAdherence.update({
         where: { id: med.id },
         data: {
-          adherenceStatus: 'Missed',
+          adherenceStatus: 'missed',
           missedDoses: {
             increment: 1
           }
         }
       });
-      
       markedAnyMedications = true;
     }
     
@@ -157,9 +140,7 @@ export const directlyCheckMissedMedications = async (patientId) => {
   }
 };
 
-/**
- * Helper to get the current time period (morning, afternoon, evening)
- */
+// function to get the current time period (morning, afternoon, evening)
 function getCurrentTimePeriod() {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return 'morning';
@@ -167,9 +148,7 @@ function getCurrentTimePeriod() {
   return 'evening';
 }
 
-/**
- * Helper to get all time periods that come before the current one
- */
+// function to get all time periods that come before the current one
 function getPreviousTimePeriods(currentPeriod) {
   const timeOrder = ['morning', 'afternoon', 'evening'];
   const currentIndex = timeOrder.indexOf(currentPeriod);

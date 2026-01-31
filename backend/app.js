@@ -1,12 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
+// auth
 import signup from "./auth/signup.js";
 import signin from "./auth/signin.js";
-import addPatient from "./doctor/addPatient.js";
 import setPassword from "./auth/setPassword.js";
 import forgotPassword from "./auth/forgotPassword.js";
 import resetPassword from "./auth/resetPassword.js";
+
+// doctor
+import addPatient from "./doctor/addPatient.js";
 import retrievePatients from "./doctor/retirevePatients.js";
 import getAllDoctors from "./doctor/getAllDoctors.js";
 import assignPatient from "./doctor/assign-patient.js";
@@ -15,26 +18,26 @@ import cors from "cors";
 import prescription from "./doctor/prescription.js";
 import { getMedicinesHandler } from "./utils/medicineData.js";
 import { getPatientPrescriptions } from "./patient/prescriptions.js";
+import deletePrescription from "./doctor/deletePrescription.js";
+import { getPatientMedicationsTodayForDoctor } from "./doctor/medications.js";
+import { getDoctorPrescriptionsByPatientId } from "./doctor/getPrescriptions.js";
 import {
   getTodayMedications,
   updateMedicationStatus,
   getMedicationHistory,
   getMedicationAdherenceStats,
 } from "./patient/medications.js";
+// scheduler
 import { initScheduler } from "./scheduleTasks.js";
-// Import the trigger function instead of middleware
 import { triggerMedicationReminder } from "./middleware/MedicationReminder.js";
-// Import the missed medication checker middleware
 import { checkForMissedMedications, configureSocketIO } from "./middleware/MissedMedicationChecker.js";
 
-// Import appointment controllers
+// appointment controllers
 import createAppointment from "./appointment/createAppointment.js";
 import getDoctorAppointments from "./appointment/getDoctorAppointments.js";
 import getPatientAppointments from "./appointment/getPatientAppointments.js";
 import updateAppointmentStatus from "./appointment/updateAppointmentStatus.js";
 import getAvailableSlots from "./appointment/getAvailableSlots.js";
-
-import { getDoctorPrescriptionsByPatientId } from "./doctor/getPrescriptions.js";
 
 // Import chat controllers
 import { createChat, getChatsByDoctor, getChatsByPatient, getChatById } from "./chat/chatController.js";
@@ -43,19 +46,13 @@ import { createMessage, getMessagesByChatId } from "./chat/messageController.js"
 import http from "http";
 import { Server } from "socket.io";
 
-// Import the new controller
-import deletePrescription from "./doctor/deletePrescription.js";
-
-// Import doctor medication controller
-import { getPatientMedicationsTodayForDoctor } from "./doctor/medications.js";
-
 const app = express();
 const server = http.createServer(app);
 
-// Initialize Socket.io
+// initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "*", // Configure as needed for production
+    origin: "*", // change in production
     methods: ["GET", "POST"]
   }
 });
@@ -63,43 +60,43 @@ const io = new Server(server, {
 // Make io available globally for use in other modules
 global.io = io;
 
-// Configure the middleware with the Socket.io instance
+// Configure the middleware with the Socket.io instance(if not done this then app.js will need middleware and socket.io )
 configureSocketIO(io);
 
 app.use(express.json());
 app.use("*", cors());
 
-// Create a middleware that triggers reminders for ALL routes without interfering with responses
 app.use((req, res, next) => {
-  // Trigger reminders asynchronously without waiting for response
   triggerMedicationReminder().catch(console.error);
   next();
 });
 
-// Add the missed medication checker middleware to automatically mark missed medications
-// This will run on every request but only process for authenticated patients
 app.use(checkForMissedMedications);
 
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
-
+// authentication
 app.post("/auth/signup", signup);
 app.post("/auth/signin", signin);
 app.post("/auth/set-password", setPassword);
 app.post("/auth/forgot-password", forgotPassword);
 app.post("/auth/reset-password", resetPassword);
+
+// doctor
 app.get("/doctor/retrievePatients", retrievePatients);
 app.get("/doctor/doctors", getAllDoctors);
 app.post("/doctor/add-patient", addPatient);
 app.post("/doctor/prescription", prescription);
+app.post("/doctor/assign-patient", assignPatient);
+app.post("/doctor/remove-patient", removePatient);
 app.get("/doctor/prescriptions/:patientId", getDoctorPrescriptionsByPatientId);
 app.delete("/doctor/prescription/:prescriptionId", deletePrescription);
-app.get("/patient/prescriptions/:patientId", getPatientPrescriptions);
-
-// New medication tracking endpoints
-app.get("/patient/medications/today/:patientId", getTodayMedications);
 app.get("/doctor/patient-medications/today/:patientId", getPatientMedicationsTodayForDoctor);
+
+// patient
+app.get("/patient/prescriptions/:patientId", getPatientPrescriptions);  
+app.get("/patient/medications/today/:patientId", getTodayMedications);
 app.post("/patient/medications/update-status", updateMedicationStatus);
 app.get("/patient/medications/history/:patientId", getMedicationHistory);
 app.get(

@@ -16,13 +16,13 @@ const signup = async (req, res) => {
           email: email,
         },
       });
-      console.log("GGGG",user);
       const token = tokenGenerate({
         role : role,
         name : name,
         email : email,
         age : age,
         id : user.id,
+        specialization: role === "doctor" ? user.specialization : undefined
       });
         return res.json({"msg":"done signup",token:token,role:role});
         
