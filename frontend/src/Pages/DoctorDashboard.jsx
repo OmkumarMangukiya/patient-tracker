@@ -6,7 +6,7 @@ import AddPatient from '../Components/AddPatient';
 import AddPrescription from '../Components/AddPrescription';
 import AppointmentList from '../Components/AppointmentList';
 import EnhancedChatInterface from '../Components/Chat/EnhancedChatInterface';
-import ConciseMedicationTracker from '../components/ConciseMedicationTracker';
+import ConciseMedicationTracker from '../Components/ConciseMedicationTracker';
 import {
   AreaChart,
   Bell,
