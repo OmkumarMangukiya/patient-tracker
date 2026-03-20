@@ -178,3 +178,5 @@ server.listen(8000, () => {
   // Initialize the medication reminder scheduler
   initScheduler();
 });
+
+export default app;
