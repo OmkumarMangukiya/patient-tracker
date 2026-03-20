@@ -1,0 +1,31 @@
+{
+  "name": "patient-tracker-backend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Patient Tracker — Express Backend",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "db:generate": "npx prisma generate",
+    "db:push": "npx prisma db push",
+    "db:migrate": "npx prisma migrate dev"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.5.0",
+    "@prisma/extension-accelerate": "^1.2.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.7",
+    "prisma": "^7.5.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

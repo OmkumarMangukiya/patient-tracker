@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 // Define function to get medicine data from CSV
 export async function getMedicines() {
   const medicines = [];
-  const csvPath = path.join(__dirname, '..', '..', 'A_Z_medicines_dataset_of_India.csv');
+  const csvPath = path.join(__dirname, '..', 'data', 'A_Z_medicines_dataset_of_India.csv');
 
   return new Promise((resolve, reject) => {
     fs.createReadStream(csvPath)

@@ -1,25 +1,9 @@
 import prisma from '../client.js';
-import jwt from 'jsonwebtoken';
-
-// Verify JWT token
-function verifyToken(token) {
-  try {
-    return jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
-  } catch (error) {
-    return null;
-  }
-}
 
 // Create a new message in a chat
 export const createMessage = async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decoded = verifyToken(token);
-    
-    if (!decoded) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    
+    const decoded = req.user;
     const { chatId } = req.params;
     const { content } = req.body;
     
@@ -74,13 +58,7 @@ export const createMessage = async (req, res) => {
 // Get all messages for a chat
 export const getMessagesByChatId = async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decoded = verifyToken(token);
-    
-    if (!decoded) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    
+    const decoded = req.user;
     const { chatId } = req.params;
     
     // Verify the chat exists

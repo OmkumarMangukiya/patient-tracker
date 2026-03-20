@@ -1,25 +1,8 @@
 import prisma from '../client.js';
-import jwt from 'jsonwebtoken';
-
-// Verify JWT token
-function verifyToken(token) {
-  try {
-    return jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
-  } catch (error) {
-    return null;
-  }
-}
 
 // Create a new chat between doctor and patient
 export const createChat = async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decoded = verifyToken(token);
-    
-    if (!decoded) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    
     const { patientId, doctorId } = req.body;
     
     // Validate that both IDs are provided
@@ -99,14 +82,11 @@ export const createChat = async (req, res) => {
 // Get all chats for a doctor
 export const getChatsByDoctor = async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decoded = verifyToken(token);
-    
-    if (!decoded || decoded.role !== 'doctor') {
+    if (req.user.role !== 'doctor') {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     
-    const doctorId = decoded.id;
+    const doctorId = req.user.id;
     
     const chats = await prisma.chat.findMany({
       where: {
@@ -142,14 +122,11 @@ export const getChatsByDoctor = async (req, res) => {
 // Get all chats for a patient
 export const getChatsByPatient = async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decoded = verifyToken(token);
-    
-    if (!decoded || decoded.role !== 'patient') {
+    if (req.user.role !== 'patient') {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     
-    const patientId = parseInt(decoded.id);
+    const patientId = parseInt(req.user.id);
     
     const chats = await prisma.chat.findMany({
       where: {
@@ -186,13 +163,7 @@ export const getChatsByPatient = async (req, res) => {
 // Get a specific chat by ID
 export const getChatById = async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decoded = verifyToken(token);
-    
-    if (!decoded) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    
+    const decoded = req.user;
     const { chatId } = req.params;
     
     const chat = await prisma.chat.findUnique({

@@ -1,18 +1,10 @@
 import prisma from "../client.js";
-import { tokenVerify } from "../auth/jwtToken.js";
+import { tokenVerify } from "../auth/jwtToken.js"
 import jwt from "jsonwebtoken";
-
 // Get today's medications for a patient
 export const getTodayMedications = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-
-    const decoded = tokenVerify(token);
-    if (!decoded || decoded.role !== "patient") {
+    if (req.user.role !== "patient") {
       return res
         .status(403)
         .json({ message: "Unauthorized: Only patients can view medications" });
@@ -71,7 +63,7 @@ export const getTodayMedications = async (req, res) => {
         for (const prescription of prescriptions) {
           for (const medicine of prescription.medicines) {
             const timing = medicine.timing;
-            
+
             // Check if medication is still active based on duration
             // If prescription has a date and duration, check if it's still valid
             if (isStillActive(prescription.date, medicine.duration)) {
@@ -210,23 +202,23 @@ export const getTodayMedications = async (req, res) => {
 // Helper function to check if a medicine is still active based on prescription date and duration
 function isStillActive(prescriptionDate, durationStr) {
   if (!prescriptionDate || !durationStr) return true; // If missing data, assume it's active
-  
+
   try {
     // Parse the duration string (e.g. "7 days", "2 weeks", "1 month")
     const durationMatch = durationStr.match(/(\d+)\s*(\w+)/);
     if (!durationMatch) return true;
-    
+
     const value = parseInt(durationMatch[1]);
     const unit = durationMatch[2].toLowerCase();
-    
+
     // Convert prescription date to Date object if it's not already
-    const startDate = prescriptionDate instanceof Date 
-      ? prescriptionDate 
+    const startDate = prescriptionDate instanceof Date
+      ? prescriptionDate
       : new Date(prescriptionDate);
-    
+
     // Calculate end date based on duration
     const endDate = new Date(startDate);
-    
+
     if (unit.includes('day')) {
       endDate.setDate(endDate.getDate() + value);
     } else if (unit.includes('week')) {
@@ -236,7 +228,7 @@ function isStillActive(prescriptionDate, durationStr) {
     } else {
       return true; // Unknown unit, assume it's active
     }
-    
+
     // Check if today is before or equal to the end date
     const today = new Date();
     return today <= endDate;
@@ -276,24 +268,25 @@ export const updateMedicationStatus = async (req, res) => {
     });
 
     let result;
-    
+
     if (existingRecord) {
       // Update existing record instead of creating a new one
       console.log(`Updating existing record for medicine: ${medication}, medicineId: ${medicineId}`);
-      
+
       result = await prisma.MedicineAdherence.update({
         where: {
           id: existingRecord.id
         },
         data: {
           adherenceStatus: status,
+          missedDoses: status === 'Missed' ? 1 : 0,
           updatedAt: new Date()
         }
       });
     } else if (isNewMedication || !medicineId) {
       // Only create a new record if it's a new medication or doesn't have a medicine ID
       console.log(`Creating new adherence record for medicine: ${medication}`);
-      
+
       result = await prisma.MedicineAdherence.create({
         data: {
           patientId: parseInt(patientId),
@@ -302,7 +295,8 @@ export const updateMedicationStatus = async (req, res) => {
           scheduledTime: scheduledTime,
           adherenceStatus: status,
           prescriptionId: prescriptionId,
-          medicineId: medicineId
+          medicineId: medicineId,
+          missedDoses: status === 'Missed' ? 1 : 0
         }
       });
     } else {
@@ -424,22 +418,22 @@ export const getMedicationAdherenceStats = async (req, res) => {
     const totalActiveCount = adherenceRecords.filter(
       r => r.adherenceStatus !== "Pending"
     ).length;
-    
+
     const takenCount = adherenceRecords.filter(
       r => r.adherenceStatus === "Taken"
     ).length;
-    
+
     const missedCount = adherenceRecords.filter(
       r => r.adherenceStatus === "Missed"
     ).length;
-    
+
     const pendingCount = adherenceRecords.filter(
       r => r.adherenceStatus === "Pending"
     ).length;
 
     // Calculate adherence rate (taken / (taken + missed)) excluding pending
-    const adherenceRate = totalActiveCount > 0 
-      ? (takenCount / totalActiveCount) * 100 
+    const adherenceRate = totalActiveCount > 0
+      ? (takenCount / totalActiveCount) * 100
       : 0;
 
     // Group by date to see daily adherence

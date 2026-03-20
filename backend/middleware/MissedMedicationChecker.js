@@ -13,21 +13,21 @@ export const configureSocketIO = (socketIO) => {
 export const checkForMissedMedications = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    
+
     if (!token) {
       return next();
     }
-    
+
     try {
       const decoded = tokenVerify(token);
-      
+
       if (decoded && decoded.role === 'patient') {
         const patientId = decoded.id;
         // break date and time
         const today = new Date().toISOString().split("T")[0];
         // get current time period -> morning , afternoon , evening
-        const currentTime = getCurrentTimePeriod(); 
-        
+        const currentTime = getCurrentTimePeriod();
+
         // Find all pending medications for this patient for today
         // that are scheduled for an earlier time period
         const pendingMedications = await prisma.MedicineAdherence.findMany({
@@ -40,7 +40,7 @@ export const checkForMissedMedications = async (req, res, next) => {
             }
           }
         });
-        
+
         // Mark these medications as missed
         let markedAnyMedications = false;
         for (const med of pendingMedications) {
@@ -53,17 +53,17 @@ export const checkForMissedMedications = async (req, res, next) => {
               }
             }
           });
-          
+
           markedAnyMedications = true;
           console.log(`[Middleware] Auto-marked medication ${med.id} as missed for patient ${patientId}`);
         }
-        
+
         if (pendingMedications.length > 0) {
           console.log(`[Middleware] Auto-marked ${pendingMedications.length} medications as missed for patient ${patientId}`);
-          
+
           // Notify frontend via WebSocket if any medications were marked
           if (markedAnyMedications && io) {
-            io.emit('medications-updated', { 
+            io.emit('medications-updated', {
               patientId: patientId,
               count: pendingMedications.length
             });
@@ -85,12 +85,12 @@ export const checkForMissedMedications = async (req, res, next) => {
 export const directlyCheckMissedMedications = async (patientId) => {
   try {
     if (!patientId) return;
-    
+
     // break date and time
     const today = new Date().toISOString().split("T")[0];
     // get current time period -> morning , afternoon , evening
-    const currentTime = getCurrentTimePeriod(); 
-    
+    const currentTime = getCurrentTimePeriod();
+
     // Find all pending medications for this patient for today
     // that are scheduled for an earlier time period
     const pendingMedications = await prisma.MedicineAdherence.findMany({
@@ -103,7 +103,7 @@ export const directlyCheckMissedMedications = async (patientId) => {
         }
       }
     });
-    
+
     // Mark these medications as missed
     let markedAnyMedications = false;
     for (const med of pendingMedications) {
@@ -118,21 +118,21 @@ export const directlyCheckMissedMedications = async (patientId) => {
       });
       markedAnyMedications = true;
     }
-    
+
     if (pendingMedications.length > 0) {
       console.log(`[Direct Check] Auto-marked ${pendingMedications.length} medications as missed for patient ${patientId}`);
-      
+
       // Notify frontend via WebSocket if any medications were marked
       if (markedAnyMedications && io) {
-        io.emit('medications-updated', { 
+        io.emit('medications-updated', {
           patientId: patientId,
           count: pendingMedications.length
         });
       }
-      
+
       return pendingMedications.length;
     }
-    
+
     return 0;
   } catch (error) {
     console.error("Error in direct missed medication check:", error);
@@ -152,8 +152,8 @@ function getCurrentTimePeriod() {
 function getPreviousTimePeriods(currentPeriod) {
   const timeOrder = ['morning', 'afternoon', 'evening'];
   const currentIndex = timeOrder.indexOf(currentPeriod);
-  
+
   if (currentIndex <= 0) return []; // Morning has no previous periods
-  
+
   return timeOrder.slice(0, currentIndex);
 } 

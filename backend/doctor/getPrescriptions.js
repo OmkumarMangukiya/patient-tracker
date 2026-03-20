@@ -1,20 +1,12 @@
 import prisma from "../client.js";
-import { tokenVerify } from "../auth/jwtToken.js";
 
 export const getDoctorPrescriptionsByPatientId = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    
-    if (!token) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-    
-    const decoded = tokenVerify(token);
-    if (!decoded || decoded.role !== 'doctor') {
+    if (req.user.role !== 'doctor') {
       return res.status(403).json({ message: "Unauthorized: Only doctors can access this endpoint" });
     }
     
-    const doctorId = decoded.id;
+    const doctorId = req.user.id;
     const { patientId } = req.params;
     
     if (!patientId) {

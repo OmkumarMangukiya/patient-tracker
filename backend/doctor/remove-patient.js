@@ -1,16 +1,12 @@
-import { tokenVerify } from "../auth/jwtToken.js";
 import prisma from "../client.js";
 
 const removePatient = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        const doctorData = tokenVerify(token);
-        
-        if (!doctorData || doctorData.role !== 'doctor') {
+        if (req.user.role !== 'doctor') {
             return res.status(403).json({ message: "Unauthorized: Only doctors can remove patients" });
         }
         
-        const doctorId = doctorData.id;
+        const doctorId = req.user.id;
         const patientIdentifier = req.body.patientId;
         
         if (!patientIdentifier) {

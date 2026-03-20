@@ -1,17 +1,13 @@
 import prisma from "../client.js";
-import { tokenGenerate, tokenVerify } from "../auth/jwtToken.js";
+import { tokenGenerate } from "../auth/jwtToken.js";
 import { sendInviteEmail } from "../utils/emailService.js";
 
 const addPatient = async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    return res.status(401).json({ message: "Authentication required" });
-  }
-
-  const decoded = tokenVerify(token);
-  if (!decoded || decoded.role !== 'doctor') {
+  if (req.user.role !== 'doctor') {
     return res.status(403).json({ message: "Unauthorized: Only doctors can add patients" });
   }
+
+  const decoded = req.user;
 
   const { name, email, age, gender } = req.body;
   

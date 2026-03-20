@@ -29,7 +29,7 @@ cron.schedule("* * * * *", async () => {
   await continuouslyCheckMissedMedications();
 });
 
-// Run less frequent but more thorough checks at transition periods
+// Check for missed
 // Check at 12:30 PM (for missed morning medications)
 cron.schedule("30 12 * * *", async () => {
   console.log("Checking for missed morning medications...");
@@ -55,10 +55,8 @@ async function continuouslyCheckMissedMedications() {
     const currentHour = new Date().getHours();
     const currentMinute = new Date().getMinutes();
     
-    // Only log on the hour to avoid excessive logging
-    if (currentMinute === 0) {
-      console.log(`Continuous medication check at ${currentHour}:00`);
-    }
+    //console.log(`Continuous medication check at ${currentHour}:00`);
+
     
     // Define transition hours for time periods
     const morningEndHour = 12;    // 12:00 PM - end of morning period
@@ -166,7 +164,7 @@ async function continuouslyCheckMissedMedications() {
   }
 }
 
-// Add a check to avoid sending reminders for medications that are already taken
+// Send remainders to patient who have not taken their medications for current time period
 export async function sendReminders(timeOfDay) {
   try {
     // Get all patients with active prescriptions
@@ -226,7 +224,7 @@ export async function sendReminders(timeOfDay) {
         );
 
         // Add logic to check if medication is already taken before sending reminder
-        const medicationsToRemind = prescriptions.flatMap((prescription) =>
+        const medicationsToRemind = prescriptions.flatMap((prescription) => // flatmap to smash all med into one single array
           prescription.medicines.filter(
             (med) => {
               const isMedForThisTimePeriod = med.timing && med.timing[timeOfDay] === true;

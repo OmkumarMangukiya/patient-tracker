@@ -1,9 +1,8 @@
-import pkg from '@prisma/client';
-const { PrismaClient } = pkg;
+import { PrismaClient } from '@prisma/client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 
-// Original line commented out or removed:
-// import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  accelerateUrl: process.env.DATABASE_URL
+}).$extends(withAccelerate());
 
 export default prisma;

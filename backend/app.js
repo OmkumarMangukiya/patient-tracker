@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
+import { authenticate } from "./middleware/authMiddleware.js";
 // auth
 import signup from "./auth/signup.js";
 import signin from "./auth/signin.js";
@@ -10,7 +11,7 @@ import resetPassword from "./auth/resetPassword.js";
 
 // doctor
 import addPatient from "./doctor/addPatient.js";
-import retrievePatients from "./doctor/retirevePatients.js";
+import retrievePatients from "./doctor/retrievePatients.js";
 import getAllDoctors from "./doctor/getAllDoctors.js";
 import assignPatient from "./doctor/assign-patient.js";
 import removePatient from "./doctor/remove-patient.js";
@@ -83,44 +84,45 @@ app.post("/auth/set-password", setPassword);
 app.post("/auth/forgot-password", forgotPassword);
 app.post("/auth/reset-password", resetPassword);
 
-// doctor
-app.get("/doctor/retrievePatients", retrievePatients);
-app.get("/doctor/doctors", getAllDoctors);
-app.post("/doctor/add-patient", addPatient);
-app.post("/doctor/prescription", prescription);
-app.post("/doctor/assign-patient", assignPatient);
-app.post("/doctor/remove-patient", removePatient);
-app.get("/doctor/prescriptions/:patientId", getDoctorPrescriptionsByPatientId);
-app.delete("/doctor/prescription/:prescriptionId", deletePrescription);
-app.get("/doctor/patient-medications/today/:patientId", getPatientMedicationsTodayForDoctor);
+// doctor (all protected)
+app.get("/doctor/retrievePatients", authenticate, retrievePatients);
+app.get("/doctor/doctors", authenticate, getAllDoctors);
+app.post("/doctor/add-patient", authenticate, addPatient);
+app.post("/doctor/prescription", authenticate, prescription);
+app.post("/doctor/assign-patient", authenticate, assignPatient);
+app.post("/doctor/remove-patient", authenticate, removePatient);
+app.get("/doctor/prescriptions/:patientId", authenticate, getDoctorPrescriptionsByPatientId);
+app.delete("/doctor/prescription/:prescriptionId", authenticate, deletePrescription);
+app.get("/doctor/patient-medications/today/:patientId", authenticate, getPatientMedicationsTodayForDoctor);
 
-// patient
-app.get("/patient/prescriptions/:patientId", getPatientPrescriptions);  
-app.get("/patient/medications/today/:patientId", getTodayMedications);
-app.post("/patient/medications/update-status", updateMedicationStatus);
-app.get("/patient/medications/history/:patientId", getMedicationHistory);
+// patient (all protected)
+app.get("/patient/prescriptions/:patientId", authenticate, getPatientPrescriptions);  
+app.get("/patient/medications/today/:patientId", authenticate, getTodayMedications);
+app.post("/patient/medications/update-status", authenticate, updateMedicationStatus);
+app.get("/patient/medications/history/:patientId", authenticate, getMedicationHistory);
 app.get(
   "/patient/medications/adherence-stats/:patientId",
+  authenticate,
   getMedicationAdherenceStats
 );
 
 // Medicine data endpoint
 app.get("/api/medicines", getMedicinesHandler);
 
-// Appointment endpoints
-app.post("/appointments", createAppointment);
-app.get("/doctor/appointments", getDoctorAppointments);
-app.get("/patient/appointments", getPatientAppointments);
-app.post("/appointments/update-status", updateAppointmentStatus);
-app.get("/appointments/available-slots", getAvailableSlots);
+// Appointment endpoints (all protected)
+app.post("/appointments", authenticate, createAppointment);
+app.get("/doctor/appointments", authenticate, getDoctorAppointments);
+app.get("/patient/appointments", authenticate, getPatientAppointments);
+app.post("/appointments/update-status", authenticate, updateAppointmentStatus);
+app.get("/appointments/available-slots", authenticate, getAvailableSlots);
 
-// Chat endpoints
-app.post("/chats", createChat);
-app.get("/doctor/chats", getChatsByDoctor);
-app.get("/patient/chats", getChatsByPatient);
-app.get("/chats/:chatId", getChatById);
-app.post("/chats/:chatId/messages", createMessage);
-app.get("/chats/:chatId/messages", getMessagesByChatId);
+// Chat endpoints (all protected)
+app.post("/chats", authenticate, createChat);
+app.get("/doctor/chats", authenticate, getChatsByDoctor);
+app.get("/patient/chats", authenticate, getChatsByPatient);
+app.get("/chats/:chatId", authenticate, getChatById);
+app.post("/chats/:chatId/messages", authenticate, createMessage);
+app.get("/chats/:chatId/messages", authenticate, getMessagesByChatId);
 
 // Test endpoint to send medication reminders manually
 app.post("/admin/send-medication-reminders", async (req, res) => {

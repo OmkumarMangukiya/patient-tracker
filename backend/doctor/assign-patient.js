@@ -1,10 +1,8 @@
-import { tokenVerify } from "../auth/jwtToken.js";
 import prisma from "../client.js";
 
 const assignPatient = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        const doctorId = tokenVerify(token).id;
+        const doctorId = req.user.id;
         const patientIdentifier = req.body.patientId;
         
         if (!patientIdentifier) {
