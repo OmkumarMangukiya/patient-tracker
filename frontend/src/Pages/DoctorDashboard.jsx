@@ -565,11 +565,11 @@ function DoctorDashboard({ initialTab }) {
                         <p className="mt-1.5 text-xs text-on-surface-variant">Loading prescriptions...</p>
                       </div>
                     ) : patientPrescriptions.length === 0 ? (
-                      <div className="bg-surface-container-low/40 rounded-xl border border-outline-variant/60 p-4 text-center text-xs font-medium text-on-surface-variant flex items-center justify-center min-h-[100px]">
+                      <div className="bg-surface-container-low/40 rounded-xl border border-outline-variant/60 p-4 text-center text-xs font-medium text-on-surface-variant flex items-center justify-center min-h-25">
                         No prescriptions found for this patient
                       </div>
                     ) : (
-                      <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
+                      <div className="space-y-2.5 max-h-85 overflow-y-auto pr-1">
                         {patientPrescriptions.map((prescription, index) => (
                           <div key={prescription.id || `prescription-${index}`} className="bg-surface-lowest rounded-xl p-3 border border-outline-variant/60 shadow-xs">
                             <div className="flex justify-between items-start mb-2.5 pb-2 border-b border-outline-variant/40">

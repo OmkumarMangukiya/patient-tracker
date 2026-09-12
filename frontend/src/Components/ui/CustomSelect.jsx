@@ -63,9 +63,8 @@ function CustomSelect({
         disabled={disabled}
         aria-label={ariaLabel}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full bg-surface-lowest border border-outline-variant/60 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium text-primary-container flex items-center justify-between cursor-pointer shadow-xs ${
-          sizeClasses[size] || sizeClasses.md
-        } ${disabled ? 'opacity-50 cursor-not-allowed bg-surface-container-low/50' : ''} ${className}`}
+        className={`w-full bg-surface-lowest border border-outline-variant/60 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium text-primary-container flex items-center justify-between cursor-pointer shadow-xs ${sizeClasses[size] || sizeClasses.md
+          } ${disabled ? 'opacity-50 cursor-not-allowed bg-surface-container-low/50' : ''} ${className}`}
       >
         <div className="flex items-center space-x-2 truncate">
           {LeadingIcon && <LeadingIcon className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />}
@@ -83,17 +82,15 @@ function CustomSelect({
           )}
         </div>
         <ChevronDown
-          className={`w-3.5 h-3.5 text-on-surface-variant shrink-0 ml-2 transition-transform duration-200 ${
-            isOpen ? 'rotate-180 text-primary' : ''
-          }`}
+          className={`w-3.5 h-3.5 text-on-surface-variant shrink-0 ml-2 transition-transform duration-200 ${isOpen ? 'rotate-180 text-primary' : ''
+            }`}
         />
       </button>
 
       {isOpen && (
         <div
-          className={`absolute top-full mt-1.5 bg-surface-lowest border border-outline-variant/60 rounded-xl shadow-[0_12px_32px_rgba(19,27,46,0.12)] z-50 p-1 max-h-60 overflow-y-auto animate-in fade-in zoom-in-95 duration-150 ${
-            align === 'right' ? 'right-0' : 'left-0'
-          } min-w-[140px] w-full ${dropdownClassName}`}
+          className={`absolute top-full mt-1.5 bg-surface-lowest border border-outline-variant/60 rounded-xl shadow-[0_12px_32px_rgba(19,27,46,0.12)] z-50 p-1 max-h-60 overflow-y-auto animate-in fade-in zoom-in-95 duration-150 ${align === 'right' ? 'right-0' : 'left-0'
+            } min-w-35 w-full ${dropdownClassName}`}
         >
           {normalizedOptions.length === 0 ? (
             <div className="p-2.5 text-center text-xs text-on-surface-variant font-medium">
@@ -106,11 +103,10 @@ function CustomSelect({
                 <div
                   key={opt.value}
                   onClick={() => handleSelect(opt.value)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer text-xs transition-all ${
-                    isSelected
+                  className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer text-xs transition-all ${isSelected
                       ? 'bg-primary-container text-on-primary font-bold shadow-xs'
                       : 'text-primary-container hover:bg-surface-container-low font-medium'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-2 truncate">
                     {opt.icon && <span className="shrink-0">{opt.icon}</span>}

@@ -189,7 +189,7 @@ function AppointmentBooking() {
               <button
                 type="button"
                 onClick={() => setIsDoctorDropdownOpen(!isDoctorDropdownOpen)}
-                className="w-full px-3.5 py-2.5 bg-surface-lowest border border-outline-variant/60 hover:border-primary/40 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs md:text-sm text-left flex items-center justify-between cursor-pointer shadow-xs min-h-[42px]"
+                className="w-full px-3.5 py-2.5 bg-surface-lowest border border-outline-variant/60 hover:border-primary/40 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs md:text-sm text-left flex items-center justify-between cursor-pointer shadow-xs min-h-10.5"
               >
                 {selectedDoctorObj ? (
                   <span className="flex items-center space-x-2 font-medium text-primary-container truncate">
@@ -248,7 +248,7 @@ function AppointmentBooking() {
             </label>
             <input
               type="date"
-              className="w-full px-3.5 py-2 bg-surface-container-low/40 border border-outline-variant/60 rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all text-xs md:text-sm text-primary-container font-medium min-h-[38px]"
+              className="w-full px-3.5 py-2 bg-surface-container-low/40 border border-outline-variant/60 rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all text-xs md:text-sm text-primary-container font-medium min-h-9.5"
               value={selectedDate}
               onChange={handleDateChange}
               min={format(new Date(), 'yyyy-MM-dd')}
@@ -300,7 +300,7 @@ function AppointmentBooking() {
             Appointment Purpose
           </label>
           <textarea
-            className="w-full px-3.5 py-2.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all text-xs md:text-sm text-primary-container font-medium placeholder-on-surface-variant/50 resize-y min-h-[70px]"
+            className="w-full px-3.5 py-2.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all text-xs md:text-sm text-primary-container font-medium placeholder-on-surface-variant/50 resize-y min-h-17.5"
             rows="2"
             value={purpose}
             onChange={(e) => setPurpose(e.target.value)}

@@ -115,7 +115,7 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 shrink-0 border-r border-transparent flex flex-col p-6 space-y-8 bg-surface transform transition-all duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0 shadow-2xl lg:shadow-none w-[280px]' : '-translate-x-full lg:translate-x-0 w-[280px]'
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 shrink-0 border-r border-transparent flex flex-col p-6 space-y-8 bg-surface transform transition-all duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0 shadow-2xl lg:shadow-none w-70' : '-translate-x-full lg:translate-x-0 w-70'
         } ${isSidebarCollapsed ? 'lg:w-20! lg:items-center lg:px-3' : 'lg:w-64'}`}>
         <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} w-full`}>
           {/* Brand */}

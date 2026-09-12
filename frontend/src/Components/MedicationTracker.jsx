@@ -134,7 +134,7 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
 
   if (loading) {
     return (
-      <div className="min-h-[200px] flex items-center justify-center">
+      <div className="min-h-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-primary-container"></div>
       </div>
     );
