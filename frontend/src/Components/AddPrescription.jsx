@@ -1,5 +1,31 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../lib/apiClient';
+import CustomSelect from './ui/CustomSelect';
+
+const dosageOptions = [
+  { value: '0.5', label: '1/2 tab/cap' },
+  { value: '1', label: '1 tab/cap' },
+  { value: '2', label: '2 tabs/caps' },
+  { value: '5ml', label: '5ml (liquid)' },
+  { value: '10ml', label: '10ml (liquid)' }
+];
+
+const durationOptions = [
+  { value: '3 days', label: '3 days' },
+  { value: '5 days', label: '5 days' },
+  { value: '7 days', label: '7 days' },
+  { value: '10 days', label: '10 days' },
+  { value: '15 days', label: '15 days' },
+  { value: '30 days', label: '30 days' }
+];
+
+const instructionOptions = [
+  { value: 'before_food', label: 'Before food' },
+  { value: 'after_food', label: 'After food' },
+  { value: 'with_food', label: 'With food' },
+  { value: 'empty_stomach', label: 'Empty stomach' },
+  { value: 'as_needed', label: 'As needed' }
+];
 
 function AddPrescription({ patientId, patientName, onClose }) {
   const [medicines, setMedicines] = useState([]);
@@ -234,27 +260,23 @@ function AddPrescription({ patientId, patientName, onClose }) {
         <div className="p-3.5 mb-4 border border-outline-variant/60 rounded-xl bg-surface-container-low/50">
           <h3 className="text-xs font-bold text-primary-container uppercase tracking-wider mb-1.5">Medical Condition</h3>
           <div>
-            <select
-              id="condition"
-              name="condition"
+            <CustomSelect
               value={condition}
-              onChange={handleConditionChange}
-              className="w-full border border-outline-variant/60 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary text-xs font-medium text-primary-container bg-surface"
-            >
-              {commonConditions.map(cond => (
-                <option key={cond} value={cond}>{cond}</option>
-              ))}
-            </select>
+              onChange={(val) => setCondition(val)}
+              options={commonConditions}
+              placeholder="Select condition..."
+              size="sm"
+            />
             {condition === 'Other' && (
               <input
                 type="text"
                 placeholder="Specify condition"
-                className="w-full mt-2 border border-outline-variant/60 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary text-xs text-primary-container bg-surface"
+                className="w-full mt-2 border border-outline-variant/60 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary text-xs text-primary-container bg-surface-lowest"
                 onChange={(e) => setCondition(e.target.value)}
               />
             )}
           </div>
-          <p className="text-[11px] text-on-surface-variant font-medium mt-1">This condition will be associated with the prescription and visible to the patient</p>
+          <p className="text-[11px] text-on-surface-variant font-medium mt-1.5">This condition will be associated with the prescription and visible to the patient</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -268,11 +290,11 @@ function AddPrescription({ patientId, patientName, onClose }) {
                 placeholder="Search medicine by name..."
                 value={search}
                 onChange={handleSearchChange}
-                className="w-full px-3 py-1.5 border border-outline-variant/60 rounded-lg text-xs text-primary-container bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary"
+                className="w-full px-3 py-1.5 border border-outline-variant/60 rounded-xl text-xs text-primary-container bg-surface-lowest focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary"
               />
             </div>
 
-            <div className="max-h-80 overflow-y-auto border border-outline-variant/60 rounded-lg divide-y divide-outline-variant/40">
+            <div className="max-h-80 overflow-y-auto border border-outline-variant/60 rounded-xl divide-y divide-outline-variant/40">
               {loading ? (
                 <div className="p-4 text-center text-xs text-on-surface-variant font-medium">Loading medicines...</div>
               ) : filteredMedicines.length > 0 ? (
@@ -288,7 +310,7 @@ function AddPrescription({ patientId, patientName, onClose }) {
                       </div>
                       <button
                         onClick={() => handleAddMedicine(med)}
-                        className="bg-primary/10 text-primary hover:bg-primary hover:text-on-primary px-2.5 py-1 rounded-md text-xs font-bold border border-primary/20 transition-colors"
+                        className="bg-primary/10 text-primary hover:bg-primary hover:text-on-primary px-2.5 py-1 rounded-md text-xs font-bold border border-primary/20 transition-colors cursor-pointer"
                         type="button"
                       >
                         Add
@@ -308,18 +330,18 @@ function AddPrescription({ patientId, patientName, onClose }) {
               <h3 className="font-bold text-xs uppercase tracking-wider mb-2.5 text-primary-container">Prescription Details</h3>
 
               {selectedMedicines.length === 0 ? (
-                <div className="p-6 text-center text-xs text-on-surface-variant border border-outline-variant/60 rounded-lg mb-3 bg-surface-container-lowest">
+                <div className="p-6 text-center text-xs text-on-surface-variant border border-outline-variant/60 rounded-xl mb-3 bg-surface-container-low/40 font-medium">
                   No medicines added to prescription yet. Search and add medicines from the left panel.
                 </div>
               ) : (
-                <div className="max-h-80 overflow-y-auto border border-outline-variant/60 rounded-lg divide-y divide-outline-variant/40 mb-3">
+                <div className="max-h-80 overflow-y-auto border border-outline-variant/60 rounded-xl divide-y divide-outline-variant/40 mb-3">
                   {selectedMedicines.map((med, index) => (
-                    <div key={`${med.id}-${index}`} className="p-3 bg-surface">
+                    <div key={`${med.id}-${index}`} className="p-3 bg-surface-lowest">
                       <div className="flex justify-between items-start mb-1.5">
                         <div className="font-bold text-xs text-primary-container">{med.name}</div>
                         <button
                           onClick={() => handleRemoveMedicine(index)}
-                          className="text-[#D93838] hover:opacity-80 p-0.5 rounded transition-opacity"
+                          className="text-[#D93838] hover:opacity-80 p-0.5 rounded transition-opacity cursor-pointer"
                           type="button"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,35 +359,24 @@ function AddPrescription({ patientId, patientName, onClose }) {
                           <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">
                             Dosage
                           </label>
-                          <select
+                          <CustomSelect
+                            size="sm"
                             value={med.dosage}
-                            onChange={(e) => handleMedicineChange(index, 'dosage', e.target.value)}
-                            className="w-full border border-outline-variant/60 rounded-md px-2 py-1 text-xs text-primary-container bg-surface-lowest focus:ring-1 focus:ring-primary/40 outline-none"
-                          >
-                            <option value="0.5">1/2 tab/cap</option>
-                            <option value="1">1 tab/cap</option>
-                            <option value="2">2 tabs/caps</option>
-                            <option value="5ml">5ml (liquid)</option>
-                            <option value="10ml">10ml (liquid)</option>
-                          </select>
+                            onChange={(val) => handleMedicineChange(index, 'dosage', val)}
+                            options={dosageOptions}
+                          />
                         </div>
 
                         <div>
                           <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">
                             Duration
                           </label>
-                          <select
+                          <CustomSelect
+                            size="sm"
                             value={med.duration}
-                            onChange={(e) => handleMedicineChange(index, 'duration', e.target.value)}
-                            className="w-full border border-outline-variant/60 rounded-md px-2 py-1 text-xs text-primary-container bg-surface-lowest focus:ring-1 focus:ring-primary/40 outline-none"
-                          >
-                            <option value="3 days">3 days</option>
-                            <option value="5 days">5 days</option>
-                            <option value="7 days">7 days</option>
-                            <option value="10 days">10 days</option>
-                            <option value="15 days">15 days</option>
-                            <option value="30 days">30 days</option>
-                          </select>
+                            onChange={(val) => handleMedicineChange(index, 'duration', val)}
+                            options={durationOptions}
+                          />
                         </div>
                       </div>
 
@@ -408,17 +419,12 @@ function AddPrescription({ patientId, patientName, onClose }) {
                         <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">
                           Instructions
                         </label>
-                        <select
+                        <CustomSelect
+                          size="sm"
                           value={med.instructions}
-                          onChange={(e) => handleMedicineChange(index, 'instructions', e.target.value)}
-                          className="w-full border border-outline-variant/60 rounded-md px-2 py-1 text-xs text-primary-container bg-surface-lowest focus:ring-1 focus:ring-primary/40 outline-none"
-                        >
-                          <option value="before_food">Before food</option>
-                          <option value="after_food">After food</option>
-                          <option value="with_food">With food</option>
-                          <option value="empty_stomach">Empty stomach</option>
-                          <option value="as_needed">As needed</option>
-                        </select>
+                          onChange={(val) => handleMedicineChange(index, 'instructions', val)}
+                          options={instructionOptions}
+                        />
                       </div>
                     </div>
                   ))}

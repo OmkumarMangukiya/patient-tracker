@@ -10,15 +10,11 @@ import ResetPassword from './Components/ResetPassword';
 import { useEffect, useState } from 'react';
 
 // Icons
-import { 
-  LayoutDashboard, 
-  Pill, 
-  ClipboardList, 
-  Calendar, 
-  Mail, 
-  Plus, 
-  Settings, 
-  HelpCircle,
+import {
+  LayoutDashboard,
+  ClipboardList,
+  Calendar,
+  Mail,
   LogOut,
   User,
   Menu,
@@ -36,13 +32,13 @@ function App() {
           <Route path="/doctor/dashboard" element={<SidebarLayout Component={DoctorDashboard} role="doctor" />} />
           <Route path="/doctor/appointments" element={<SidebarLayout Component={DoctorDashboard} role="doctor" initialTab="appointments" />} />
           <Route path="/doctor/messages" element={<SidebarLayout Component={DoctorDashboard} role="doctor" initialTab="messages" />} />
-          
+
           <Route path="/patient/dashboard" element={<SidebarLayout Component={PatientDashboard} role="patient" />} />
           <Route path="/patient/medications" element={<SidebarLayout Component={PatientDashboard} role="patient" initialTab="medications" />} />
           <Route path="/patient/prescriptions" element={<SidebarLayout Component={PatientDashboard} role="patient" initialTab="prescriptions" />} />
           <Route path="/patient/appointments" element={<SidebarLayout Component={PatientDashboard} role="patient" initialTab="appointments" />} />
           <Route path="/patient/messages" element={<SidebarLayout Component={PatientDashboard} role="patient" initialTab="messages" />} />
-          
+
           <Route path="/set-password" element={<SidebarLayout Component={SetPassword} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -85,19 +81,19 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
   };
 
   const currentPath = location.pathname;
-  
-  const navItems = role === 'doctor' 
+
+  const navItems = role === 'doctor'
     ? [
-        { name: 'Dashboard', path: '/doctor/dashboard', icon: LayoutDashboard },
-        { name: 'Appointments', path: '/doctor/appointments', icon: Calendar },
-        { name: 'Messages', path: '/doctor/messages', icon: Mail },
-      ]
+      { name: 'Dashboard', path: '/doctor/dashboard', icon: LayoutDashboard },
+      { name: 'Appointments', path: '/doctor/appointments', icon: Calendar },
+      { name: 'Messages', path: '/doctor/messages', icon: Mail },
+    ]
     : [
-        { name: 'Dashboard', path: '/patient/dashboard', icon: LayoutDashboard },
-        { name: 'Prescriptions', path: '/patient/prescriptions', icon: ClipboardList },
-        { name: 'Appointments', path: '/patient/appointments', icon: Calendar },
-        { name: 'Messages', path: '/patient/messages', icon: Mail },
-      ];
+      { name: 'Dashboard', path: '/patient/dashboard', icon: LayoutDashboard },
+      { name: 'Prescriptions', path: '/patient/prescriptions', icon: ClipboardList },
+      { name: 'Appointments', path: '/patient/appointments', icon: Calendar },
+      { name: 'Messages', path: '/patient/messages', icon: Mail },
+    ];
 
   // Helper to determine active state using standard pathname or initialTab fallback
   const isActive = (path) => {
@@ -112,16 +108,15 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
     <div className="flex min-h-screen bg-surface text-on-surface">
       {/* Mobile Overlay */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-on-surface/40 backdrop-blur-sm z-40 transition-opacity"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 shrink-0 border-r border-transparent flex flex-col p-6 space-y-8 bg-surface transform transition-all duration-300 ease-in-out ${
-        isSidebarOpen ? 'translate-x-0 shadow-2xl lg:shadow-none w-[280px]' : '-translate-x-full lg:translate-x-0 w-[280px]'
-      } ${isSidebarCollapsed ? 'lg:w-20! lg:items-center lg:px-3' : 'lg:w-64'}`}>
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 shrink-0 border-r border-transparent flex flex-col p-6 space-y-8 bg-surface transform transition-all duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0 shadow-2xl lg:shadow-none w-[280px]' : '-translate-x-full lg:translate-x-0 w-[280px]'
+        } ${isSidebarCollapsed ? 'lg:w-20! lg:items-center lg:px-3' : 'lg:w-64'}`}>
         <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} w-full`}>
           {/* Brand */}
           {!isSidebarCollapsed && (
@@ -130,16 +125,16 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
             </div>
           )}
           {/* Desktop Collapse Toggle */}
-          <button 
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
+          <button
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             className="hidden lg:flex p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors"
             title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isSidebarCollapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
           </button>
           {/* Mobile Close Button */}
-          <button 
-            onClick={() => setIsSidebarOpen(false)} 
+          <button
+            onClick={() => setIsSidebarOpen(false)}
             className="lg:hidden p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
@@ -156,7 +151,7 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
             <div className="flex flex-col min-w-0">
               <span className="font-semibold text-primary-container leading-tight truncate">{userData.name}</span>
               <span className="text-xs text-on-surface-variant font-medium mt-0.5">
-                ID: #{userData.id ? String(userData.id).substring(0,4) : '...'}
+                ID: #{userData.id ? String(userData.id).substring(0, 4) : '...'}
               </span>
             </div>
           )}
@@ -173,8 +168,8 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
                 to={item.path}
                 title={isSidebarCollapsed ? item.name : undefined}
                 className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-colors font-medium
-                  ${active 
-                    ? 'bg-surface-container-highest text-primary-container shadow-sm ring-1 ring-outline-variant/20' 
+                  ${active
+                    ? 'bg-surface-container-highest text-primary-container shadow-sm ring-1 ring-outline-variant/20'
                     : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary-container'
                   }`}
               >
@@ -186,28 +181,15 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
         </nav>
 
         {/* Footer Navigation */}
-        <div className="space-y-4 pt-8">
-          {role !== 'doctor' && (
-            <button 
-              onClick={() => navigate(`/${role}/appointments`)}
-              title={isSidebarCollapsed ? 'New Appointment' : undefined}
-              className={`w-full flex items-center justify-center bg-primary-container hover:bg-[#0d1322] text-on-primary rounded-full font-semibold transition-transform hover:scale-[1.02] shadow-[0_10px_20px_rgba(19,27,46,0.25)] ${isSidebarCollapsed ? 'p-3' : 'space-x-2 py-4 px-6'}`}
-            >
-              <Plus className="w-5 h-5 shrink-0" />
-              {!isSidebarCollapsed && <span>New Appointment</span>}
-            </button>
-          )}
-          
-          <div className="pt-4 border-t border-outline-variant/60 space-y-2">
-            <button 
-              onClick={handleLogout}
-              title={isSidebarCollapsed ? 'Logout' : undefined}
-              className={`w-full flex items-center ${isSidebarCollapsed ? 'justify-center' : 'space-x-3'} px-4 py-2.5 rounded-lg text-[#D93838] hover:bg-[#FFF5F5] hover:text-[#D93838] transition-colors font-medium`}
-            >
-              <LogOut className="w-5 h-5 shrink-0" />
-              {!isSidebarCollapsed && <span>Logout</span>}
-            </button>
-          </div>
+        <div className="pt-4 border-t border-outline-variant/60 space-y-2">
+          <button
+            onClick={handleLogout}
+            title={isSidebarCollapsed ? 'Logout' : undefined}
+            className={`w-full flex items-center ${isSidebarCollapsed ? 'justify-center' : 'space-x-3'} px-4 py-2.5 rounded-lg text-[#D93838] hover:bg-[#FFF5F5] hover:text-[#D93838] transition-colors font-medium cursor-pointer`}
+          >
+            <LogOut className="w-5 h-5 shrink-0" />
+            {!isSidebarCollapsed && <span>Logout</span>}
+          </button>
         </div>
       </aside>
 
@@ -218,8 +200,8 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
           <div className="font-bold text-xl tracking-tight text-primary-container pl-2">
             Clinical Curator
           </div>
-          <button 
-            onClick={() => setIsSidebarOpen(true)} 
+          <button
+            onClick={() => setIsSidebarOpen(true)}
             className="p-2 -mr-2 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors"
           >
             <Menu className="w-6 h-6" />

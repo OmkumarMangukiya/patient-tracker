@@ -249,21 +249,20 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
                         const isPending = status === 'Pending';
 
                         const statusBadgeClass = 
-                          isTaken ? 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-600/30' :
-                          isMissed ? 'text-rose-700 bg-rose-50 ring-1 ring-rose-600/30' :
-                          'text-amber-700 bg-amber-50 ring-1 ring-amber-600/30';
+                          isTaken ? 'text-primary-container bg-secondary-container border border-outline-variant/60' :
+                          isMissed ? 'text-rose-800 bg-rose-50/80 border border-rose-200/80' :
+                          'text-on-secondary-container bg-surface-container-highest/60 border border-outline-variant/60';
 
                         return (
                           <div
                             key={medication.id || index}
                             className={`flex flex-col justify-between p-3.5 rounded-xl transition-all duration-200 border ${
-                              isTaken ? 'bg-surface-lowest border-outline-variant/60 shadow-xs' :
-                              isMissed ? 'bg-[#FFF5F5] border-[#D93838]/40 shadow-xs relative overflow-hidden' :
+                              isMissed ? 'bg-surface-lowest border-rose-200/70 shadow-xs relative overflow-hidden' :
                               'bg-surface-lowest border-outline-variant/60 shadow-xs'
                             }`}
                           >
                             {/* Missed active edge */}
-                            {isMissed && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#D93838]" />}
+                            {isMissed && <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-400" />}
 
                             <div className="flex flex-col space-y-1.5 items-start mb-3">
                               <div className="flex justify-between items-start w-full gap-2">
@@ -358,9 +357,9 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
                       </td>
                       <td className="py-2.5 px-3 text-right">
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
-                          record.adherenceStatus === 'Taken' ? 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-600/30' :
-                          record.adherenceStatus === 'Missed' ? 'text-rose-700 bg-rose-50 ring-1 ring-rose-600/30' :
-                          'text-amber-700 bg-amber-50 ring-1 ring-amber-600/30'
+                          record.adherenceStatus === 'Taken' ? 'text-primary-container bg-secondary-container border border-outline-variant/60' :
+                          record.adherenceStatus === 'Missed' ? 'text-rose-800 bg-rose-50/80 border border-rose-200/80' :
+                          'text-on-secondary-container bg-surface-container-highest/60 border border-outline-variant/60'
                         }`}>
                           {record.adherenceStatus}
                         </span>

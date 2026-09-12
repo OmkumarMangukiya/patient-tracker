@@ -707,27 +707,11 @@ function DoctorDashboard({ initialTab }) {
 
       {/* Prescription Modal */}
       {showPrescriptionModal && selectedPatient && (
-        <div className="fixed inset-0 bg-primary-container/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-surface-lowest rounded-lg shadow-lg p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-primary-container">
-                Add Prescription for {selectedPatient.name}
-              </h3>
-              <button
-                onClick={handleClosePrescriptionModal}
-                className="text-on-surface-variant hover:text-on-surface transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <AddPrescription
-              patientId={selectedPatient._id || selectedPatient.id || selectedPatient.uniqueId}
-              patientName={selectedPatient.name}
-              onClose={handleClosePrescriptionModal}
-            />
-          </div>
-        </div>
+        <AddPrescription
+          patientId={selectedPatient._id || selectedPatient.id || selectedPatient.uniqueId}
+          patientName={selectedPatient.name}
+          onClose={handleClosePrescriptionModal}
+        />
       )}
 
       {/* Confirm Remove Patient Modal */}

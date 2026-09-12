@@ -81,11 +81,11 @@ function ConciseMedicationTracker({ patientId }) {
   const getStatusIcon = (status) => {
     switch(status) {
       case 'Taken':
-        return <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />;
+        return <CheckCircle className="h-3.5 w-3.5 text-primary-container shrink-0" />;
       case 'Missed':
         return <XCircle className="h-3.5 w-3.5 text-rose-600 shrink-0" />;
       default:
-        return <Clock className="h-3.5 w-3.5 text-amber-600 shrink-0" />;
+        return <Clock className="h-3.5 w-3.5 text-on-secondary-container shrink-0" />;
     }
   };
   
@@ -126,8 +126,8 @@ function ConciseMedicationTracker({ patientId }) {
       <div className="grid grid-cols-3 gap-2 text-center">
         {/* Taken Card */}
         <div className="bg-surface-container-low/70 hover:bg-surface-container-low border border-outline-variant/60 rounded-xl p-2.5 flex flex-col items-center justify-center transition-all">
-          <div className="w-6 h-6 rounded-full bg-emerald-500/15 flex items-center justify-center mb-1">
-            <CheckCircle className="h-3.5 w-3.5 text-emerald-600" />
+          <div className="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center mb-1">
+            <CheckCircle className="h-3.5 w-3.5 text-primary-container" />
           </div>
           <p className="text-lg font-bold text-primary-container leading-none">{summary.taken}</p>
           <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mt-0.5">Taken</p>
@@ -135,8 +135,8 @@ function ConciseMedicationTracker({ patientId }) {
 
         {/* Pending Card */}
         <div className="bg-surface-container-low/70 hover:bg-surface-container-low border border-outline-variant/60 rounded-xl p-2.5 flex flex-col items-center justify-center transition-all">
-          <div className="w-6 h-6 rounded-full bg-amber-500/15 flex items-center justify-center mb-1">
-            <Clock className="h-3.5 w-3.5 text-amber-600" />
+          <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center mb-1">
+            <Clock className="h-3.5 w-3.5 text-on-secondary-container" />
           </div>
           <p className="text-lg font-bold text-primary-container leading-none">{summary.pending}</p>
           <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mt-0.5">Pending</p>
@@ -144,7 +144,7 @@ function ConciseMedicationTracker({ patientId }) {
 
         {/* Missed Card */}
         <div className="bg-surface-container-low/70 hover:bg-surface-container-low border border-outline-variant/60 rounded-xl p-2.5 flex flex-col items-center justify-center transition-all">
-          <div className="w-6 h-6 rounded-full bg-rose-500/15 flex items-center justify-center mb-1">
+          <div className="w-6 h-6 rounded-full bg-rose-50 border border-rose-200/60 flex items-center justify-center mb-1">
             <XCircle className="h-3.5 w-3.5 text-rose-600" />
           </div>
           <p className="text-lg font-bold text-primary-container leading-none">{summary.missed}</p>
@@ -177,9 +177,9 @@ function ConciseMedicationTracker({ patientId }) {
                   {meds.map((med, index) => {
                     const status = med.adherenceStatus;
                     const statusClass = 
-                      status === 'Taken' ? 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-600/30' :
-                      status === 'Missed' ? 'text-rose-700 bg-rose-50 ring-1 ring-rose-600/30' :
-                      'text-amber-700 bg-amber-50 ring-1 ring-amber-600/30';
+                      status === 'Taken' ? 'text-primary-container bg-secondary-container border border-outline-variant/60' :
+                      status === 'Missed' ? 'text-rose-800 bg-rose-50/80 border border-rose-200/80' :
+                      'text-on-secondary-container bg-surface-container-highest/60 border border-outline-variant/60';
 
                     return (
                       <div 

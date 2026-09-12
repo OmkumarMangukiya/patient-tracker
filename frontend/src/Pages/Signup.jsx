@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../lib/apiClient';
 import { User, Stethoscope } from 'lucide-react';
+import CustomSelect from '../Components/ui/CustomSelect';
 
 function Signup() {
     const [role, setRole] = useState('patient');
@@ -183,24 +184,19 @@ function Signup() {
                                 <label className="block text-sm font-semibold text-primary-container" htmlFor="gender">
                                     Gender <span className="text-[#D93838]">*</span>
                                 </label>
-                                <div className="relative">
-                                    <select
-                                        id="gender"
-                                        value={gender}
-                                        onChange={(e) => setGender(e.target.value)}
-                                        className="w-full px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/40 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-primary-container font-medium appearance-none shadow-xs cursor-pointer"
-                                        required
-                                    >
-                                        <option value="" disabled className="text-on-surface-variant">Select</option>
-                                        <option value="male" className="text-primary-container">Male</option>
-                                        <option value="female" className="text-primary-container">Female</option>
-                                        <option value="other" className="text-primary-container">Other</option>
-                                        <option value="prefer-not-to-say" className="text-primary-container">Prefer not to say</option>
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-primary-container">
-                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                                    </div>
-                                </div>
+                                <CustomSelect
+                                    value={gender}
+                                    onChange={(val) => setGender(val)}
+                                    options={[
+                                        { value: 'male', label: 'Male' },
+                                        { value: 'female', label: 'Female' },
+                                        { value: 'other', label: 'Other' },
+                                        { value: 'prefer-not-to-say', label: 'Prefer not to say' }
+                                    ]}
+                                    placeholder="Select gender"
+                                    size="lg"
+                                    className="px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/40 border-transparent rounded-xl focus:ring-2 focus:ring-primary/30"
+                                />
                             </div>
                         </div>
                     )}

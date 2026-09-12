@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import apiClient from '../lib/apiClient';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, Clock, CheckCircle, XCircle, AlertCircle, ChevronDown, ListFilter, User } from 'lucide-react';
+import CustomSelect from './ui/CustomSelect';
 
 function AppointmentList({ userRole }) {
   const [appointments, setAppointments] = useState([]);
@@ -140,34 +141,38 @@ function AppointmentList({ userRole }) {
           </div>
         </div>
         
-        <div className="flex flex-wrap gap-2.5">
-          <div className="relative">
-            <select
-              className="appearance-none bg-surface-variant/40 text-primary-container font-medium text-xs rounded-xl px-3.5 py-1.5 pr-8 border border-outline-variant/60 focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer"
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="w-36">
+            <CustomSelect
+              size="sm"
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">All Status</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="missed">Missed</option>
-            </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-on-surface-variant pointer-events-none" />
+              onChange={setStatusFilter}
+              options={[
+                { value: 'all', label: 'All Status' },
+                { value: 'scheduled', label: 'Scheduled' },
+                { value: 'completed', label: 'Completed' },
+                { value: 'cancelled', label: 'Cancelled' },
+                { value: 'missed', label: 'Missed' }
+              ]}
+              align="right"
+              className="bg-surface-variant/40 border-outline-variant/60 rounded-xl"
+            />
           </div>
           
-          <div className="relative">
-            <select
-              className="appearance-none bg-surface-variant/40 text-primary-container font-medium text-xs rounded-xl px-3.5 py-1.5 pr-8 border border-outline-variant/60 focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer"
+          <div className="w-36">
+            <CustomSelect
+              size="sm"
               value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-            >
-              <option value="all">All Dates</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="today">Today</option>
-              <option value="past">Past</option>
-            </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-on-surface-variant pointer-events-none" />
+              onChange={setDateFilter}
+              options={[
+                { value: 'all', label: 'All Dates' },
+                { value: 'upcoming', label: 'Upcoming' },
+                { value: 'today', label: 'Today' },
+                { value: 'past', label: 'Past' }
+              ]}
+              align="right"
+              className="bg-surface-variant/40 border-outline-variant/60 rounded-xl"
+            />
           </div>
         </div>
       </div>

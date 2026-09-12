@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../lib/apiClient';
+import CustomSelect from './ui/CustomSelect';
 
 function AddPatient({ formInputs = null, onInputChange = null }) {
   // Use local state if no external state is provided
@@ -168,22 +169,28 @@ function AddPatient({ formInputs = null, onInputChange = null }) {
 
       {mode === 'existing' ? (
         <div className="mb-4">
-          <label htmlFor="existingPatient" className="block text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1.5">Select Existing Patient</label>
-          <select
-            id="existingPatient"
-            name="existingPatient"
+          <label className="block text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1.5">Select Existing Patient</label>
+          <CustomSelect
             value={selectedPatientId}
-            onChange={handlePatientSelect}
-            className="w-full px-3 py-2 border border-outline-variant/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary text-xs font-medium text-primary-container bg-surface"
-            required
-          >
-            <option value="">-- Select a patient --</option>
-            {allPatients.map(patient => (
-              <option key={patient.id} value={patient.id}>
-                {patient.name} ({patient.email})
-              </option>
-            ))}
-          </select>
+            onChange={(patientId) => {
+              setSelectedPatientId(patientId);
+              const selectedPatient = allPatients.find(p => String(p.id) === String(patientId));
+              if (selectedPatient) {
+                setFormData({
+                  name: selectedPatient.name || '',
+                  email: selectedPatient.email || '',
+                  age: selectedPatient.age || '',
+                  gender: selectedPatient.gender || 'male'
+                });
+              }
+            }}
+            options={allPatients.map(patient => ({
+              value: patient.id,
+              label: patient.name,
+              sublabel: patient.email
+            }))}
+            placeholder="Select a patient..."
+          />
         </div>
       ) : (
         <>

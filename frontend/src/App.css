@@ -29,11 +29,12 @@
 
   /* Editorial Clinical Excellence Palette */
   --color-surface: #F4FAFF;
+  --color-surface-lowest: #FFFFFF;
+  --color-surface-container-lowest: #FFFFFF;
   --color-surface-container-low: #E8F6FF;
   --color-surface-container: #DEF0FC;
   --color-surface-container-high: #D9EBF7;
   --color-surface-container-highest: #D3E5F1;
-  --color-surface-container-lowest: #FFFFFF;
   --color-surface-variant: #D3E5F1;
   --color-primary-container: #131B2E;
   --color-on-primary: #FFFFFF;

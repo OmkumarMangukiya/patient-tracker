@@ -189,27 +189,27 @@ function AppointmentBooking() {
               <button
                 type="button"
                 onClick={() => setIsDoctorDropdownOpen(!isDoctorDropdownOpen)}
-                className="w-full px-3.5 py-2 bg-surface-container-low/40 border border-outline-variant/60 hover:border-primary/40 rounded-xl focus:ring-1 focus:ring-primary/30 focus:border-primary transition-all text-xs md:text-sm text-left flex items-center justify-between cursor-pointer min-h-[38px]"
+                className="w-full px-3.5 py-2.5 bg-surface-lowest border border-outline-variant/60 hover:border-primary/40 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs md:text-sm text-left flex items-center justify-between cursor-pointer shadow-xs min-h-[42px]"
               >
                 {selectedDoctorObj ? (
                   <span className="flex items-center space-x-2 font-medium text-primary-container truncate">
-                    <span>{selectedDoctorObj.name}</span>
-                    <span className="text-[11px] text-on-surface-variant font-normal">&mdash;</span>
-                    <span className="text-[11px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-md truncate">
+                    <span className="font-semibold">{selectedDoctorObj.name}</span>
+                    <span className="text-on-surface-variant/40">&bull;</span>
+                    <span className="text-[11px] font-semibold text-primary bg-secondary-container px-2 py-0.5 rounded-full truncate">
                       {selectedDoctorObj.specialization}
                     </span>
                   </span>
                 ) : (
-                  <span className="text-on-surface-variant font-normal">Select a doctor...</span>
+                  <span className="text-on-surface-variant/70 font-normal">Select a doctor...</span>
                 )}
                 <ChevronDown className={`w-4 h-4 text-on-surface-variant shrink-0 ml-2 transition-transform duration-200 ${isDoctorDropdownOpen ? 'rotate-180 text-primary' : ''}`} />
               </button>
 
               {/* Styled Dropdown Menu */}
               {isDoctorDropdownOpen && (
-                <div className="absolute left-0 right-0 top-full mt-1 bg-surface-lowest border border-outline-variant/60 rounded-xl shadow-lg z-30 p-1 max-h-56 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute left-0 right-0 top-full mt-1.5 bg-surface-lowest border border-outline-variant/60 rounded-xl shadow-[0_12px_32px_rgba(19,27,46,0.12)] z-50 p-1.5 max-h-56 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
                   {doctors.length === 0 ? (
-                    <div className="p-3 text-center text-xs text-on-surface-variant">
+                    <div className="p-3 text-center text-xs text-on-surface-variant font-medium">
                       No assigned doctors available
                     </div>
                   ) : (
@@ -219,21 +219,19 @@ function AppointmentBooking() {
                         <div
                           key={doctor.id}
                           onClick={() => handleSelectDoctor(doctor.id)}
-                          className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer text-xs transition-colors ${
-                            isSelected
-                              ? 'bg-primary-container text-on-primary font-bold'
-                              : 'text-primary-container hover:bg-surface-variant/60 font-medium'
-                          }`}
+                          className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer text-xs transition-all ${isSelected
+                              ? 'bg-primary-container text-on-primary font-bold shadow-xs'
+                              : 'text-primary-container hover:bg-surface-container-low font-medium'
+                            }`}
                         >
                           <div className="flex items-center space-x-2 truncate">
                             <span className="truncate">{doctor.name}</span>
-                            <span className={`text-[11px] px-1.5 py-0.5 rounded ${
-                              isSelected ? 'bg-white/20 text-white' : 'bg-surface-container-low text-on-surface-variant'
-                            }`}>
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-surface-container text-on-secondary-container'
+                              }`}>
                               {doctor.specialization}
                             </span>
                           </div>
-                          {isSelected && <Check className="w-3.5 h-3.5 shrink-0 ml-2" />}
+                          {isSelected && <Check className="w-3.5 h-3.5 shrink-0 ml-2 text-white" />}
                         </div>
                       );
                     })
@@ -261,8 +259,8 @@ function AppointmentBooking() {
 
         {isLoading && (
           <div className="py-2 flex items-center text-on-surface-variant space-x-2">
-             <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-on-surface-variant border-t-transparent"></div>
-             <span className="font-medium text-xs">Loading available slots...</span>
+            <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-on-surface-variant border-t-transparent"></div>
+            <span className="font-medium text-xs">Loading available slots...</span>
           </div>
         )}
 
@@ -278,8 +276,8 @@ function AppointmentBooking() {
                   key={slot.time}
                   type="button"
                   className={`py-1.5 px-2.5 rounded-lg text-center text-xs font-semibold transition-all cursor-pointer ${selectedSlot === slot.time
-                      ? 'bg-primary-container text-on-primary shadow-xs'
-                      : 'bg-surface-container-low/50 text-primary-container hover:bg-surface-container border border-outline-variant/60'
+                    ? 'bg-primary-container text-on-primary shadow-xs'
+                    : 'bg-surface-container-low/50 text-primary-container hover:bg-surface-container border border-outline-variant/60'
                     }`}
                   onClick={() => handleSlotSelect(slot.time)}
                 >
@@ -292,7 +290,7 @@ function AppointmentBooking() {
 
         {availableSlots.length === 0 && selectedDate && selectedDoctor && !isLoading && (
           <div className="bg-surface-container-low/40 border border-outline-variant/60 rounded-xl p-3 text-center">
-             <p className="text-on-surface-variant font-medium text-xs">No available slots for this date. Please select another date.</p>
+            <p className="text-on-surface-variant font-medium text-xs">No available slots for this date. Please select another date.</p>
           </div>
         )}
 
@@ -314,9 +312,9 @@ function AppointmentBooking() {
         <div className="pt-2">
           <button
             type="submit"
-            className={`w-full py-2.5 px-5 rounded-xl text-xs md:text-sm font-bold transition-all shadow-xs cursor-pointer ${isLoading || !selectedDoctor || !selectedSlot || !purpose 
-                ? 'bg-surface-variant text-on-surface-variant/50 shadow-none cursor-not-allowed' 
-                : 'text-on-primary bg-primary-container hover:bg-[#0d1322]'
+            className={`w-full py-2.5 px-5 rounded-xl text-xs md:text-sm font-bold transition-all shadow-xs cursor-pointer ${isLoading || !selectedDoctor || !selectedSlot || !purpose
+              ? 'bg-surface-variant text-on-surface-variant/50 shadow-none cursor-not-allowed'
+              : 'text-on-primary bg-primary-container hover:bg-[#0d1322]'
               }`}
             disabled={isLoading || !selectedDoctor || !selectedSlot || !purpose}
           >
