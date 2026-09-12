@@ -1,7 +1,16 @@
-import dotenv from 'dotenv';
-import transporter from './emailConfig.js';
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
 dotenv.config();
+
+// Create Nodemailer transporter
+export const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 /**
  * Send an invitation email with password setup link
@@ -11,12 +20,12 @@ dotenv.config();
  */
 export const sendInviteEmail = async (patientEmail, patientName, token) => {
   const link = `${process.env.FRONTEND_URL}/set-password?token=${token}`;
-  
+
   try {
     const mailOptions = {
       from: `"Patient Tracker" <${process.env.EMAIL_USER}>`,
       to: patientEmail,
-      subject: 'Welcome to Patient Tracker - Set Your Password',
+      subject: "Welcome to Patient Tracker - Set Your Password",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #4a5568;">Welcome to Patient Tracker!</h2>
@@ -27,14 +36,14 @@ export const sendInviteEmail = async (patientEmail, patientName, token) => {
           <p>If you didn't expect this email, please ignore it.</p>
           <p>Best regards,<br>Patient Tracker Team</p>
         </div>
-      `
+      `,
     };
-    
+
     const info = await transporter.sendMail(mailOptions);
-    console.log('Invitation email sent:', info.messageId);
+    console.log("Invitation email sent:", info.messageId);
     return true;
   } catch (error) {
-    console.error('Error sending invitation email:', error.message);
+    console.error("Error sending invitation email:", error.message);
     return false;
   }
 };
@@ -47,12 +56,12 @@ export const sendInviteEmail = async (patientEmail, patientName, token) => {
  */
 export const sendPasswordResetEmail = async (userEmail, userName, token) => {
   const link = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-  
+
   try {
     const mailOptions = {
       from: `"Patient Tracker" <${process.env.EMAIL_USER}>`,
       to: userEmail,
-      subject: 'Password Reset - Patient Tracker',
+      subject: "Password Reset - Patient Tracker",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #4a5568;">Password Reset</h2>
@@ -63,19 +72,61 @@ export const sendPasswordResetEmail = async (userEmail, userName, token) => {
           <p>If you didn't request a password reset, please ignore this email or contact support if you have concerns.</p>
           <p>Best regards,<br>Patient Tracker Team</p>
         </div>
-      `
+      `,
     };
-    
+
     const info = await transporter.sendMail(mailOptions);
-    console.log('Password reset email sent:', info.messageId);
+    console.log("Password reset email sent:", info.messageId);
     return true;
   } catch (error) {
-    console.error('Error sending password reset email:', error.message);
+    console.error("Error sending password reset email:", error.message);
+    return false;
+  }
+};
+
+/**
+ * Send medication reminder email
+ * @param {string} email - Patient email
+ * @param {string} name - Patient name
+ * @param {Array} medications - List of medications to take
+ * @param {string} timeOfDay - "morning" | "afternoon" | "evening"
+ */
+export const sendMedicationReminderEmail = async (email, name, medications, timeOfDay) => {
+  try {
+    const medicationsList = medications
+      .map((med) => `<li>${med.name || med.medicineName} - ${med.dosage} - ${med.instructions}</li>`)
+      .join("");
+
+    const mailOptions = {
+      from: `"Patient Tracker" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `Medication Reminder - ${timeOfDay} dose`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #4a5568;">Medication Reminder</h2>
+          <p>Hello ${name},</p>
+          <p>It's time to take your ${timeOfDay} medication:</p>
+          <ul>
+            ${medicationsList}
+          </ul>
+          <p>Please remember to mark these medications as taken in your Patient Dashboard.</p>
+          <p>Best regards,<br>Patient Tracker Team</p>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Medication reminder sent to ${email}. ID: ${info.messageId}`);
+    return true;
+  } catch (error) {
+    console.error(`Error sending medication reminder to ${email}:`, error.message);
     return false;
   }
 };
 
 export default {
+  transporter,
   sendInviteEmail,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendMedicationReminderEmail,
 };

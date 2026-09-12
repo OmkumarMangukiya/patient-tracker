@@ -1,14 +1,12 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../utils/client.js";
-import { tokenVerify } from "../auth/jwtToken.js";
 import { normalizeToSlotStart } from "../utils/slotUtils.js";
 
 const SLOT_UNAVAILABLE_MESSAGE = "This time slot is already booked";
 
 const createAppointment = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    const patient = tokenVerify(token);
+    const patient = req.user;
 
     if (patient.role !== "patient") {
       return res.status(403).json({ error: "Only patients can book appointments" });
@@ -24,7 +22,7 @@ const createAppointment = async (req, res) => {
     const doctorIdStr = String(doctorId);
     const slotStart = normalizeToSlotStart(new Date(appointmentDate));
 
-    const doctor = await prisma.Doctor.findUnique({
+    const doctor = await prisma.doctor.findUnique({
       where: { id: doctorIdStr },
     });
 
@@ -32,7 +30,7 @@ const createAppointment = async (req, res) => {
       return res.status(404).json({ error: "Doctor not found" });
     }
 
-    const patientRecord = await prisma.Patient.findFirst({
+    const patientRecord = await prisma.patient.findFirst({
       where: {
         id: patientIdInt,
         doctors: {
@@ -50,7 +48,7 @@ const createAppointment = async (req, res) => {
     }
 
     // Fast-path check; the partial unique index is the real concurrency guard
-    const conflictingAppointment = await prisma.Appointment.findFirst({
+    const conflictingAppointment = await prisma.appointment.findFirst({
       where: {
         doctorId: doctorIdStr,
         slotStart,
@@ -62,7 +60,7 @@ const createAppointment = async (req, res) => {
       return res.status(409).json({ error: SLOT_UNAVAILABLE_MESSAGE });
     }
 
-    const appointment = await prisma.Appointment.create({
+    const appointment = await prisma.appointment.create({
       data: {
         patientId: patientIdInt,
         doctorId: doctorIdStr,
@@ -73,7 +71,7 @@ const createAppointment = async (req, res) => {
       },
     });
 
-    res.status(201).json(appointment);
+    return res.status(201).json(appointment);
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -83,7 +81,7 @@ const createAppointment = async (req, res) => {
     }
 
     console.error("Error creating appointment:", error);
-    res.status(500).json({ error: "Failed to create appointment" });
+    return res.status(500).json({ error: "Failed to create appointment" });
   }
 };
 

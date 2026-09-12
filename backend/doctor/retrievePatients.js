@@ -1,24 +1,24 @@
 import prisma from "../utils/client.js";
 
 const retrievePatients = async (req, res) => {
-    try {
-        const doctorId = String(req.user.id);
-        
-        const patient = await prisma.Patient.findMany({
-            where: {
-                doctors: {
-                    some: {
-                        id: doctorId
-                    }
-                }
-            }
-        });
-        
-        res.status(200).json(patient);
-    } catch (err) {
-        console.error('Error in retrieving patients:', err);
-        res.status(500).send('Error in retrieving patients');
-    }
+  try {
+    const doctorId = String(req.user.id);
+
+    const patients = await prisma.patient.findMany({
+      where: {
+        doctors: {
+          some: {
+            id: doctorId,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json(patients);
+  } catch (err) {
+    console.error("Error in retrieving patients:", err);
+    return res.status(500).json({ message: "Error in retrieving patients" });
+  }
 };
 
-export default retrievePatients;
+export default retrievePatients;

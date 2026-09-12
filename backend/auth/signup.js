@@ -1,54 +1,70 @@
-import { tokenGenerate } from './jwtToken.js';
-import prisma from '../utils/client.js';
-import bcrypt from 'bcryptjs'; // Fixed typo from bccrypt to bcrypt
+import { tokenGenerate } from "./jwtToken.js";
+import prisma from "../utils/client.js";
+import bcrypt from "bcryptjs";
+
 const signup = async (req, res) => {
-    const { role } = req.body;
+  const { role } = req.body;
+
   try {
-    if (role === 'patient') {
-    const { role, name, email, age, gender, password } = req.body;
-      const hashedPassword = await bcrypt.hash(password, 10); // Fixed typo
-      const user = await prisma.Patient.create({
+    if (role === "patient") {
+      const { name, email, age, gender, password } = req.body;
+
+      if (!email || !password || !name) {
+        return res.status(400).json({ message: "Name, email, and password are required" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await prisma.patient.create({
         data: {
-          name: name,
-          age: parseInt(age),
-          gender: gender,
+          name,
+          age: age ? parseInt(age, 10) : null,
+          gender,
           password: hashedPassword,
-          email: email,
+          email,
         },
       });
-      const token = tokenGenerate({
-        role : role,
-        name : name,
-        email : email,
-        age : age,
-        id : user.id,
-        specialization: role === "doctor" ? user.specialization : undefined
-      });
-        return res.json({"msg":"done signup",token:token,role:role});
-        
-    } else if (role ==='doctor'){
-      const {role,name,email,password,specialization} = req.body;
-      const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await prisma.Doctor.create({
-            data: {
-            name: name,
-            specialization: specialization,
-            password: hashedPassword,
-            email: email,
 
-            },
-        });
-        const token = tokenGenerate({
-            role : role,
-            name : name,
-            email : email,
-            id : user.id,
-        });
-        return res.json({"msg":"done signup",token:token,role:role});
+      const token = tokenGenerate({
+        role,
+        name,
+        email,
+        age,
+        id: user.id,
+      });
+
+      return res.json({ msg: "done signup", token, role });
+    } else if (role === "doctor") {
+      const { name, email, password, specialization } = req.body;
+
+      if (!email || !password || !name) {
+        return res.status(400).json({ message: "Name, email, and password are required" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await prisma.doctor.create({
+        data: {
+          name,
+          specialization: specialization || "General",
+          password: hashedPassword,
+          email,
+        },
+      });
+
+      const token = tokenGenerate({
+        role,
+        name,
+        email,
+        id: user.id,
+        specialization: user.specialization,
+      });
+
+      return res.json({ msg: "done signup", token, role });
+    } else {
+      return res.status(400).json({ message: "Invalid role. Role must be 'patient' or 'doctor'" });
     }
   } catch (err) {
-    console.error('Error in creating user:', err);
-    res.status(400).send('Error in creating user');
+    console.error("Error in creating user:", err);
+    res.status(400).send("Error in creating user");
   }
 };
 
