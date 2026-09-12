@@ -1,4 +1,4 @@
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 import { tokenVerify } from "../auth/jwtToken.js"
 import jwt from "jsonwebtoken";
 // Get today's medications for a patient

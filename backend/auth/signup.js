@@ -1,5 +1,5 @@
 import { tokenGenerate } from './jwtToken.js';
-import prisma from '../client.js';
+import prisma from '../utils/client.js';
 import bcrypt from 'bcryptjs'; // Fixed typo from bccrypt to bcrypt
 const signup = async (req, res) => {
     const { role } = req.body;

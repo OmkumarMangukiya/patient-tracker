@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 import { tokenVerify } from "../auth/jwtToken.js";
 import { normalizeToSlotStart } from "../utils/slotUtils.js";
 

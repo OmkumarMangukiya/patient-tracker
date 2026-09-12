@@ -10,7 +10,7 @@
  * Usage: npm run test:concurrent-booking
  */
 import dotenv from "dotenv";
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 import { tokenGenerate } from "../auth/jwtToken.js";
 import { normalizeToSlotStart } from "../utils/slotUtils.js";
 

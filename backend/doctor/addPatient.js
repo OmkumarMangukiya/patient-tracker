@@ -1,4 +1,4 @@
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 import { tokenGenerate } from "../auth/jwtToken.js";
 import { sendInviteEmail } from "../utils/emailService.js";
 

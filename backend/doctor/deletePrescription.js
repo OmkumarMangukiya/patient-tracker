@@ -1,4 +1,4 @@
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 
 const deletePrescription = async (req, res) => {
   try {

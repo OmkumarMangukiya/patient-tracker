@@ -1,4 +1,4 @@
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 
 export const getPatientPrescriptions = async (req, res) => {
   try {

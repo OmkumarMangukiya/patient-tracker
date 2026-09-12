@@ -1,4 +1,4 @@
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 
 const removePatient = async (req, res) => {
     try {

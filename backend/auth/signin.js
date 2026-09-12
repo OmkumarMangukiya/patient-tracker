@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { tokenGenerate } from "./jwtToken.js";
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 import bcrypt from "bcryptjs";
 
 // Ensure environment variables are loaded before token generation

@@ -1,4 +1,4 @@
-import prisma from '../client.js';
+import prisma from '../utils/client.js';
 
 // Create a new chat between doctor and patient
 export const createChat = async (req, res) => {

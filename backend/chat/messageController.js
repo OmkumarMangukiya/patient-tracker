@@ -1,4 +1,4 @@
-import prisma from '../client.js';
+import prisma from '../utils/client.js';
 
 // Create a new message in a chat
 export const createMessage = async (req, res) => {

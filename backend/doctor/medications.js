@@ -1,4 +1,4 @@
-import prisma from '../client.js';
+import prisma from '../utils/client.js';
 
 // Get today's medication adherence for a specific patient, accessible by their assigned doctor
 export async function getPatientMedicationsTodayForDoctor(req, res) {

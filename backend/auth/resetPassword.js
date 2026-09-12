@@ -1,4 +1,4 @@
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 import { tokenVerify } from "./jwtToken.js";
 import bcrypt from "bcryptjs";
 

@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import prisma from "./client.js";
+import prisma from "./utils/client.js";
 import { emailServiceAlert } from "./utils/emailServiceAlert.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";

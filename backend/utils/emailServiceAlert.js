@@ -1,5 +1,5 @@
 import { tokenVerify } from "../auth/jwtToken.js";
-import prisma from "../client.js";
+import prisma from "./client.js";
 import dotenv from "dotenv";
 import transporter from "./emailConfig.js";
 

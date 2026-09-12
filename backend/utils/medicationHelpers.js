@@ -1,4 +1,4 @@
-import prisma from "../client.js";
+import prisma from "./client.js";
 
 /**
  * Check if a prescribed medicine is still within its active duration.

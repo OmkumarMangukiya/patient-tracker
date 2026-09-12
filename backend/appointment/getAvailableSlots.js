@@ -1,4 +1,4 @@
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 
 const getAvailableSlots = async (req, res) => {
   try {

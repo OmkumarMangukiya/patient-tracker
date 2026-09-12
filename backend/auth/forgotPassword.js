@@ -1,4 +1,4 @@
-import prisma from "../client.js";
+import prisma from "../utils/client.js";
 import { tokenGenerate } from "./jwtToken.js";
 import { sendPasswordResetEmail } from "../utils/emailService.js";
 
