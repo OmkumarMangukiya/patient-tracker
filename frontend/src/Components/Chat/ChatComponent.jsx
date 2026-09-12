@@ -191,7 +191,7 @@ function ChatComponent({ chatId, onBack, userRole, recipientName, recipientId })
                     <div className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'}`}>
                       <div
                         className={`max-w-[70%] rounded-lg p-3 shadow-sm border ${isCurrentUser(message)
-                            ? 'bg-blue-600 text-black rounded-br-none border-blue-700'
+                            ? 'bg-primary-container text-on-primary rounded-br-none border-primary-container'
                             : 'bg-surface-lowest text-gray-800 rounded-bl-none border-gray-200'
                           }`}
                       >
@@ -224,11 +224,11 @@ function ChatComponent({ chatId, onBack, userRole, recipientName, recipientId })
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 border rounded-l-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 border rounded-l-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
           <button
             type="submit"
-            className="bg-blue-600 text-black rounded-r-lg p-2 h-full"
+            className="bg-primary-container text-on-primary rounded-r-lg p-2 h-full hover:bg-[#0d1322] transition-colors"
             disabled={!newMessage.trim()}
           >
             <Send className="h-5 w-5" />

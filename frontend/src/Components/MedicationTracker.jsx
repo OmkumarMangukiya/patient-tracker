@@ -141,66 +141,86 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
   }
 
   return (
-    <div className="w-full flex flex-col space-y-10 animate-in fade-in duration-500">
+    <div className="w-full flex flex-col space-y-4 animate-in fade-in duration-500">
 
       {/* Header & Adherence Bar */}
       {activeTab === 'current' && (
-        <div className="flex flex-col md:flex-row md:items-end justify-between space-y-8 md:space-y-0 relative">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-outline-variant/60">
 
           {/* Adherence Stats */}
-          <div className="flex-1 max-w-xl">
-            <h2 className="text-xs font-bold tracking-[0.15em] text-on-surface-variant uppercase mb-2">Daily Adherence</h2>
-            <div className="text-6xl font-black text-primary-container tracking-tighter mb-6 leading-none">
-              {adherencePercentage}% <span className="text-4xl text-on-surface-variant/80 font-bold ml-1">Overall</span>
+          <div className="flex-1 max-w-2xl">
+            <h2 className="text-xs font-bold tracking-wider text-on-surface-variant uppercase mb-1">Daily Adherence</h2>
+            <div className="text-3xl md:text-4xl font-extrabold text-primary-container tracking-tight mb-2 leading-none">
+              {adherencePercentage}% <span className="text-xl text-on-surface-variant font-semibold ml-1">Overall</span>
             </div>
 
             {/* Progress Bar Container */}
-            <div className="h-3 w-full bg-surface-container-high rounded-full overflow-hidden mb-3">
+            <div className="h-2 w-full bg-surface-container-high rounded-full overflow-hidden mb-2">
               <div
                 className="h-full bg-primary-container rounded-full transition-all duration-1000 ease-out"
                 style={{ width: `${adherencePercentage}%` }}
               />
             </div>
 
-            <div className="flex items-center space-x-2 text-sm text-on-surface-variant font-medium">
-              <Info className="w-4 h-4 opacity-70" />
-              <span>You have taken {takenMeds} out of {totalMeds} prescribed doses today.</span>
+            <div className="flex items-center space-x-1.5 text-xs text-on-surface-variant font-medium">
+              <Info className="w-3.5 h-3.5 opacity-70 shrink-0" />
+              <span>You have taken {takenMeds} of {totalMeds} prescribed doses today.</span>
+            </div>
+          </div>
+
+          {/* Toggle Pills */}
+          <div className="flex justify-end shrink-0">
+            <div className="bg-surface-container-high rounded-full p-1 inline-flex border border-outline-variant/60 shadow-xs">
+              <button
+                onClick={() => setActiveTab('current')}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${activeTab === 'current' ? 'bg-surface-lowest text-primary-container shadow-xs' : 'text-on-secondary-container hover:text-primary-container'}`}
+              >
+                Today's Medications
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${activeTab === 'history' ? 'bg-surface-lowest text-primary-container shadow-xs' : 'text-on-secondary-container hover:text-primary-container'}`}
+              >
+                Medication History
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Toggle Pills - Always visible */}
-      <div className="flex justify-end">
-        <div className="bg-surface-container-high rounded-full p-1.5 inline-flex shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] border border-outline-variant/30">
-          <button
-            onClick={() => setActiveTab('current')}
-            className={`px-8 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${activeTab === 'current' ? 'bg-surface-lowest text-primary-container shadow-sm' : 'text-on-secondary-container hover:text-primary-container'}`}
-          >
-            Today's Medications
-          </button>
-          <button
-            onClick={() => setActiveTab('history')}
-            className={`px-8 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${activeTab === 'history' ? 'bg-surface-lowest text-primary-container shadow-sm' : 'text-on-secondary-container hover:text-primary-container'}`}
-          >
-            Medication History
-          </button>
+      {activeTab === 'history' && (
+        <div className="flex justify-end mb-2">
+          <div className="bg-surface-container-high rounded-full p-1 inline-flex border border-outline-variant/60 shadow-xs">
+            <button
+              onClick={() => setActiveTab('current')}
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${activeTab === 'current' ? 'bg-surface-lowest text-primary-container shadow-xs' : 'text-on-secondary-container hover:text-primary-container'}`}
+            >
+              Today's Medications
+            </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${activeTab === 'history' ? 'bg-surface-lowest text-primary-container shadow-xs' : 'text-on-secondary-container hover:text-primary-container'}`}
+            >
+              Medication History
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-800 rounded-xl">
+        <div className="p-3 bg-[#FFF5F5] text-[#D93838] border border-[#D93838]/40 rounded-xl text-xs font-medium">
           {error}
         </div>
       )}
 
       {activeTab === 'current' ? (
-        <div className="flex flex-col lg:flex-row lg:space-x-8 lg:items-start pt-4">
-
+        <div>
           {/* Main List Area */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {medications.length === 0 ? (
-              <p className="text-on-surface-variant font-medium col-span-full">No medications scheduled for today.</p>
+              <div className="bg-surface-container-low/40 rounded-xl border border-outline-variant/60 p-6 text-center text-xs font-medium text-on-surface-variant col-span-full">
+                No medications scheduled for today.
+              </div>
             ) : (
               getSortedTimeGroups().map(group => {
                 const groupTotal = group.medications.length;
@@ -208,71 +228,69 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
                 const groupAdherence = groupTotal === 0 ? 0 : Math.round((groupTaken / groupTotal) * 100);
 
                 return (
-                  <div key={group.time} className="flex flex-col space-y-6">
+                  <div key={group.time} className="flex flex-col space-y-2.5">
                     {/* Time Header */}
-                    <div className="flex items-center space-x-4">
-                      <h3 className="text-xl font-bold text-primary-container tracking-tight">
+                    <div className="flex items-center justify-between px-1">
+                      <h3 className="text-sm font-bold text-primary-container tracking-tight flex items-center">
                         {getTimeDisplayName(group.time)}
                       </h3>
-                      <div className="bg-surface-container-highest px-3 py-1 rounded-full flex items-center space-x-2 text-xs font-semibold text-primary-container">
-                        <span className="w-2 h-2 rounded-full bg-primary-container"></span>
+                      <div className="bg-surface-container-highest px-2 py-0.5 rounded-full flex items-center space-x-1.5 text-[11px] font-semibold text-primary-container">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
                         <span>{groupAdherence}%</span>
                       </div>
                     </div>
 
                     {/* Cards Column */}
-                    <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-2.5">
                       {group.medications.map((medication, index) => {
                         const status = medication.adherenceStatus;
                         const isTaken = status === 'Taken';
                         const isMissed = status === 'Missed';
                         const isPending = status === 'Pending';
 
+                        const statusBadgeClass = 
+                          isTaken ? 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-600/30' :
+                          isMissed ? 'text-rose-700 bg-rose-50 ring-1 ring-rose-600/30' :
+                          'text-amber-700 bg-amber-50 ring-1 ring-amber-600/30';
+
                         return (
                           <div
                             key={medication.id || index}
-                            className={`flex flex-col justify-between p-7 rounded-2xl transition-all duration-300 ${isTaken ? 'bg-surface-lowest shadow-[0_10px_40px_rgba(12,30,38,0.03)]' :
-                                isMissed ? 'bg-[#FFF5F5] ring-1 ring-[#FFE0E0] shadow-sm relative overflow-hidden' :
-                                  'bg-surface-lowest shadow-[0_10px_40px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/10'
-                              }`}
+                            className={`flex flex-col justify-between p-3.5 rounded-xl transition-all duration-200 border ${
+                              isTaken ? 'bg-surface-lowest border-outline-variant/60 shadow-xs' :
+                              isMissed ? 'bg-[#FFF5F5] border-[#D93838]/40 shadow-xs relative overflow-hidden' :
+                              'bg-surface-lowest border-outline-variant/60 shadow-xs'
+                            }`}
                           >
                             {/* Missed active edge */}
-                            {isMissed && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#FFD1D1]" />}
+                            {isMissed && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#D93838]" />}
 
-                            <div className="flex flex-col space-y-3 items-start mb-6">
-                              <div className="flex flex-col">
-                                <h4 className="text-lg font-bold text-primary-container leading-tight mb-1">
+                            <div className="flex flex-col space-y-1.5 items-start mb-3">
+                              <div className="flex justify-between items-start w-full gap-2">
+                                <h4 className="text-sm font-bold text-primary-container leading-tight">
                                   {medication.medicineName || medication.medication}
                                 </h4>
-                                <span className="text-sm text-on-surface-variant font-medium">
-                                  {medication.dosage} • {medication.instructions || 'As directed'}
+                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${statusBadgeClass}`}>
+                                  {status}
                                 </span>
                               </div>
-
-                              {/* Status Badge */}
-                              <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${isTaken ? 'bg-surface-container-high text-primary-container' :
-                                  isMissed ? 'bg-[#FFE5E5] text-[#D93838]' :
-                                    'bg-surface-container-high text-primary-container'
-                                }`}>
-                                {status}
-                              </div>
+                              <span className="text-xs text-on-surface-variant font-medium">
+                                {medication.dosage} • {medication.instructions || 'As directed'}
+                              </span>
                             </div>
 
-                            <div className="mt-auto flex items-end justify-between">
-                              {/* Bottom Left Context */}
-                              {isTaken ? (
-                                <span className="text-xs text-on-surface-variant font-medium italic">
+                            <div className="mt-auto flex items-center justify-between pt-1">
+                              {isTaken && (
+                                <span className="text-[11px] text-on-surface-variant font-medium italic">
                                   Logged today
                                 </span>
-                              ) : (
-                                <div className="flex-1" />
                               )}
 
                               {/* Action Buttons */}
                               {isPending && (
                                 <button
                                   onClick={() => updateMedicationStatus(medication, 'Taken')}
-                                  className="w-full bg-primary-container text-primary-container rounded-full py-3.5 font-semibold transition-transform hover:scale-[1.02] shadow-md"
+                                  className="w-full bg-primary-container hover:bg-[#0d1322] text-on-primary rounded-lg py-1.5 text-xs font-semibold transition-all shadow-xs cursor-pointer"
                                 >
                                   Mark as Taken
                                 </button>
@@ -281,7 +299,7 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
                               {isMissed && (
                                 <button
                                   onClick={() => updateMedicationStatus(medication, 'Taken')}
-                                  className="w-full bg-surface-container-high text-primary-container rounded-full py-3.5 font-semibold transition-transform hover:scale-[1.02]"
+                                  className="w-full bg-primary-container hover:bg-[#0d1322] text-on-primary rounded-lg py-1.5 text-xs font-semibold transition-all shadow-xs cursor-pointer"
                                 >
                                   Mark as Taken
                                 </button>
@@ -290,7 +308,7 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
                               {isTaken && (
                                 <button
                                   onClick={() => updateMedicationStatus(medication, 'Pending')}
-                                  className="text-sm font-semibold text-primary-container underline decoration-primary-container/30 hover:decoration-primary-container underline-offset-4 pl-4 transition-colors"
+                                  className="text-xs font-semibold text-primary-container hover:text-primary underline decoration-primary-container/40 hover:decoration-primary-container underline-offset-2 ml-auto transition-colors cursor-pointer"
                                 >
                                   Undo
                                 </button>
@@ -308,39 +326,42 @@ function MedicationTracker({ patientId, initialTab = 'current' }) {
           </div>
         </div>
       ) : (
-        <div className="bg-surface-lowest rounded-2xl p-8 shadow-[0_10px_40px_rgba(12,30,38,0.03)] ring-1 ring-outline-variant/10">
-          <h2 className="text-2xl font-bold mb-6 text-primary-container tracking-tight">Medication History</h2>
+        <div className="bg-surface-lowest rounded-2xl p-4 md:p-6 shadow-xs border border-outline-variant/60">
+          <h2 className="text-lg font-bold mb-4 text-primary-container tracking-tight">Medication History</h2>
 
           {medicationHistory.length === 0 ? (
-            <p className="text-on-surface-variant">No medication history available.</p>
+            <div className="bg-surface-container-low/40 rounded-xl border border-outline-variant/60 p-5 text-center text-xs font-medium text-on-surface-variant">
+              No medication history available.
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
                 <thead>
-                  <tr className="text-on-surface-variant text-sm font-semibold border-b border-surface-container-high">
-                    <th className="py-4 px-4 font-semibold tracking-wide">Date</th>
-                    <th className="py-4 px-4 font-semibold tracking-wide">Time</th>
-                    <th className="py-4 px-4 font-semibold tracking-wide">Medication</th>
-                    <th className="py-4 px-4 font-semibold tracking-wide text-right">Status</th>
+                  <tr className="text-on-surface-variant text-xs font-semibold border-b border-outline-variant/60">
+                    <th className="py-2.5 px-3 tracking-wide">Date</th>
+                    <th className="py-2.5 px-3 tracking-wide">Time</th>
+                    <th className="py-2.5 px-3 tracking-wide">Medication</th>
+                    <th className="py-2.5 px-3 tracking-wide text-right">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-surface-container-low text-sm font-medium">
+                <tbody className="divide-y divide-outline-variant/30 text-xs font-medium">
                   {medicationHistory.map((record) => (
-                    <tr key={record.id} className="hover:bg-surface-container/30 transition-colors">
-                      <td className="py-4 px-4 text-primary-container">
+                    <tr key={record.id} className="hover:bg-surface-container-low/50 transition-colors">
+                      <td className="py-2.5 px-3 text-primary-container">
                         {new Date(record.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
-                      <td className="py-4 px-4 text-on-surface-variant capitalize">
+                      <td className="py-2.5 px-3 text-on-surface-variant capitalize">
                         {record.scheduledTime || 'Unscheduled'}
                       </td>
-                      <td className="py-4 px-4 text-primary-container font-bold">
+                      <td className="py-2.5 px-3 text-primary-container font-semibold">
                         {record.medication}
                       </td>
-                      <td className="py-4 px-4 text-right">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${record.adherenceStatus === 'Taken' ? 'bg-surface-container-highest text-primary-container' :
-                            record.adherenceStatus === 'Missed' ? 'bg-[#FFE5E5] text-[#D93838]' :
-                              'bg-surface-container-highest text-primary-container'
-                          }`}>
+                      <td className="py-2.5 px-3 text-right">
+                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
+                          record.adherenceStatus === 'Taken' ? 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-600/30' :
+                          record.adherenceStatus === 'Missed' ? 'text-rose-700 bg-rose-50 ring-1 ring-rose-600/30' :
+                          'text-amber-700 bg-amber-50 ring-1 ring-amber-600/30'
+                        }`}>
                           {record.adherenceStatus}
                         </span>
                       </td>

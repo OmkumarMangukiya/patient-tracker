@@ -62,7 +62,7 @@ function ResetPassword() {
       <div className="fixed top-[10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/5 blur-3xl opacity-50 pointer-events-none"></div>
       <div className="fixed bottom-[-10%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-primary-container/5 blur-3xl opacity-50 pointer-events-none"></div>
 
-      <div className="w-full max-w-md bg-surface-lowest rounded-3xl p-8 sm:p-10 shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/20 relative z-10">
+      <div className="w-full max-w-md bg-surface-lowest rounded-3xl p-8 sm:p-10 shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/60 relative z-10">
         <div className="text-left mb-8">
           <h1 className="text-3xl font-bold text-primary-container tracking-tight mb-2">Create New Password</h1>
           <p className="text-on-surface-variant font-medium text-sm">
@@ -100,7 +100,7 @@ function ResetPassword() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3.5 bg-surface-variant border-transparent rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all duration-300 text-primary-container font-medium"
+                className="w-full px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/60 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-primary-container font-medium shadow-xs"
                 placeholder="Must be at least 8 characters"
                 required
               />
@@ -115,7 +115,7 @@ function ResetPassword() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3.5 bg-surface-variant border-transparent rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all duration-300 text-primary-container font-medium"
+                className="w-full px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/60 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-primary-container font-medium shadow-xs"
                 placeholder="Confirm your new password"
                 required
               />
@@ -125,9 +125,9 @@ function ResetPassword() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full py-4 px-6 rounded-full font-bold transition-all duration-300 transform shadow-[0_10px_20px_rgba(12,30,38,0.2)] ${isLoading 
+                className={`w-full py-4 px-6 rounded-full font-bold transition-all duration-300 transform shadow-[0_10px_20px_rgba(19,27,46,0.25)] ${isLoading 
                     ? 'bg-surface-variant text-on-surface-variant/50 shadow-none cursor-not-allowed' 
-                    : 'text-on-primary bg-linear-to-br from-primary to-primary-container hover:-translate-y-0.5 hover:shadow-[0_15px_30px_rgba(12,30,38,0.3)]'
+                    : 'text-on-primary bg-primary-container hover:bg-[#0d1322] hover:-translate-y-0.5 hover:shadow-[0_15px_30px_rgba(19,27,46,0.35)]'
                   }`}
               >
                 {isLoading ? 'Resetting...' : 'Update Password'}

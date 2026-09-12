@@ -29,14 +29,14 @@ const getAvailableSlots = async (req, res) => {
     const existingAppointments = await prisma.Appointment.findMany({
       where: {
         doctorId: doctorIdStr,
-        appointmentDate: {
+        slotStart: {
           gte: queryDate,
           lt: nextDay
         },
         status: { not: 'cancelled' }
       },
       select: {
-        appointmentDate: true
+        slotStart: true
       }
     });
     
@@ -51,7 +51,7 @@ const getAvailableSlots = async (req, res) => {
     }
     
     // Filter out booked slots
-    const bookedTimes = existingAppointments.map(app => app.appointmentDate.getTime());
+    const bookedTimes = existingAppointments.map(app => app.slotStart.getTime());
     const availableSlots = allSlots.filter(slot => !bookedTimes.includes(slot.getTime()));
     
     res.status(200).json({

@@ -14,7 +14,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: #000000;
+  --color-primary: #131B2E;
   --color-primary-foreground: #FFFFFF;
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -38,12 +38,12 @@
   --color-primary-container: #131B2E;
   --color-on-primary: #FFFFFF;
   --color-on-primary-fixed: #131B2E;
-  --color-on-surface: #0C1E26;
+  --color-on-surface: #131B2E;
   --color-on-surface-variant: #131B2E;
   --color-primary-fixed-variant: #3F465C;
   --color-secondary-container: #D5E3FD;
   --color-on-secondary-container: #57657B;
-  --color-tertiary: #000000;
+  --color-tertiary: #131B2E;
   --color-outline-variant: #c1d1da;
 }
 

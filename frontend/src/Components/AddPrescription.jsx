@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import apiClient from '../lib/apiClient';
 
 function AddPrescription({ patientId, patientName, onClose }) {
@@ -194,27 +194,30 @@ function AddPrescription({ patientId, patientName, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 overflow-auto z-50" onClick={handleCloseModal}>
-      <div className="bg-surface-lowest rounded-lg shadow-lg p-6 w-full max-w-4xl max-h-screen overflow-auto" onClick={e => e.stopPropagation()}>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-black">
-            Add Prescription for {patientName || 'Patient'}
-          </h2>
+    <div className="fixed inset-0 bg-primary-container/60 backdrop-blur-xs flex items-center justify-center p-3 md:p-4 overflow-auto z-50" onClick={handleCloseModal}>
+      <div className="bg-surface-lowest rounded-2xl shadow-xl ring-1 ring-outline-variant/60 p-4 md:p-6 w-full max-w-4xl max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
+        <div className="flex justify-between items-center mb-4 pb-3 border-b border-outline-variant/60">
+          <div>
+            <h2 className="text-xl font-bold text-primary-container tracking-tight">
+              Add Prescription
+            </h2>
+            <p className="text-xs text-on-surface-variant font-medium">Patient: <span className="font-semibold text-primary-container">{patientName || 'Patient'}</span></p>
+          </div>
           <button
             onClick={handleCloseModal}
-            className="text-gray-500 hover:text-gray-800"
+            className="text-on-surface-variant hover:text-primary-container p-1 rounded-lg hover:bg-surface-variant transition-colors"
             type="button"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
         </div>
 
         {!validPatientId && (
-          <div className="p-4 mb-4 rounded bg-red-100 text-red-700 border border-red-300">
+          <div className="p-3 mb-3 rounded-xl bg-[#FFF5F5] text-[#D93838] border border-[#FFE0E0] text-xs">
             <strong>Patient ID is missing.</strong> This is likely a system error. Please try:
-            <ul className="list-disc ml-5 mt-2">
+            <ul className="list-disc ml-5 mt-1">
               <li>Closing this modal and selecting the patient again</li>
               <li>Refreshing the page and trying again</li>
             </ul>
@@ -222,24 +225,21 @@ function AddPrescription({ patientId, patientName, onClose }) {
         )}
 
         {message.text && (
-          <div className={`p-4 mb-4 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          <div className={`p-3 mb-3 rounded-xl text-xs font-medium ${message.type === 'success' ? 'bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]' : 'bg-[#FFF5F5] text-[#D93838] border border-[#FFE0E0]'
             }`}>
             {message.text}
           </div>
         )}
 
-        <div className="p-4 mb-6 border-2 border-blue-200 rounded-lg bg-blue-50">
-          <h3 className="text-lg font-semibold text-blue-700 mb-2">Medical Condition</h3>
-          <div className="mb-2">
-            <label htmlFor="condition" className="block text-sm font-medium text-gray-700 mb-1">
-              Select the condition being treated with this prescription
-            </label>
+        <div className="p-3.5 mb-4 border border-outline-variant/60 rounded-xl bg-surface-container-low/50">
+          <h3 className="text-xs font-bold text-primary-container uppercase tracking-wider mb-1.5">Medical Condition</h3>
+          <div>
             <select
               id="condition"
               name="condition"
               value={condition}
               onChange={handleConditionChange}
-              className="w-full border-2 border-blue-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              className="w-full border border-outline-variant/60 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary text-xs font-medium text-primary-container bg-surface"
             >
               {commonConditions.map(cond => (
                 <option key={cond} value={cond}>{cond}</option>
@@ -249,46 +249,46 @@ function AddPrescription({ patientId, patientName, onClose }) {
               <input
                 type="text"
                 placeholder="Specify condition"
-                className="w-full mt-2 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                className="w-full mt-2 border border-outline-variant/60 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary text-xs text-primary-container bg-surface"
                 onChange={(e) => setCondition(e.target.value)}
               />
             )}
           </div>
-          <p className="text-sm text-blue-600">This condition will be associated with the prescription and visible to the patient</p>
+          <p className="text-[11px] text-on-surface-variant font-medium mt-1">This condition will be associated with the prescription and visible to the patient</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Left column: Medicine search and list */}
-          <div className="border rounded p-4">
-            <h3 className="font-semibold mb-3 text-black">Search Medicines</h3>
+          <div className="border border-outline-variant/60 rounded-xl p-3.5 bg-surface-lowest">
+            <h3 className="font-bold text-xs uppercase tracking-wider mb-2.5 text-primary-container">Search Medicines</h3>
 
-            <div className="mb-4">
+            <div className="mb-3">
               <input
                 type="text"
                 placeholder="Search medicine by name..."
                 value={search}
                 onChange={handleSearchChange}
-                className="w-full px-3 py-2 border rounded text-black"
+                className="w-full px-3 py-1.5 border border-outline-variant/60 rounded-lg text-xs text-primary-container bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary"
               />
             </div>
 
-            <div className="max-h-96 overflow-y-auto border rounded">
+            <div className="max-h-80 overflow-y-auto border border-outline-variant/60 rounded-lg divide-y divide-outline-variant/40">
               {loading ? (
-                <div className="p-4 text-center text-gray-500">Loading medicines...</div>
+                <div className="p-4 text-center text-xs text-on-surface-variant font-medium">Loading medicines...</div>
               ) : filteredMedicines.length > 0 ? (
-                <ul className="divide-y">
+                <ul>
                   {filteredMedicines.slice(0, 50).map((med) => (
-                    <li key={med.id} className="p-3 hover:bg-gray-50 flex justify-between items-center">
+                    <li key={med.id} className="p-2.5 hover:bg-surface-variant/30 flex justify-between items-center border-b border-outline-variant/30 last:border-0 transition-colors">
                       <div>
-                        <div className="font-medium text-black">{med.name}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-bold text-xs text-primary-container">{med.name}</div>
+                        <div className="text-[11px] text-on-surface-variant font-medium">
                           {med.composition1} {med.composition2}
                         </div>
-                        <div className="text-sm text-gray-600">₹{med.price}</div>
+                        <div className="text-[11px] font-semibold text-primary">₹{med.price}</div>
                       </div>
                       <button
                         onClick={() => handleAddMedicine(med)}
-                        className="bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200"
+                        className="bg-primary/10 text-primary hover:bg-primary hover:text-on-primary px-2.5 py-1 rounded-md text-xs font-bold border border-primary/20 transition-colors"
                         type="button"
                       >
                         Add
@@ -297,137 +297,139 @@ function AddPrescription({ patientId, patientName, onClose }) {
                   ))}
                 </ul>
               ) : (
-                <div className="p-4 text-center text-gray-500">No medicines found</div>
+                <div className="p-4 text-center text-xs text-on-surface-variant">No medicines found</div>
               )}
             </div>
           </div>
 
           {/* Right column: Selected medications and prescription details */}
-          <div className="border rounded p-4">
-            <h3 className="font-semibold mb-3 text-black">Prescription Details</h3>
+          <div className="border border-outline-variant/60 rounded-xl p-3.5 bg-surface-lowest flex flex-col justify-between">
+            <div>
+              <h3 className="font-bold text-xs uppercase tracking-wider mb-2.5 text-primary-container">Prescription Details</h3>
 
-            {selectedMedicines.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 border rounded mb-4">
-                No medicines added to prescription yet. Search and add medicines from the left panel.
-              </div>
-            ) : (
-              <ul className="mb-4 divide-y border rounded">
-                {selectedMedicines.map((med, index) => (
-                  <li key={`${med.id}-${index}`} className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="font-medium text-black">{med.name}</div>
-                      <button
-                        onClick={() => handleRemoveMedicine(index)}
-                        className="text-red-500 hover:text-red-700"
-                        type="button"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                      </button>
-                    </div>
+              {selectedMedicines.length === 0 ? (
+                <div className="p-6 text-center text-xs text-on-surface-variant border border-outline-variant/60 rounded-lg mb-3 bg-surface-container-lowest">
+                  No medicines added to prescription yet. Search and add medicines from the left panel.
+                </div>
+              ) : (
+                <div className="max-h-80 overflow-y-auto border border-outline-variant/60 rounded-lg divide-y divide-outline-variant/40 mb-3">
+                  {selectedMedicines.map((med, index) => (
+                    <div key={`${med.id}-${index}`} className="p-3 bg-surface">
+                      <div className="flex justify-between items-start mb-1.5">
+                        <div className="font-bold text-xs text-primary-container">{med.name}</div>
+                        <button
+                          onClick={() => handleRemoveMedicine(index)}
+                          className="text-[#D93838] hover:opacity-80 p-0.5 rounded transition-opacity"
+                          type="button"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                          </svg>
+                        </button>
+                      </div>
 
-                    <div className="text-sm text-gray-500 mb-3">
-                      {med.composition1} {med.composition2}
-                    </div>
+                      <div className="text-[11px] text-on-surface-variant mb-2">
+                        {med.composition1} {med.composition2}
+                      </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Dosage
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">
+                            Dosage
+                          </label>
+                          <select
+                            value={med.dosage}
+                            onChange={(e) => handleMedicineChange(index, 'dosage', e.target.value)}
+                            className="w-full border border-outline-variant/60 rounded-md px-2 py-1 text-xs text-primary-container bg-surface-lowest focus:ring-1 focus:ring-primary/40 outline-none"
+                          >
+                            <option value="0.5">1/2 tab/cap</option>
+                            <option value="1">1 tab/cap</option>
+                            <option value="2">2 tabs/caps</option>
+                            <option value="5ml">5ml (liquid)</option>
+                            <option value="10ml">10ml (liquid)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">
+                            Duration
+                          </label>
+                          <select
+                            value={med.duration}
+                            onChange={(e) => handleMedicineChange(index, 'duration', e.target.value)}
+                            className="w-full border border-outline-variant/60 rounded-md px-2 py-1 text-xs text-primary-container bg-surface-lowest focus:ring-1 focus:ring-primary/40 outline-none"
+                          >
+                            <option value="3 days">3 days</option>
+                            <option value="5 days">5 days</option>
+                            <option value="7 days">7 days</option>
+                            <option value="10 days">10 days</option>
+                            <option value="15 days">15 days</option>
+                            <option value="30 days">30 days</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="mt-2">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">
+                          Timing
+                        </label>
+                        <div className="flex space-x-3 text-xs">
+                          <label className="flex items-center space-x-1 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={med.timing.morning}
+                              onChange={(e) => handleMedicineChange(index, 'timing.morning', e.target.checked)}
+                              className="rounded border-outline-variant/60 text-primary focus:ring-primary/30"
+                            />
+                            <span className="text-[11px] text-primary-container font-medium">Morn</span>
+                          </label>
+                          <label className="flex items-center space-x-1 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={med.timing.afternoon}
+                              onChange={(e) => handleMedicineChange(index, 'timing.afternoon', e.target.checked)}
+                              className="rounded border-outline-variant/60 text-primary focus:ring-primary/30"
+                            />
+                            <span className="text-[11px] text-primary-container font-medium">Aft</span>
+                          </label>
+                          <label className="flex items-center space-x-1 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={med.timing.evening}
+                              onChange={(e) => handleMedicineChange(index, 'timing.evening', e.target.checked)}
+                              className="rounded border-outline-variant/60 text-primary focus:ring-primary/30"
+                            />
+                            <span className="text-[11px] text-primary-container font-medium">Eve</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="mt-2">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">
+                          Instructions
                         </label>
                         <select
-                          value={med.dosage}
-                          onChange={(e) => handleMedicineChange(index, 'dosage', e.target.value)}
-                          className="w-full border rounded px-2 py-1 text-black"
+                          value={med.instructions}
+                          onChange={(e) => handleMedicineChange(index, 'instructions', e.target.value)}
+                          className="w-full border border-outline-variant/60 rounded-md px-2 py-1 text-xs text-primary-container bg-surface-lowest focus:ring-1 focus:ring-primary/40 outline-none"
                         >
-                          <option value="0.5">1/2 tablet/capsule</option>
-                          <option value="1">1 tablet/capsule</option>
-                          <option value="2">2 tablets/capsules</option>
-                          <option value="5ml">5ml (liquid)</option>
-                          <option value="10ml">10ml (liquid)</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Duration
-                        </label>
-                        <select
-                          value={med.duration}
-                          onChange={(e) => handleMedicineChange(index, 'duration', e.target.value)}
-                          className="w-full border rounded px-2 py-1 text-black"
-                        >
-                          <option value="3 days">3 days</option>
-                          <option value="5 days">5 days</option>
-                          <option value="7 days">7 days</option>
-                          <option value="10 days">10 days</option>
-                          <option value="15 days">15 days</option>
-                          <option value="30 days">30 days</option>
+                          <option value="before_food">Before food</option>
+                          <option value="after_food">After food</option>
+                          <option value="with_food">With food</option>
+                          <option value="empty_stomach">Empty stomach</option>
+                          <option value="as_needed">As needed</option>
                         </select>
                       </div>
                     </div>
-
-                    <div className="mt-3">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Timing
-                      </label>
-                      <div className="flex space-x-4">
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={med.timing.morning}
-                            onChange={(e) => handleMedicineChange(index, 'timing.morning', e.target.checked)}
-                            className="mr-1"
-                          />
-                          <span className="text-sm text-black">Morning</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={med.timing.afternoon}
-                            onChange={(e) => handleMedicineChange(index, 'timing.afternoon', e.target.checked)}
-                            className="mr-1"
-                          />
-                          <span className="text-sm text-black">Afternoon</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={med.timing.evening}
-                            onChange={(e) => handleMedicineChange(index, 'timing.evening', e.target.checked)}
-                            className="mr-1"
-                          />
-                          <span className="text-sm text-black">Evening</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div className="mt-3">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Instructions
-                      </label>
-                      <select
-                        value={med.instructions}
-                        onChange={(e) => handleMedicineChange(index, 'instructions', e.target.value)}
-                        className="w-full border rounded px-2 py-1 text-black"
-                      >
-                        <option value="before_food">Before food</option>
-                        <option value="after_food">After food</option>
-                        <option value="with_food">With food</option>
-                        <option value="empty_stomach">Empty stomach</option>
-                        <option value="as_needed">As needed</option>
-                      </select>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
 
             <button
               onClick={handleSubmit}
               disabled={loading || selectedMedicines.length === 0}
-              className={`w-full py-2 rounded font-medium text-black ${loading || selectedMedicines.length === 0 ? 'bg-blue-300' : 'bg-blue-600 hover:bg-blue-700'
+              className={`w-full py-2 rounded-xl font-bold text-xs text-on-primary transition-all shadow-xs ${loading || selectedMedicines.length === 0 ? 'bg-primary-container/40 cursor-not-allowed' : 'bg-primary-container hover:bg-[#0d1322] active:scale-[0.99]'
                 }`}
               type="button"
             >

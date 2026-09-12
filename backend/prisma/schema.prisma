@@ -78,10 +78,20 @@ model Appointment {
   doctorId        String
   doctor          Doctor   @relation(fields: [doctorId], references: [id])
   appointmentDate DateTime
+  slotStart       DateTime // Normalized hour boundary — enforced unique per doctor for active bookings
   status          String // "scheduled", "completed", "cancelled", "missed"
   purpose         String? // Brief description of appointment purpose
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  // CONCURRENCY GUARD: A partial unique index on (doctorId, slotStart)
+  // WHERE status <> 'cancelled' is enforced at the DB level via raw SQL migration
+  // (20250806120000_add_appointment_slot_unique_constraint). This prevents
+  // double-booking even under concurrent requests — two simultaneous inserts for
+  // the same doctor+slot will race to the DB; only one wins, and the loser gets
+  // a P2002 unique-violation which createAppointment.js catches and returns as a
+  // clean 409 "This time slot is already booked" response.
+  // Cancelled appointments are excluded from the index so a freed slot is re-bookable.
 }
 
 model MedicineAdherence {

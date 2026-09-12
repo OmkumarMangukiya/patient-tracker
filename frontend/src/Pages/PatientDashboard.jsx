@@ -272,7 +272,7 @@ function PatientDashboard({ initialTab }) {
           </div>
           <button
             onClick={handleRefresh}
-            className="w-full bg-linear-to-br from-primary to-primary-container text-on-primary font-bold py-3 rounded-full hover:shadow-[0_10px_20px_rgba(12,30,38,0.2)] hover:-translate-y-0.5 transition-all duration-300"
+            className="w-full bg-primary-container hover:bg-[#0d1322] text-on-primary font-bold py-3 rounded-full hover:shadow-[0_10px_20px_rgba(19,27,46,0.25)] hover:-translate-y-0.5 transition-all duration-300"
           >
             Try Again
           </button>
@@ -293,26 +293,26 @@ function PatientDashboard({ initialTab }) {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="w-full space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         {/* Header Section */}
-        <div className="bg-surface-lowest rounded-3xl p-8 shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/20 mb-8">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+        <div className="bg-surface-lowest rounded-2xl p-4 md:p-6 shadow-[0_10px_30px_rgba(12,30,38,0.03)] ring-1 ring-outline-variant/60 mb-4">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
             <div>
-              <h1 className="text-3xl font-bold text-on-surface">Welcome back, {userName}!</h1>
-              <p className="text-on-surface-variant">Here's your health overview for today</p>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-primary-container">Welcome back, {userName}!</h1>
+              <p className="text-xs md:text-sm text-on-surface-variant font-medium mt-0.5">Here's your health overview for today</p>
             </div>
-            <div className="flex items-center mt-4 md:mt-0">
+            <div className="flex items-center mt-2 md:mt-0">
               {lastRefreshed && (
-                <span className="text-sm text-on-surface-variant mr-3">
-                  Last updated: {lastRefreshed.toLocaleTimeString()}
+                <span className="text-xs text-on-surface-variant font-medium mr-3">
+                  Last updated: {lastRefreshed.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               )}
               <button
                 onClick={handleRefresh}
-                className="bg-surface-variant text-primary-container px-4 py-2 rounded-lg hover:bg-surface-container-highest flex items-center transition duration-200 font-medium ring-1 ring-outline-variant/20"
+                className="bg-surface-variant text-primary-container px-3 py-1.5 rounded-xl hover:bg-surface-container-highest flex items-center transition duration-200 text-xs font-semibold ring-1 ring-outline-variant/60 cursor-pointer"
               >
-                <RefreshCw className="h-5 w-5 mr-2" />
+                <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
                 Refresh
               </button>
             </div>
@@ -321,51 +321,51 @@ function PatientDashboard({ initialTab }) {
 
         {/* Stats Dashboard */}
         {activeTab === 'dashboard' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-surface-lowest rounded-xl shadow-md p-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <div className="bg-surface-lowest rounded-xl shadow-xs border border-outline-variant/60 p-3.5">
               <div className="flex items-center">
-                <div className="p-3 rounded-lg bg-surface-container-low mr-4">
-                  <Scroll className="h-6 w-6 text-primary-container" />
+                <div className="p-2.5 rounded-lg bg-surface-container-low mr-3 shrink-0">
+                  <Scroll className="h-5 w-5 text-primary-container" />
                 </div>
                 <div>
-                  <p className="text-sm text-on-surface-variant">Prescriptions</p>
-                  <p className="text-2xl font-bold text-on-surface">{stats.totalPrescriptions}</p>
+                  <p className="text-xs font-medium text-on-surface-variant">Prescriptions</p>
+                  <p className="text-xl font-bold text-primary-container">{stats.totalPrescriptions}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-surface-lowest rounded-xl shadow-md p-6">
+            <div className="bg-surface-lowest rounded-xl shadow-xs border border-outline-variant/60 p-3.5">
               <div className="flex items-center">
-                <div className="p-3 rounded-lg bg-surface-container-low mr-4">
-                  <PillIcon className="h-6 w-6 text-primary-container" />
+                <div className="p-2.5 rounded-lg bg-surface-container-low mr-3 shrink-0">
+                  <PillIcon className="h-5 w-5 text-primary-container" />
                 </div>
                 <div>
-                  <p className="text-sm text-on-surface-variant">Active Medications</p>
-                  <p className="text-2xl font-bold text-on-surface">{stats.activeMedications}</p>
+                  <p className="text-xs font-medium text-on-surface-variant">Active Meds</p>
+                  <p className="text-xl font-bold text-primary-container">{stats.activeMedications}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-surface-lowest rounded-xl shadow-md p-6">
+            <div className="bg-surface-lowest rounded-xl shadow-xs border border-outline-variant/60 p-3.5">
               <div className="flex items-center">
-                <div className="p-3 rounded-lg bg-surface-container-low mr-4">
-                  <PieChart className="h-6 w-6 text-primary-container" />
+                <div className="p-2.5 rounded-lg bg-surface-container-low mr-3 shrink-0">
+                  <PieChart className="h-5 w-5 text-primary-container" />
                 </div>
                 <div>
-                  <p className="text-sm text-on-surface-variant">Adherence Rate</p>
-                  <p className="text-2xl font-bold text-on-surface">{stats.adherenceRate}%</p>
+                  <p className="text-xs font-medium text-on-surface-variant">Adherence</p>
+                  <p className="text-xl font-bold text-primary-container">{stats.adherenceRate}%</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-surface-lowest rounded-xl shadow-md p-6">
+            <div className="bg-surface-lowest rounded-xl shadow-xs border border-outline-variant/60 p-3.5">
               <div className="flex items-center">
-                <div className="p-3 rounded-lg bg-surface-container-low mr-4">
-                  <Calendar className="h-6 w-6 text-primary-container" />
+                <div className="p-2.5 rounded-lg bg-surface-container-low mr-3 shrink-0">
+                  <Calendar className="h-5 w-5 text-primary-container" />
                 </div>
                 <div>
-                  <p className="text-sm text-on-surface-variant">Upcoming Appointments</p>
-                  <p className="text-2xl font-bold text-on-surface">{stats.upcomingAppointments}</p>
+                  <p className="text-xs font-medium text-on-surface-variant">Upcoming Appts</p>
+                  <p className="text-xl font-bold text-primary-container">{stats.upcomingAppointments}</p>
                 </div>
               </div>
             </div>
@@ -374,128 +374,137 @@ function PatientDashboard({ initialTab }) {
 
         {/* Medication Reminders */}
         {!isLoading && currentTimeMedications.length > 0 && (
-          <div className="bg-linear-to-r from-primary to-primary-container rounded-xl shadow-md p-6 mb-6 text-on-primary">
-            <div className="flex items-center mb-4">
-              <span className="text-3xl mr-3">{getTimeEmoji(getCurrentTimePeriod())}</span>
-              <h2 className="text-2xl font-semibold">Time for your {getCurrentTimePeriod()} medications!</h2>
+          <div className="bg-primary-container rounded-2xl shadow-xs p-4 md:p-5 mb-4 text-on-primary">
+            <div className="flex items-center mb-3">
+              <span className="text-2xl mr-2.5">{getTimeEmoji(getCurrentTimePeriod())}</span>
+              <h2 className="text-lg md:text-xl font-bold">Time for your {getCurrentTimePeriod()} medications!</h2>
             </div>
-            <p className="mb-4">
-              You have {currentTimeMedications.length} medication{currentTimeMedications.length > 1 ? 's' : ''} to take now:
+            <p className="text-xs text-on-primary/80 mb-3">
+              You have {currentTimeMedications.length} medication{currentTimeMedications.length > 1 ? 's' : ''} scheduled right now:
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 mb-3">
               {currentTimeMedications.map((med, index) => (
-                <div key={med.id || index} className="bg-white/15 p-3 rounded-lg backdrop-blur-sm">
-                  <div className="font-medium">{med.medicineName || med.medication}</div>
-                  <div className="text-sm opacity-80">{med.dosage}</div>
+                <div key={med.id || index} className="bg-white/10 p-2.5 rounded-xl border border-white/10 backdrop-blur-xs">
+                  <div className="font-semibold text-xs text-white">{med.medicineName || med.medication}</div>
+                  <div className="text-[11px] text-white/75">{med.dosage}</div>
                 </div>
               ))}
             </div>
             <button
               onClick={() => switchToTab('medications')}
-              className="bg-surface-lowest text-primary-container px-4 py-2 rounded-lg hover:bg-surface-container-low font-medium transition duration-200"
+              className="bg-surface-lowest text-primary-container px-3.5 py-1.5 rounded-lg hover:bg-surface-container-low text-xs font-semibold transition duration-200 cursor-pointer shadow-xs"
             >
               Mark as Taken
             </button>
           </div>
         )}
 
-        {/* Navigation Tabs - Removed favoring Sidebar */}
+        {/* Main Content Area */}
+        {isLoading ? (
+          <div className="bg-surface-lowest rounded-2xl shadow-xs ring-1 ring-outline-variant/60 p-8 flex justify-center items-center h-48">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
+          </div>
+        ) : (
+          <div className="w-full">
+            {activeTab === 'dashboard' && (
+              <div className="bg-surface-lowest rounded-2xl shadow-xs ring-1 ring-outline-variant/60 p-4 md:p-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-base font-bold text-primary-container">Recent Prescriptions</h3>
+                  <button
+                    onClick={() => switchToTab('prescriptions')}
+                    className="text-primary-container hover:text-primary flex items-center text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    View All Prescriptions
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
 
-        {/* Main Content */}
-        <div className="bg-surface-lowest rounded-b-xl shadow-md p-6">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-container"></div>
-            </div>
-          ) : (
-            <>
-              {activeTab === 'dashboard' && (
-                <div className="mb-8">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-semibold text-on-surface">Recent Prescriptions</h3>
-                    <button
-                      onClick={() => switchToTab('prescriptions')}
-                      className="text-primary-container hover:text-on-surface flex items-center text-sm font-medium transition-colors"
-                    >
-                      View All Prescriptions
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                {prescriptions.length === 0 ? (
+                  <div className="bg-surface-container-low/40 rounded-xl border border-outline-variant/60 p-5 text-center text-xs font-medium text-on-surface-variant">
+                    No prescriptions found
                   </div>
-
-                  {prescriptions.length === 0 ? (
-                    <p className="text-on-surface-variant">No prescriptions found</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {prescriptions.slice(0, 5).map((prescription) => (
-                        <div key={prescription.id} className="border border-outline-variant/20 rounded-lg p-4 hover:bg-surface-container-low transition-colors">
-                          <div className="flex justify-between">
-                            <div>
-                              <p className="font-medium text-on-surface">Dr. {prescription.doctor.name}</p>
-                              <p className="text-sm text-on-surface-variant">
-                                {new Date(prescription.date).toLocaleDateString()}
-                                <span className="mx-2">•</span>
-                                {prescription.medicines.length} medication{prescription.medicines.length !== 1 ? 's' : ''}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => switchToTab('prescriptions')}
-                              className="text-primary-container hover:text-on-surface text-sm font-medium transition-colors"
-                            >
-                              Details
-                            </button>
+                ) : (
+                  <div className="space-y-2.5">
+                    {prescriptions.slice(0, 5).map((prescription) => (
+                      <div key={prescription.id} className="border border-outline-variant/60 rounded-xl p-3.5 hover:bg-surface-container-low/50 transition-colors">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-semibold text-xs text-primary-container">Dr. {prescription.doctor.name}</p>
+                            <p className="text-[11px] text-on-surface-variant mt-0.5">
+                              {new Date(prescription.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                              <span className="mx-1.5">•</span>
+                              {prescription.medicines.length} medication{prescription.medicines.length !== 1 ? 's' : ''}
+                            </p>
                           </div>
-
-                          {/* Show a preview of medicines */}
-                          {prescription.medicines.length > 0 && (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {prescription.medicines.slice(0, 3).map(med => (
-                                <div key={med.id} className="bg-secondary-container px-2 py-1 rounded text-xs text-on-secondary-container">
-                                  {med.medicineName}
-                                </div>
-                              ))}
-                              {prescription.medicines.length > 3 && (
-                                <div className="bg-surface-container-low px-2 py-1 rounded text-xs text-on-surface-variant">
-                                  +{prescription.medicines.length - 3} more
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-
-                      {prescriptions.length > 5 && (
-                        <div className="text-center pt-2">
                           <button
                             onClick={() => switchToTab('prescriptions')}
-                            className="text-primary-container hover:text-on-surface text-sm font-medium transition-colors"
+                            className="text-primary-container hover:text-primary text-xs font-semibold transition-colors px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container"
                           >
-                            See {prescriptions.length - 5} more prescriptions
+                            Details
                           </button>
                         </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
 
-              {activeTab === 'medications' && patientId && <MedicationTracker patientId={patientId} />}
-              {activeTab === 'prescriptions' && patientId && <ViewPrescription patientId={patientId} />}
-              {activeTab === 'appointments' && (
-                <div className="space-y-8">
-                  <AppointmentBooking />
-                  <AppointmentList userRole="patient" />
-                </div>
-              )}
-              {activeTab === 'messages' && (
-                <div className="h-full">
-                  <MessagesInterface userRole="patient" />
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                        {/* Show a preview of medicines */}
+                        {prescription.medicines.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {prescription.medicines.slice(0, 3).map(med => (
+                              <div key={med.id} className="bg-secondary-container px-2 py-0.5 rounded-full text-[11px] font-semibold text-on-secondary-container">
+                                {med.medicineName}
+                              </div>
+                            ))}
+                            {prescription.medicines.length > 3 && (
+                              <div className="bg-surface-container-low border border-outline-variant/40 px-2 py-0.5 rounded-full text-[11px] text-on-surface-variant">
+                                +{prescription.medicines.length - 3} more
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {prescriptions.length > 5 && (
+                      <div className="text-center pt-2">
+                        <button
+                          onClick={() => switchToTab('prescriptions')}
+                          className="text-primary-container hover:text-primary text-xs font-semibold transition-colors"
+                        >
+                          See {prescriptions.length - 5} more prescriptions
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'medications' && patientId && (
+              <div className="bg-surface-lowest rounded-2xl shadow-xs ring-1 ring-outline-variant/60 p-4 md:p-6 w-full">
+                <MedicationTracker patientId={patientId} />
+              </div>
+            )}
+
+            {activeTab === 'prescriptions' && patientId && (
+              <div className="w-full">
+                <ViewPrescription patientId={patientId} />
+              </div>
+            )}
+
+            {activeTab === 'appointments' && (
+              <div className="space-y-4 w-full">
+                <AppointmentBooking />
+                <AppointmentList userRole="patient" />
+              </div>
+            )}
+
+            {activeTab === 'messages' && (
+              <div className="w-full h-[650px]">
+                <MessagesInterface userRole="patient" />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -9,8 +9,9 @@ import { Button } from "../../Components/ui/button";
 import { Input } from "../../Components/ui/input";
 import { cn } from "../../lib/utils";
 
-function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSelect }) {
+function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSelect, onBack }) {
   const [view, setView] = useState(initialSelectedPatient ? 'new' : 'list'); // 'list', 'chat', 'new'
+  const [fromInitialPatient, setFromInitialPatient] = useState(Boolean(initialSelectedPatient));
   const [selectedChat, setSelectedChat] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [chats, setChats] = useState([]);
@@ -27,6 +28,7 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
   useEffect(() => {
     if (initialSelectedPatient) {
       setSelectedPatient(initialSelectedPatient);
+      setFromInitialPatient(true);
       setView('new');
     }
   }, [initialSelectedPatient]);
@@ -129,8 +131,15 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
   };
 
   const handleBack = () => {
+    if (fromInitialPatient && onBack) {
+      setFromInitialPatient(false);
+      if (onPatientSelect) onPatientSelect();
+      onBack();
+      return;
+    }
     setView('list');
     setMessages([]);
+    setSelectedChat(null);
   };
 
   const handleChatStart = (newChat) => {
@@ -311,31 +320,31 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
 
   // Render chat list view
   const renderChatList = () => (
-    <Card className="w-full h-full max-h-full flex flex-col bg-surface-lowest shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/20 rounded-3xl overflow-hidden">
-      <CardHeader className="bg-surface-lowest border-b border-outline-variant/20 pb-4 pt-6 px-6 shrink-0">
+    <Card className="w-full h-full max-h-full flex flex-col bg-surface-lowest shadow-xs ring-1 ring-outline-variant/60 rounded-2xl overflow-hidden">
+      <CardHeader className="bg-surface-lowest border-b border-outline-variant/60 pb-3 pt-4 px-4 sm:px-5 shrink-0">
         <CardTitle className="flex justify-between items-center text-primary-container">
           <div className="flex items-center">
-            <MessageSquare className="h-5 w-5 mr-3 text-primary" />
-            <span className="font-bold tracking-tight">Messages</span>
+            <MessageSquare className="h-4 w-4 mr-2.5 text-primary" />
+            <span className="font-bold text-lg tracking-tight">Messages</span>
           </div>
           <Button
             onClick={handleNewChatClick}
             variant="ghost"
             size="icon"
-            className="rounded-full bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary"
+            className="rounded-full h-8 w-8 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary"
           >
-            <Plus className="h-5 w-5" />
+            <Plus className="h-4 w-4" />
           </Button>
         </CardTitle>
-        <div className="relative">
+        <div className="relative mt-2">
           <Input
             type="text"
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-9 h-8.5 text-xs rounded-xl border-outline-variant/60 bg-surface-variant/30 text-primary-container"
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-on-surface-variant opacity-60" />
         </div>
       </CardHeader>
 
@@ -343,45 +352,45 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
         <CardContent className="p-0">
           {loading ? (
             <div className="flex justify-center items-center h-32">
-              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-primary"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
             </div>
           ) : error ? (
-            <div className="text-center p-4 text-red-500">{error}</div>
+            <div className="text-center p-4 text-xs text-[#D93838]">{error}</div>
           ) : filteredChats.length === 0 ? (
-            <div className="flex flex-col items-center justify-center text-center p-8 text-gray-500 h-64">
+            <div className="flex flex-col items-center justify-center text-center p-8 text-on-surface-variant h-64">
               {searchQuery ? (
                 <>
-                  <Search className="h-8 w-8 mb-2 text-gray-400" />
-                  <p>No chats found matching "{searchQuery}"</p>
+                  <Search className="h-6 w-6 mb-2 opacity-50" />
+                  <p className="text-xs">No chats found matching "{searchQuery}"</p>
                 </>
               ) : (
                 <>
-                  <MessageSquare className="h-12 w-12 mb-3 text-gray-300" />
-                  <p className="mb-2">No conversations yet</p>
-                  <p className="text-sm">
+                  <MessageSquare className="h-8 w-8 mb-2 opacity-40" />
+                  <p className="text-xs font-semibold text-primary-container mb-1">No conversations yet</p>
+                  <p className="text-[11px]">
                     Click the + button to start a new conversation
                   </p>
                 </>
               )}
             </div>
           ) : (
-            <div>
+            <div className="divide-y divide-outline-variant/40">
               {filteredChats.map((chat) => (
                 <div
                   key={chat.id}
                   onClick={() => handleChatSelect(chat)}
-                  className="border-b last:border-b-0 p-4 hover:bg-gray-50 cursor-pointer"
+                  className="p-3 sm:p-3.5 hover:bg-surface-variant/40 cursor-pointer transition-colors"
                 >
                   <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-gray-900">
+                    <h3 className="font-bold text-xs text-primary-container">
                       {userRole === 'doctor' ? '' : 'Dr. '}
                       {getRecipientName(chat)}
                     </h3>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-[10px] text-on-surface-variant font-medium">
                       {chat.messages?.length > 0 && formatRelativeTime(chat.messages[0].createdAt)}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1 truncate">
+                  <p className="text-xs text-on-surface-variant mt-0.5 truncate">
                     {getLastMessage(chat)}
                   </p>
                 </div>
@@ -395,60 +404,60 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
 
   // Render chat view
   const renderChatView = () => (
-    <Card className="w-full h-full max-h-full flex flex-col bg-surface-lowest shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/20 rounded-3xl overflow-hidden">
-      <CardHeader className="bg-surface-lowest border-b border-outline-variant/20 p-4 pb-4 shrink-0">
+    <Card className="w-full h-full max-h-full flex flex-col bg-surface-lowest shadow-xs ring-1 ring-outline-variant/60 rounded-2xl overflow-hidden">
+      <CardHeader className="bg-surface-lowest border-b border-outline-variant/60 p-3 sm:p-4 shrink-0">
         <div className="flex items-center">
           <Button
             onClick={handleBack}
             variant="ghost"
             size="icon"
-            className="mr-2 hover:bg-surface-container-low rounded-full"
+            className="mr-2 h-7 w-7 hover:bg-surface-container-low rounded-full"
           >
-            <ChevronLeft className="h-5 w-5 text-on-surface-variant" />
+            <ChevronLeft className="h-4 w-4 text-on-surface-variant" />
           </Button>
           <div>
-            <CardTitle className="text-xl font-bold text-primary-container">
+            <CardTitle className="text-base font-bold text-primary-container leading-none">
               {userRole === 'doctor' ? '' : 'Dr. '}{getRecipientName(selectedChat)}
             </CardTitle>
-            <CardDescription className="text-on-surface-variant font-medium">
+            <CardDescription className="text-xs text-on-surface-variant font-medium mt-0.5">
               {userRole === 'doctor' ? 'Patient' : 'Doctor'}
             </CardDescription>
           </div>
         </div>
       </CardHeader>
 
-      <ScrollArea className="grow px-4 py-2 bg-surface">
+      <ScrollArea className="grow px-3 sm:px-4 py-2 bg-surface">
         <CardContent className="p-0">
           {loading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-primary"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
             </div>
           ) : messages.length === 0 ? (
-            <div className="flex justify-center items-center h-64 text-gray-500">
+            <div className="flex justify-center items-center h-64 text-xs text-on-surface-variant">
               No messages yet. Start the conversation!
             </div>
           ) : (
             <div className="space-y-2">
               {groupMessagesByDate().map((group, groupIndex) => (
                 <div key={groupIndex}>
-                  <div className="flex justify-center my-4">
-                    <div className="bg-gray-200 rounded-full px-3 py-1 text-xs text-gray-600">
+                  <div className="flex justify-center my-3">
+                    <div className="bg-surface-variant/70 border border-outline-variant/60 rounded-full px-2.5 py-0.5 text-[10px] font-semibold text-on-surface-variant">
                       {formatDate(new Date(group.date))}
                     </div>
                   </div>
                   {group.messages.map((message, messageIndex) => (
                     <div
                       key={message.id || messageIndex}
-                      className="mb-4"
+                      className="mb-2.5"
                     >
                       {/* Message container with alignment */}
                       <div className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'}`}>
                         <div
                           className={cn(
-                            "max-w-[80%] rounded-2xl p-4 shadow-sm",
+                            "max-w-[80%] rounded-xl p-2.5 sm:p-3 text-xs shadow-xs",
                             isCurrentUser(message)
-                              ? "bg-primary-container text-on-primary rounded-br-sm"
-                              : "bg-surface text-on-surface-variant rounded-bl-sm ring-1 ring-outline-variant/20"
+                              ? "bg-primary-container text-on-primary rounded-br-xs"
+                              : "bg-surface-lowest text-on-surface-variant rounded-bl-xs border border-outline-variant/60"
                           )}
                         >
                           {message.content}
@@ -456,11 +465,11 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
                       </div>
 
                       {/* Timestamp - completely separate row */}
-                      <div className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'} mt-1`}>
+                      <div className={`flex ${isCurrentUser(message) ? 'justify-end' : 'justify-start'} mt-0.5`}>
                         <div
                           className={cn(
-                            "text-xs",
-                            isCurrentUser(message) ? "text-gray-600 mr-1" : "text-gray-500 ml-1"
+                            "text-[10px]",
+                            isCurrentUser(message) ? "text-on-surface-variant/70 mr-1" : "text-on-surface-variant/70 ml-1"
                           )}
                         >
                           {formatTime(message.createdAt)}
@@ -476,21 +485,21 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
         </CardContent>
       </ScrollArea>
 
-      <CardFooter className="p-4 border-t bg-surface-lowest shrink-0">
+      <CardFooter className="p-2.5 sm:p-3 border-t border-outline-variant/60 bg-surface-lowest shrink-0">
         <form onSubmit={handleSendMessage} className="flex w-full gap-2">
           <Input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1"
+            className="flex-1 h-9 text-xs rounded-xl border-outline-variant/60 bg-surface text-primary-container"
           />
           <Button
             type="submit"
             disabled={!newMessage.trim()}
-            className="bg-primary text-on-primary hover:bg-primary-container hover:shadow-[0_4px_12px_rgba(12,30,38,0.1)] rounded-full transition-all"
+            className="bg-primary text-on-primary hover:bg-primary-container rounded-xl h-9 w-9 p-0 flex items-center justify-center transition-all shrink-0 shadow-xs"
           >
-            <Send className="h-5 w-5" />
+            <Send className="h-4 w-4" />
           </Button>
         </form>
       </CardFooter>
@@ -499,21 +508,18 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
 
   // Render new chat view
   const renderNewChatView = () => (
-    <Card className="w-full h-full max-h-full flex flex-col">
-      <CardHeader className="bg-medical-green-light shrink-0">
+    <Card className="w-full h-full max-h-full flex flex-col bg-surface-lowest ring-1 ring-outline-variant/60 rounded-2xl overflow-hidden shadow-xs">
+      <CardHeader className="bg-surface-container-low/50 border-b border-outline-variant/60 p-3 sm:p-4 shrink-0">
         <div className="flex items-center">
           <Button
-            onClick={() => {
-              handleBack();
-              if (onPatientSelect) onPatientSelect();
-            }}
+            onClick={handleBack}
             variant="ghost"
             size="icon"
-            className="mr-2 hover:bg-medical-green-light rounded-full"
+            className="mr-2 h-7 w-7 hover:bg-surface-container-low rounded-full"
           >
-            <ChevronLeft className="h-5 w-5 text-gray-700" />
+            <ChevronLeft className="h-4 w-4 text-on-surface-variant" />
           </Button>
-          <CardTitle className="text-gray-800">
+          <CardTitle className="text-base font-bold text-primary-container">
             {selectedPatient ? `Chat with ${selectedPatient.name}` : 'Start a new conversation'}
           </CardTitle>
         </div>
@@ -521,11 +527,11 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
       <CardContent className="p-6 grow overflow-auto">
         {selectedPatient ? (
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-medical-green-light flex items-center justify-center mb-4">
-              <MessageSquare className="h-8 w-8 text-medical-green-dark" />
+            <div className="w-12 h-12 mx-auto rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-3 text-primary">
+              <MessageSquare className="h-6 w-6" />
             </div>
-            <h3 className="text-xl font-medium text-gray-800 mb-2">{selectedPatient.name}</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className="text-lg font-bold text-primary-container mb-1">{selectedPatient.name}</h3>
+            <p className="text-xs text-on-surface-variant font-medium mb-5">
               {selectedPatient.age && `${selectedPatient.age} years old`}
               {selectedPatient.phone && ` • ${selectedPatient.phone}`}
             </p>
@@ -665,19 +671,19 @@ function EnhancedChatInterface({ userRole, initialSelectedPatient, onPatientSele
                   setLoading(false);
                 }
               }}
-              className="bg-medical-green hover:bg-medical-green-dark text-black"
+              className="bg-primary-container hover:bg-[#0d1322] text-on-primary font-bold text-xs px-4 py-2 rounded-xl shadow-xs"
               disabled={loading}
             >
               {loading ? 'Processing...' : error ? 'Try Again' : 'Start conversation'}
             </Button>
             {error && (
-              <div className="mt-3 text-red-500 text-sm">
+              <div className="mt-3 text-[#D93838] text-xs font-medium">
                 {error}
               </div>
             )}
           </div>
         ) : (
-          <p className="text-gray-500 text-center mt-8">
+          <p className="text-on-surface-variant text-xs text-center mt-8">
             Select a recipient to start a new conversation
           </p>
         )}

@@ -119,7 +119,7 @@ function RetrievePatient({ onAddPrescription }) {
   };
 
   if (loading) {
-    return <div className="text-center p-4 text-black">Loading patients...</div>;
+    return <div className="text-center p-4 text-primary-container">Loading patients...</div>;
   }
 
   if (error) {
@@ -128,100 +128,100 @@ function RetrievePatient({ onAddPrescription }) {
 
   if (showPatientDetails && selectedPatient) {
     return (
-      <div className="container mx-auto p-4">
+      <div className="w-full p-2 sm:p-4 animate-in fade-in duration-300">
         <button
           onClick={handleBackToPatientList}
-          className="flex items-center text-blue-600 hover:text-blue-800 mb-6"
+          className="flex items-center text-xs font-bold text-primary hover:underline mb-4"
         >
-          <ArrowLeft className="h-4 w-4 mr-1" />
+          <ArrowLeft className="h-3.5 w-3.5 mr-1" />
           Back to Patient List
         </button>
 
-        <div className="bg-surface-lowest rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex flex-col md:flex-row justify-between">
+        <div className="bg-surface-lowest rounded-2xl shadow-xs border border-outline-variant/60 p-4 sm:p-5 mb-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedPatient.name}</h2>
-              <p className="text-gray-600 mb-1">{selectedPatient.email}</p>
-              <div className="flex flex-wrap gap-4 mt-3">
-                <div className="bg-gray-100 px-3 py-1 rounded text-gray-700">
-                  Age: {selectedPatient.age || 'Not specified'}
+              <h2 className="text-xl font-bold text-primary-container mb-0.5">{selectedPatient.name}</h2>
+              <p className="text-xs text-on-surface-variant font-medium">{selectedPatient.email}</p>
+              <div className="flex flex-wrap gap-2 mt-2.5">
+                <div className="bg-surface-variant/50 border border-outline-variant/60 px-2.5 py-0.5 rounded-md text-xs font-medium text-primary-container">
+                  Age: {selectedPatient.age || 'N/A'}
                 </div>
-                <div className="bg-gray-100 px-3 py-1 rounded text-gray-700">
-                  Gender: {selectedPatient.gender || 'Not specified'}
+                <div className="bg-surface-variant/50 border border-outline-variant/60 px-2.5 py-0.5 rounded-md text-xs font-medium text-primary-container">
+                  Gender: {selectedPatient.gender || 'N/A'}
                 </div>
-                <div className="bg-gray-100 px-3 py-1 rounded text-gray-700">
+                <div className="bg-surface-variant/50 border border-outline-variant/60 px-2.5 py-0.5 rounded-md text-xs font-medium text-primary-container">
                   Status: {selectedPatient.status || 'Active'}
                 </div>
               </div>
             </div>
-            <div className="mt-4 md:mt-0">
+            <div>
               <button
                 onClick={() => handleAddPrescription(selectedPatient)}
-                className="bg-blue-500 text-black px-4 py-2 rounded flex items-center hover:bg-blue-600"
+                className="bg-primary-container text-on-primary px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center hover:bg-[#0d1322] transition-colors shadow-xs"
               >
-                <PlusCircle className="h-5 w-5 mr-2" />
+                <PlusCircle className="h-4 w-4 mr-1.5" />
                 Add New Prescription
               </button>
             </div>
           </div>
         </div>
 
-        <div className="mt-8">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-            <FileText className="h-5 w-5 mr-2 text-blue-600" />
+        <div>
+          <h3 className="text-sm font-bold text-primary-container uppercase tracking-wider mb-3 flex items-center">
+            <FileText className="h-4 w-4 mr-1.5 text-primary" />
             Prescription History
           </h3>
 
           {loadingPrescriptions ? (
-            <div className="text-center p-6 bg-surface-lowest rounded-lg shadow-sm">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Loading prescriptions...</p>
+            <div className="text-center p-8 bg-surface-lowest rounded-2xl border border-outline-variant/60">
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent mx-auto"></div>
+              <p className="mt-2 text-xs text-on-surface-variant font-medium">Loading prescriptions...</p>
             </div>
           ) : patientPrescriptions.length === 0 ? (
-            <div className="bg-surface-lowest rounded-lg shadow-sm p-6 text-center text-gray-600">
+            <div className="bg-surface-lowest rounded-2xl border border-outline-variant/60 p-6 text-center text-xs text-on-surface-variant font-medium">
               No prescriptions found for this patient
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {patientPrescriptions.map((prescription) => (
-                <div key={prescription.id} className="bg-surface-lowest rounded-lg shadow-sm p-5 border border-gray-200">
-                  <div className="flex justify-between items-start mb-4 pb-3 border-b">
+                <div key={prescription.id} className="bg-surface-lowest rounded-xl p-3.5 sm:p-4 border border-outline-variant/60 shadow-xs">
+                  <div className="flex justify-between items-start mb-3 pb-2.5 border-b border-outline-variant/60">
                     <div>
-                      <div className="flex items-center text-gray-700 mb-1">
-                        <Calendar className="h-4 w-4 mr-2 text-blue-600" />
-                        <span className="font-medium">
+                      <div className="flex items-center text-primary-container text-xs font-bold mb-0.5">
+                        <Calendar className="h-3.5 w-3.5 mr-1.5 text-primary" />
+                        <span>
                           {format(new Date(prescription.date), 'MMMM d, yyyy')}
                         </span>
                       </div>
-                      <div className="flex items-center text-gray-600">
-                        <Clock className="h-4 w-4 mr-2 text-gray-500" />
+                      <div className="flex items-center text-[11px] text-on-surface-variant font-medium">
+                        <Clock className="h-3 w-3 mr-1.5 opacity-60" />
                         <span>{format(new Date(prescription.date), 'h:mm a')}</span>
                       </div>
                     </div>
-                    <div className="bg-blue-50 px-2 py-1 rounded-full text-xs text-blue-600">
+                    <div className="bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-md text-[11px] font-bold text-primary">
                       {prescription.medicines.length} medication{prescription.medicines.length !== 1 ? 's' : ''}
                     </div>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {prescription.medicines.map((med) => (
-                      <div key={med.id} className="bg-gray-50 p-3 rounded">
-                        <h5 className="font-medium text-gray-800">{med.medicineName}</h5>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm text-gray-600">
+                      <div key={med.id} className="bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/40">
+                        <h5 className="font-bold text-xs text-primary-container">{med.medicineName}</h5>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 mt-1.5 text-[11px] text-on-surface-variant font-medium">
                           <div>
-                            <span className="text-gray-700">Dosage:</span> {med.dosage}
+                            <span className="font-semibold text-primary-container">Dosage:</span> {med.dosage}
                           </div>
                           <div>
-                            <span className="text-gray-700">Duration:</span> {med.duration}
+                            <span className="font-semibold text-primary-container">Duration:</span> {med.duration}
                           </div>
                           <div className="md:col-span-2">
-                            <span className="text-gray-700">Timing:</span> {Object.entries(med.timing)
+                            <span className="font-semibold text-primary-container">Timing:</span> {Object.entries(med.timing)
                               .filter(([_, value]) => value === true)
                               .map(([key]) => key)
                               .join(', ')}
                           </div>
                           <div className="md:col-span-2">
-                            <span className="text-gray-700">Instructions:</span> {med.instructions}
+                            <span className="font-semibold text-primary-container">Instructions:</span> {med.instructions}
                           </div>
                         </div>
                       </div>
@@ -237,75 +237,67 @@ function RetrievePatient({ onAddPrescription }) {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">My Patients</h2>
+    <div className="w-full p-2 sm:p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+        <div>
+          <h2 className="text-xl font-bold text-primary-container tracking-tight">My Patients</h2>
+          <p className="text-xs text-on-surface-variant font-medium">Browse and manage assigned patients</p>
+        </div>
         <div className="relative w-full md:w-64">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
+            <Search className="h-4 w-4 text-on-surface-variant opacity-60" />
           </div>
           <Input
             type="text"
             placeholder="Search patients..."
             value={searchTerm}
             onChange={handleSearch}
-            className="pl-10 w-full"
+            className="pl-9 h-8.5 text-xs rounded-xl border-outline-variant/60 bg-surface-lowest text-primary-container w-full"
           />
         </div>
       </div>
 
       {filteredPatients.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p className="text-gray-500">No patients found</p>
-          </CardContent>
-        </Card>
+        <div className="bg-surface-lowest rounded-2xl border border-outline-variant/60 p-8 text-center">
+          <p className="text-xs font-medium text-on-surface-variant">No patients found</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {filteredPatients.map(patient => (
-            <Card key={patient.id} className="overflow-hidden hover:shadow-md transition-shadow duration-200">
-              <CardContent className="p-0">
-                <div className="bg-medical-green-light/20 p-4 flex justify-between items-start">
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-medical-green-light flex items-center justify-center mr-3">
-                      <User className="h-5 w-5 text-medical-green-dark" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{patient.name}</h3>
-                      <p className="text-sm text-gray-500">{patient.email}</p>
-                    </div>
+            <div key={patient.id} className="bg-surface-lowest rounded-2xl border border-outline-variant/60 hover:border-primary/40 shadow-xs hover:shadow-sm transition-all duration-200 overflow-hidden flex flex-col justify-between">
+              <div className="p-3.5 bg-surface-container-low/40 border-b border-outline-variant/60 flex items-center">
+                <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mr-2.5 shrink-0 text-primary">
+                  <User className="h-4 w-4" />
+                </div>
+                <div className="overflow-hidden">
+                  <h3 className="font-bold text-xs text-primary-container truncate">{patient.name}</h3>
+                  <p className="text-[11px] text-on-surface-variant truncate">{patient.email}</p>
+                </div>
+              </div>
+
+              <div className="p-3.5 flex flex-col justify-between flex-1">
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant">Patient ID</p>
+                    <p className="text-xs font-semibold text-primary-container truncate">{patient.id}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant">Status</p>
+                    <p className={`text-xs font-bold ${patient.status === 'active' ? 'text-[#15803D]' : 'text-[#D97706]'}`}>
+                      {patient.status || 'Active'}
+                    </p>
                   </div>
                 </div>
 
-                <div className="p-4">
-                  <div className="grid grid-cols-2 gap-2 mb-4">
-                    <div>
-                      <p className="text-xs text-gray-500">Patient ID</p>
-                      <p className="text-sm font-medium">{patient.id}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Status</p>
-                      <p className={`text-sm font-medium ${patient.status === 'active' ? 'text-green-600' : 'text-orange-500'
-                        }`}>
-                        {patient.status || 'Pending'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-2">
-                    <Button
-                      onClick={() => handleViewPatientDetails(patient)}
-                      variant="outline"
-                      size="sm"
-                      className="w-full flex items-center justify-center"
-                    >
-                      <FileText className="h-4 w-4 mr-1" />
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                <button
+                  onClick={() => handleViewPatientDetails(patient)}
+                  className="w-full py-1.5 px-3 rounded-lg text-xs font-bold bg-surface-variant/50 hover:bg-surface-variant text-primary-container border border-outline-variant/60 hover:border-primary/30 flex items-center justify-center transition-colors"
+                >
+                  <FileText className="h-3.5 w-3.5 mr-1 text-primary" />
+                  View Details
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       )}

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../lib/apiClient';
+import { User, Stethoscope } from 'lucide-react';
 
 function Signup() {
-    const [role, setRole] = useState('');
+    const [role, setRole] = useState('patient');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -62,7 +63,7 @@ function Signup() {
 
     return (
         <div className="min-h-screen bg-surface flex items-center justify-center p-6 font-sans">
-            <div className="w-full max-w-md bg-surface-lowest rounded-3xl shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/20 p-10 animate-in fade-in slide-in-from-bottom-4 duration-700 my-8">
+            <div className="w-full max-w-md bg-surface-lowest rounded-3xl shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/60 p-10 animate-in fade-in slide-in-from-bottom-4 duration-700 my-8">
                 
                 <div className="text-center mb-8 space-y-2">
                     <h1 className="text-4xl font-bold tracking-tight text-primary-container">Create Account</h1>
@@ -82,24 +83,34 @@ function Signup() {
 
                 <form onSubmit={handleClick} className="space-y-6">
                     <div className="space-y-1.5">
-                        <label className="block text-sm font-semibold text-primary-container" htmlFor="role">
+                        <label className="block text-sm font-semibold text-primary-container">
                             I am a <span className="text-[#D93838]">*</span>
                         </label>
-                        <div className="relative">
-                            <select
-                                id="role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                                className="w-full px-4 py-3.5 bg-surface-variant border-transparent rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all duration-300 text-primary-container font-medium appearance-none"
-                                required
+                        <div className="grid grid-cols-2 gap-2 p-1 bg-surface-variant/60 rounded-2xl ring-1 ring-outline-variant/60">
+                            <button
+                                type="button"
+                                onClick={() => setRole("patient")}
+                                className={`cursor-pointer flex items-center justify-center space-x-2 py-2.5 px-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                                    role === "patient"
+                                        ? "bg-primary-container text-on-primary shadow-md transform scale-[1.01]"
+                                        : "text-on-surface-variant/70 hover:text-primary-container hover:bg-surface/60"
+                                }`}
                             >
-                                <option value="" disabled className="text-on-surface-variant">Select Role</option>
-                                <option value="patient" className="text-primary-container">Patient</option>
-                                <option value="doctor" className="text-primary-container">Doctor</option>
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-primary-container">
-                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                            </div>
+                                <User className="w-4 h-4 shrink-0" />
+                                <span>Patient</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setRole("doctor")}
+                                className={`cursor-pointer flex items-center justify-center space-x-2 py-2.5 px-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                                    role === "doctor"
+                                        ? "bg-primary-container text-on-primary shadow-md transform scale-[1.01]"
+                                        : "text-on-surface-variant/70 hover:text-primary-container hover:bg-surface/60"
+                                }`}
+                            >
+                                <Stethoscope className="w-4 h-4 shrink-0" />
+                                <span>Doctor</span>
+                            </button>
                         </div>
                     </div>
 
@@ -113,7 +124,7 @@ function Signup() {
                             placeholder="John Doe"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="w-full px-4 py-3.5 bg-surface-variant border-transparent rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50"
+                            className="w-full px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/40 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50 shadow-xs"
                             required
                         />
                     </div>
@@ -128,7 +139,7 @@ function Signup() {
                             placeholder="you@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3.5 bg-surface-variant border-transparent rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50"
+                            className="w-full px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/40 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50 shadow-xs"
                             required
                         />
                     </div>
@@ -143,7 +154,7 @@ function Signup() {
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3.5 bg-surface-variant border-transparent rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50"
+                            className="w-full px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/40 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50 shadow-xs"
                             required
                             minLength="6"
                         />
@@ -161,7 +172,7 @@ function Signup() {
                                     placeholder="30"
                                     value={age}
                                     onChange={(e) => setAge(e.target.value)}
-                                    className="w-full px-4 py-3.5 bg-surface-variant border-transparent rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50"
+                                    className="w-full px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/40 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50 shadow-xs"
                                     min="1"
                                     max="120"
                                     required
@@ -177,7 +188,7 @@ function Signup() {
                                         id="gender"
                                         value={gender}
                                         onChange={(e) => setGender(e.target.value)}
-                                        className="w-full px-4 py-3.5 bg-surface-variant border-transparent rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all duration-300 text-primary-container font-medium appearance-none"
+                                        className="w-full px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/40 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-primary-container font-medium appearance-none shadow-xs cursor-pointer"
                                         required
                                     >
                                         <option value="" disabled className="text-on-surface-variant">Select</option>
@@ -205,7 +216,7 @@ function Signup() {
                                 placeholder="Cardiology, Neurology, etc."
                                 value={specialization}
                                 onChange={(e) => setSpecialization(e.target.value)}
-                                className="w-full px-4 py-3.5 bg-surface-variant border-transparent rounded-xl focus:ring-1 focus:ring-primary/20 focus:bg-surface-lowest transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50"
+                                className="w-full px-4 py-3 bg-surface-container-lowest ring-1 ring-outline-variant/40 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-primary-container font-medium placeholder-on-surface-variant/50 shadow-xs"
                                 required
                             />
                         </div>
@@ -214,7 +225,7 @@ function Signup() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className={`w-full py-4 px-6 rounded-full font-bold text-on-primary bg-linear-to-br from-primary to-primary-container shadow-[0_10px_20px_rgba(12,30,38,0.2)] hover:shadow-[0_15px_30px_rgba(12,30,38,0.3)] transition-all duration-300 transform hover:-translate-y-0.5 mt-4 ${isLoading ? 'opacity-75 cursor-not-allowed transform-none hover:shadow-[0_10px_20px_rgba(12,30,38,0.2)]' : ''}`}
+                        className={`cursor-pointer w-full py-4 px-6 rounded-full font-bold text-on-primary bg-primary-container hover:bg-[#0d1322] shadow-[0_10px_20px_rgba(19,27,46,0.25)] hover:shadow-[0_15px_30px_rgba(19,27,46,0.35)] transition-all duration-300 transform hover:-translate-y-0.5 mt-4 ${isLoading ? 'opacity-75 cursor-not-allowed transform-none hover:shadow-[0_10px_20px_rgba(19,27,46,0.2)]' : ''}`}
                     >
                         {isLoading ? (
                             <span className="flex items-center justify-center space-x-2">
@@ -232,7 +243,7 @@ function Signup() {
 
                 <div className="mt-8 text-center text-sm font-medium text-on-surface-variant">
                     Already have an account?{' '}
-                    <Link to="/" className="font-bold text-primary-container hover:text-primary transition-colors underline decoration-primary-container/30 hover:decoration-primary-container underline-offset-4">
+                    <Link to="/" className="cursor-pointer font-bold text-primary-container hover:text-primary transition-colors underline decoration-primary-container/30 hover:decoration-primary-container underline-offset-4">
                         Sign in
                     </Link>
                 </div>

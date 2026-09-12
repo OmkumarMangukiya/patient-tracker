@@ -11,9 +11,11 @@
     "build": "prisma generate",
     "db:generate": "npx prisma generate",
     "db:push": "npx prisma db push",
-    "db:migrate": "npx prisma migrate dev"
+    "db:migrate": "npx prisma migrate dev",
+    "test:concurrent-booking": "node scripts/concurrentBookingTest.js"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.5.0",
     "@prisma/extension-accelerate": "^1.2.1",
     "bcryptjs": "^3.0.2",
@@ -24,6 +26,7 @@
     "jsonwebtoken": "^9.0.2",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.7",
+    "pg": "^8.23.0",
     "prisma": "^7.5.0",
     "socket.io": "^4.8.1"
   },

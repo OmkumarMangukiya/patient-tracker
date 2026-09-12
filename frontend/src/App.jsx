@@ -122,10 +122,10 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
       <aside className={`fixed lg:static inset-y-0 left-0 z-50 shrink-0 border-r border-transparent flex flex-col p-6 space-y-8 bg-surface transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? 'translate-x-0 shadow-2xl lg:shadow-none w-[280px]' : '-translate-x-full lg:translate-x-0 w-[280px]'
       } ${isSidebarCollapsed ? 'lg:w-20! lg:items-center lg:px-3' : 'lg:w-64'}`}>
-        <div className="flex items-center justify-between w-full">
+        <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} w-full`}>
           {/* Brand */}
           {!isSidebarCollapsed && (
-            <div className="font-bold text-2xl tracking-tight text-primary-container pl-2">
+            <div className="font-bold text-2xl tracking-tight text-primary-container px-2">
               Clinical Curator
             </div>
           )}
@@ -147,15 +147,15 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
         </div>
 
         {/* User Card */}
-        <div className={`bg-surface-lowest rounded-md p-4 shadow-[0_10px_40px_rgba(12,30,38,0.05)] flex items-center ${isSidebarCollapsed ? 'justify-center' : 'space-x-4'}`}>
-          <div className="w-12 h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center overflow-hidden shrink-0">
+        <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'space-x-3 px-4 py-2'}`}>
+          <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
             {/* Placeholder for User Profile Image */}
-            <User className="w-6 h-6" />
+            <User className="w-5 h-5" />
           </div>
           {!isSidebarCollapsed && (
-            <div className="flex flex-col">
-              <span className="font-semibold text-primary-container leading-tight">{userData.name}</span>
-              <span className="text-xs text-on-surface-variant">
+            <div className="flex flex-col min-w-0">
+              <span className="font-semibold text-primary-container leading-tight truncate">{userData.name}</span>
+              <span className="text-xs text-on-surface-variant font-medium mt-0.5">
                 ID: #{userData.id ? String(userData.id).substring(0,4) : '...'}
               </span>
             </div>
@@ -191,18 +191,18 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
             <button 
               onClick={() => navigate(`/${role}/appointments`)}
               title={isSidebarCollapsed ? 'New Appointment' : undefined}
-              className={`w-full flex items-center justify-center bg-linear-to-br from-primary to-primary-container text-on-primary rounded-full font-semibold transition-transform hover:scale-[1.02] shadow-[0_10px_40px_rgba(12,30,38,0.1)] ${isSidebarCollapsed ? 'p-3' : 'space-x-2 py-4 px-6'}`}
+              className={`w-full flex items-center justify-center bg-primary-container hover:bg-[#0d1322] text-on-primary rounded-full font-semibold transition-transform hover:scale-[1.02] shadow-[0_10px_20px_rgba(19,27,46,0.25)] ${isSidebarCollapsed ? 'p-3' : 'space-x-2 py-4 px-6'}`}
             >
               <Plus className="w-5 h-5 shrink-0" />
               {!isSidebarCollapsed && <span>New Appointment</span>}
             </button>
           )}
           
-          <div className="pt-8 border-t border-outline-variant/20 space-y-2">
+          <div className="pt-4 border-t border-outline-variant/60 space-y-2">
             <button 
               onClick={handleLogout}
               title={isSidebarCollapsed ? 'Logout' : undefined}
-              className={`w-full flex items-center ${isSidebarCollapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg text-[#D93838] hover:bg-[#FFF5F5] hover:text-[#D93838] transition-colors font-medium`}
+              className={`w-full flex items-center ${isSidebarCollapsed ? 'justify-center' : 'space-x-3'} px-4 py-2.5 rounded-lg text-[#D93838] hover:bg-[#FFF5F5] hover:text-[#D93838] transition-colors font-medium`}
             >
               <LogOut className="w-5 h-5 shrink-0" />
               {!isSidebarCollapsed && <span>Logout</span>}
@@ -214,7 +214,7 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 bg-surface h-screen">
         {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between p-4 bg-surface border-b border-outline-variant/20 sticky top-0 z-30">
+        <div className="lg:hidden flex items-center justify-between p-3.5 bg-surface border-b border-outline-variant/60 sticky top-0 z-30">
           <div className="font-bold text-xl tracking-tight text-primary-container pl-2">
             Clinical Curator
           </div>
@@ -227,8 +227,8 @@ const SidebarLayout = ({ Component, role, initialTab }) => {
         </div>
 
 
-        <div className="flex-1 flex flex-col min-w-0 px-4 lg:pl-4 lg:pr-8 py-6 overflow-y-auto">
-          <div className="flex-1 flex flex-col max-w-7xl w-full mx-auto">
+        <div className="flex-1 flex flex-col min-w-0 px-3 lg:px-6 py-4 overflow-y-auto">
+          <div className="flex-1 flex flex-col w-full">
             <Component initialTab={initialTab} />
           </div>
         </div>

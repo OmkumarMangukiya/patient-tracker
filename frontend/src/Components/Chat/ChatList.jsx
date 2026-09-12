@@ -99,7 +99,7 @@ function ChatList({ userRole, onChatSelect, onNewChat }) {
           <h2 className="text-xl font-semibold text-gray-800">Messages</h2>
           <button
             onClick={onNewChat}
-            className="bg-blue-600 text-black p-2 rounded-full hover:bg-blue-700 transition-colors"
+            className="bg-primary-container text-on-primary p-2 rounded-full hover:bg-[#0d1322] transition-colors"
           >
             <Plus className="h-5 w-5" />
           </button>

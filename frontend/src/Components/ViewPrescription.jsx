@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../lib/apiClient';
 import { format } from 'date-fns';
-import { ChevronDown, ChevronUp, Calendar, User, Stethoscope } from 'lucide-react';
+import { ChevronDown, ChevronUp, Calendar, User, Stethoscope, ClipboardList } from 'lucide-react';
 
 function ViewPrescription({ patientId }) {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -85,102 +85,102 @@ function ViewPrescription({ patientId }) {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface-lowest rounded-3xl p-6 md:p-8 shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/20 mb-6">
+    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface-lowest rounded-2xl p-4 md:p-5 shadow-xs ring-1 ring-outline-variant/60 mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-primary-container tracking-tight">Prescription History</h2>
-          <p className="text-sm text-on-surface-variant font-medium mt-1">Review your prescribed medications</p>
+          <h2 className="text-xl font-bold text-primary-container tracking-tight">Prescription History</h2>
+          <p className="text-xs text-on-surface-variant font-medium mt-0.5">Review your prescribed medications</p>
         </div>
-        <div className="flex space-x-3 mt-4 md:mt-0">
+        <div className="flex space-x-2 mt-3 md:mt-0">
           <button
             onClick={() => handleSort('date')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${sortBy === 'date' ? 'bg-primary-container text-on-primary' : 'bg-surface-variant text-on-surface-variant hover:bg-surface-container-low hover:text-primary-container'}`}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border ${sortBy === 'date' ? 'bg-primary-container text-on-primary border-primary-container' : 'bg-surface-variant/50 text-on-surface-variant border-outline-variant/60 hover:bg-surface-container-low hover:text-primary-container'}`}
           >
-            <Calendar className="h-4 w-4" />
+            <Calendar className="h-3.5 w-3.5" />
             <span>Date</span>
             {sortBy === 'date' && (
-              sortDirection === 'asc' ? <ChevronUp className="h-4 w-4 ml-1" /> : <ChevronDown className="h-4 w-4 ml-1" />
+              sortDirection === 'asc' ? <ChevronUp className="h-3.5 w-3.5 ml-0.5" /> : <ChevronDown className="h-3.5 w-3.5 ml-0.5" />
             )}
           </button>
           <button
             onClick={() => handleSort('doctor')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${sortBy === 'doctor' ? 'bg-primary-container text-on-primary' : 'bg-surface-variant text-on-surface-variant hover:bg-surface-container-low hover:text-primary-container'}`}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border ${sortBy === 'doctor' ? 'bg-primary-container text-on-primary border-primary-container' : 'bg-surface-variant/50 text-on-surface-variant border-outline-variant/60 hover:bg-surface-container-low hover:text-primary-container'}`}
           >
-            <User className="h-4 w-4" />
+            <User className="h-3.5 w-3.5" />
             <span>Doctor</span>
             {sortBy === 'doctor' && (
-              sortDirection === 'asc' ? <ChevronUp className="h-4 w-4 ml-1" /> : <ChevronDown className="h-4 w-4 ml-1" />
+              sortDirection === 'asc' ? <ChevronUp className="h-3.5 w-3.5 ml-0.5" /> : <ChevronDown className="h-3.5 w-3.5 ml-0.5" />
             )}
           </button>
         </div>
       </div>
 
       {prescriptions.length === 0 ? (
-        <div className="bg-surface-lowest p-12 rounded-3xl text-center shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/20 flex flex-col items-center">
-          <div className="bg-surface-variant rounded-full p-4 mb-4">
-            <ClipboardList className="h-8 w-8 text-on-surface-variant opacity-60" />
+        <div className="bg-surface-lowest p-8 rounded-2xl text-center border border-outline-variant/60 shadow-xs flex flex-col items-center">
+          <div className="bg-surface-variant rounded-full p-3 mb-3">
+            <ClipboardList className="h-6 w-6 text-on-surface-variant opacity-60" />
           </div>
-          <p className="text-primary-container font-bold text-lg mb-1">No Prescriptions</p>
-          <p className="text-on-surface-variant text-sm font-medium">You have no prescription history yet.</p>
+          <p className="text-primary-container font-bold text-sm mb-0.5">No Prescriptions</p>
+          <p className="text-on-surface-variant text-xs font-medium">You have no prescription history yet.</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {sortedPrescriptions.map((prescription) => (
             <div
               key={prescription.id}
-              className="bg-surface-lowest p-6 rounded-3xl shadow-[0_20px_60px_rgba(12,30,38,0.05)] ring-1 ring-outline-variant/20 transition-all hover:shadow-[0_25px_65px_rgba(12,30,38,0.08)]"
+              className="bg-surface-lowest p-4 md:p-5 rounded-2xl shadow-xs border border-outline-variant/60 transition-all hover:border-primary/40"
             >
-              <div className="flex flex-col md:flex-row justify-between mb-6 pb-5 border-b border-outline-variant/20">
-                <div className="space-y-2">
+              <div className="flex flex-col md:flex-row justify-between mb-4 pb-3.5 border-b border-outline-variant/60">
+                <div className="space-y-1">
                   <div className="flex items-center text-primary-container">
-                    <Calendar className="h-5 w-5 mr-3 text-primary" />
-                    <span className="font-bold text-lg">
+                    <Calendar className="h-4 w-4 mr-2 text-primary" />
+                    <span className="font-bold text-base">
                       {format(new Date(prescription.date), 'MMMM d, yyyy')}
                     </span>
                   </div>
-                  <div className="flex items-center text-on-surface-variant font-medium">
-                    <User className="h-5 w-5 mr-3 opacity-70" />
+                  <div className="flex items-center text-on-surface-variant text-xs font-medium">
+                    <User className="h-3.5 w-3.5 mr-2 opacity-70" />
                     <span>Dr. {prescription.doctor.name}</span>
                   </div>
-                  <div className="flex items-center text-on-surface-variant font-medium">
-                    <Stethoscope className="h-5 w-5 mr-3 opacity-70" />
+                  <div className="flex items-center text-on-surface-variant text-xs font-medium">
+                    <Stethoscope className="h-3.5 w-3.5 mr-2 opacity-70" />
                     <span>Condition: {prescription.condition || 'General'}</span>
                   </div>
                 </div>
-                <div className="mt-4 md:mt-0 self-start">
-                  <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-primary/10 text-primary ring-1 ring-primary/20">
+                <div className="mt-2 md:mt-0 self-start">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-primary/10 text-primary border border-primary/20">
                     {prescription.medicines.length} medication{prescription.medicines.length !== 1 ? 's' : ''}
                   </span>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-bold text-primary-container mb-4 uppercase text-xs tracking-[0.15em]">Medications Details</h4>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <h4 className="font-bold text-primary-container mb-3 uppercase text-[11px] tracking-[0.12em]">Medications Details</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {prescription.medicines.map((med) => (
-                    <div key={med.id} className="bg-surface-container-lowest p-5 rounded-2xl ring-1 ring-outline-variant/10 hover:ring-primary/20 transition-all duration-300">
-                      <h5 className="font-bold text-primary-container text-lg mb-3 flex items-center">
+                    <div key={med.id} className="bg-surface-container-lowest p-3.5 rounded-xl border border-outline-variant/60 hover:border-primary/40 transition-all duration-200">
+                      <h5 className="font-bold text-primary-container text-sm mb-2 flex items-center">
                         {med.medicineName}
                       </h5>
-                      <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm font-medium">
+                      <div className="grid grid-cols-2 gap-y-2 gap-x-3 text-xs font-medium">
                         <div className="flex flex-col">
-                          <span className="text-on-surface-variant text-xs uppercase tracking-wider mb-1">Dosage</span>
+                          <span className="text-on-surface-variant text-[10px] uppercase tracking-wider mb-0.5">Dosage</span>
                           <span className="text-primary-container">{med.dosage}</span>
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-on-surface-variant text-xs uppercase tracking-wider mb-1">Duration</span>
+                          <span className="text-on-surface-variant text-[10px] uppercase tracking-wider mb-0.5">Duration</span>
                           <span className="text-primary-container">{med.duration}</span>
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-on-surface-variant text-xs uppercase tracking-wider mb-1">Timing</span>
+                          <span className="text-on-surface-variant text-[10px] uppercase tracking-wider mb-0.5">Timing</span>
                           <span className="text-primary-container">{Object.entries(med.timing)
                             .filter(([_, value]) => value === true)
                             .map(([key]) => key)
                             .join(', ')}</span>
                         </div>
                         <div className="flex flex-col col-span-2">
-                          <span className="text-on-surface-variant text-xs uppercase tracking-wider mb-1">Instructions</span>
-                          <span className="text-primary-container bg-surface-lowest mt-1">{med.instructions}</span>
+                          <span className="text-on-surface-variant text-[10px] uppercase tracking-wider mb-0.5">Instructions</span>
+                          <span className="text-primary-container bg-surface-lowest/70 p-1.5 rounded border border-outline-variant/40 mt-0.5">{med.instructions}</span>
                         </div>
                       </div>
                     </div>
